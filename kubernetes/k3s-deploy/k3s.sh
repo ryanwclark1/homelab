@@ -170,17 +170,8 @@ curl -sO https://raw.githubusercontent.com/ryanwclark1/homelab/main/kubernetes/k
 cat ipAddressPool | sed 's/$lbrange/'$lbrange'/g' > $HOME/ipAddressPool.yaml
 kubectl apply -f $HOME/ipAddressPool.yaml
 
-# Step 9: Test with Nginx
-# kubectl apply -f https://raw.githubusercontent.com/inlets/inlets-operator/master/contrib/nginx-sample-deployment.yaml -n default
-# kubectl expose deployment nginx-1 --port=80 --type=LoadBalancer -n default
 
-# echo -e " \033[32;5mWaiting for K3S to sync and LoadBalancer to come online\033[0m"
-
-# while [[ $(kubectl get pods -l app=nginx -o 'jsonpath={..status.conditions[?(@.type=="Ready")].status}') != "True" ]]; do
-#    sleep 1
-# done
-
-# Step 10: Deploy IP Pools and l2Advertisement
+# Step 9: Deploy IP Pools and l2Advertisement
 kubectl wait --namespace metallb-system \
                 --for=condition=ready pod \
                 --selector=component=controller \
