@@ -82,6 +82,7 @@ deploy_vm() {
     local vm_ip=$5
     local disk=$6
     local disk_size=$7
+    local template_ip=$8
 
     # Check if VM already exists
     if vm_exists $vm_id $node_ip; then
@@ -125,7 +126,7 @@ for node in "${nodes[@]}"; do
         disk=$(echo "$vm" | jq -r '.disk')
         disk_size=$(echo "$vm" | jq -r '.disk_size')
 
-        deploy_vm "$node_ip" "$node_name" "$vm_id" "$vm_name" "$vm_ip" "$disk" "$disk_size"
+        deploy_vm "$node_ip" "$node_name" "$vm_id" "$vm_name" "$vm_ip" "$disk" "$disk_size" "$template_ip"
     done
 done
 
