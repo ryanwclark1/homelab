@@ -61,10 +61,10 @@ vm_exists() {
 
     # Check the status and specific output to determine if VM exists
     if [[ $status -eq 0 ]]; then
-        echo "VM does not exist"
-        return 1  # VM does not exist
+        echo "VM exist"
+        return 1
     else
-        echo "VM exists"
+        echo "VM does not exist"
         return 0  # VM exists
     fi
 
