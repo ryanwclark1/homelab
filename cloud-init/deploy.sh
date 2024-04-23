@@ -5,7 +5,7 @@ qm clone 5001 221 \
   --storage init
 
 qm set 221 --ipconfig0 ip=10.10.101.221/23,gw=10.10.100.1; \
-qm move-disk 222 scsi0 tank; \
+qm move-disk 221 scsi0 tank; \
 qm disk resize 221 scsi0 10G
 
 
@@ -92,11 +92,10 @@ qm clone 5001 229 \
   --target john \
   --storage init
 
-ssh root@john.techcasa.io "qm set 229 --ipconfig0 ip=10.10.101.221/23,gw=10.10.100.1; \
+ssh root@john.techcasa.io "qm set 229 --ipconfig0 ip=10.10.101.229/23,gw=10.10.100.1; \
 qm move-disk 229 scsi0 tank; \
-qm disk resize 221 scsi0 10G; \
+qm disk resize 229 scsi0 10G; \
 exit"
-
 
 qm clone 5001 230 \
   --name k3s-node10 \
@@ -104,7 +103,7 @@ qm clone 5001 230 \
   --target peter \
   --storage init
 
-ssh root@peter.techcasa.io "qm set 221 --ipconfig0 ip=10.10.101.221/23,gw=10.10.100.1; \
-qm move-disk 221 scsi0 tank; \
-qm disk resize 221 scsi0 10G; \
+ssh root@peter.techcasa.io "qm set 230 --ipconfig0 ip=10.10.101.230/23,gw=10.10.100.1; \
+qm move-disk 230 scsi0 tank; \
+qm disk resize 230 scsi0 10G; \
 exit"
