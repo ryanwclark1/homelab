@@ -12,6 +12,9 @@ USER=root
 # SSH Key File
 SSH_KEY="$HOME/.ssh/id_rsa"
 
+vm_cidr = 23
+vm_gateway = 10.10.100.1
+
 # Function to check for jq and install if not present
 ensure_jq_installed() {
     if ! command -v jq &> /dev/null; then
@@ -58,6 +61,7 @@ log_action() {
 
 # Loop through VM data and deploy VMs
 jq -c '.nodes[]' $inventory | while read -r node; do
+    node_name=$(echo $node | jq -r '.name')
     node_ip=$(echo $node | jq -r '.ip')
     echo $node | jq -c '.vms[]' | while read -r vm; do
         vm_name=$(echo $vm | jq -r '.name')
@@ -66,19 +70,19 @@ jq -c '.nodes[]' $inventory | while read -r node; do
         disk_size=$(echo $vm | jq -r '.disk_size')
         vm_id=$(echo $vm | jq -r '.id')
 
-        log_action "Cloning VM for $vm_name on $node_ip with ID $vm_id..."
+        log_action "Cloning VM for $vm_name on $node_name ($node_ip) with ID $vm_id..."
         ssh "$USER@$template_ip" "
             qm clone 5001 $vm_id \
             --name $vm_name \
             --full true \
-            --target $node_ip \
+            --target $node_name \
             --storage init
             exit
         "
 
         log_action "Configuring VM on $node_ip..."
         ssh "$USER@$node_ip" "
-            qm set $vm_id --ipconfig0 ip=$vm_ip/23,gw=10.10.100.1;
+            qm set $vm_id --ipconfig0 ip=$vm_ip/$vm_cidr,gw=$vm_gateway;
             qm move-disk $vm_id scsi0 $disk;
             qm disk resize $vm_id scsi0 $disk_size;
             exit
