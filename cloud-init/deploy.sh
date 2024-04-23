@@ -93,16 +93,11 @@ ensure_jq_installed
 ensure_inventory_exists
 
 
-# Load template node from inventory
-template_node=$(jq -r '.template_node' $inventory)
-template_ip=$(jq -r '.nodes[] | select(.name == "'$template_node'") | .ip' $inventory)
-
-# Process each node and VM
-while IFS= read -r node; do
+mapfile -t nodes < <(jq -c '.nodes[]' $inventory)
+for node in "${nodes[@]}"; do
     node_ip=$(echo "$node" | jq -r '.ip')
-    node_name=$(echo "$node" | jq -r '.name')
-
-    while IFS= read -r vm; do
+    mapfile -t vms < <(echo "$node" | jq -c '.vms[]')
+    for vm in "${vms[@]}"; do
         vm_id=$(echo "$vm" | jq -r '.id')
         vm_name=$(echo "$vm" | jq -r '.name')
         vm_ip=$(echo "$vm" | jq -r '.ip')
@@ -110,7 +105,7 @@ while IFS= read -r node; do
         disk_size=$(echo "$vm" | jq -r '.disk_size')
 
         deploy_vm "$node_ip" "$vm_id" "$vm_name" "$vm_ip" "$disk" "$disk_size"
-    done < <(echo "$node" | jq -c '.vms[]')
-done < <(jq -c '.nodes[]' $inventory)
+    done
+done
 
 log_action "Deployment complete."
