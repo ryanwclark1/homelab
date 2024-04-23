@@ -15,12 +15,18 @@ master1=10.10.101.221
 master2=10.10.101.222
 master3=10.10.101.223
 master4=10.10.101.224
-worker1=10.10.101.225
-worker2=10.10.101.226
-worker3=10.10.101.227
-worker4=10.10.101.228
-worker5=10.10.101.229
-worker6=10.10.101.230
+master5=10.10.101.225
+master6=10.10.101.226
+worker1=10.10.101.227
+worker2=10.10.101.228
+worker3=10.10.101.229
+worker4=10.10.101.230
+worker5=10.10.101.231
+worker6=10.10.101.232
+worker7=10.10.101.233
+worker8=10.10.101.234
+worker9=10.10.101.235
+worker10=10.10.101.236
 
 # User of remote machines
 user=administrator
@@ -32,16 +38,16 @@ interface=eth0
 vip=10.10.101.50
 
 # Array of master nodes
-masters=($master2 $master3 $master4 )
+masters=($master2 $master3 $master4 $master5 $master6)
 
 # Array of worker nodes
-workers=($worker1 $worker2 $worker3 $worker4 $worker5 $worker6)
+workers=($worker1 $worker2 $worker3 $worker4 $worker5 $worker6 $workers7 $worker8 $worker9 $worker10)
 
 # Array of all
-all=($master1 $master2 $master3 $master4 $worker1 $worker2 $worker3 $worker4 $worker5 $worker6)
+all=($master1 $master2 $master3 $master4 $master5 $master6 $worker1 $worker2 $worker3 $worker4 $worker5 $worker6 $worker7 $worker8 $worker9 $worker10)
 
 # Array of all minus master
-allnomaster1=($master2 $master3 $master4 $worker1 $worker2 $worker3 $worker4 $worker5 $worker6)
+allnomaster1=($master2 $master3 $master4 $master5 $master6 $worker1 $worker2 $worker3 $worker4 $worker5 $worker6 $worker7 $worker8 $worker9 $worker10)
 
 #Loadbalancer IP range
 lbrange=10.10.101.60-10.10.101.80

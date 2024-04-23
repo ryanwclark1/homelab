@@ -2,9 +2,12 @@
 
 # Associative array of hosts and corresponding VM IDs
 declare -A vms_to_delete=(
-    [andrew]="222 225 228"
-    [john]="223 226 229"
-    [peter]="224 227 230"
+    [james]="221"
+    [andrew]="222 227 228"
+    [john]="223 229 230"
+    [peter]="224 231 232"
+    [judas]="225 233 234"
+    [philip]="226 235 236"
 )
 
 # Function to delete a VM on a specific host

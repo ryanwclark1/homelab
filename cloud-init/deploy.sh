@@ -5,13 +5,16 @@ base_vm=5001
 
 # Array of target hosts and corresponding node names
 declare -A nodes=(
-    [andrew]="k3s-node02 k3s-node05 k3s-node08"
-    [john]="k3s-node03 k3s-node06 k3s-node09"
-    [peter]="k3s-node04 k3s-node07 k3s-node10"
+    [james]="k3s-node01"
+    [andrew]="k3s-node02 k3s-node07 k3s-node08"
+    [john]="k3s-node03 k3s-node09 k3s-node10"
+    [peter]="k3s-node04 k3s-node11 k3s-node12"
+    [judas]="k3s-node05 k3s-node13 k3s-node14"
+    [philip]="k3s-node06 k3s-node15 k3s-node16"
 )
 
 # Start VM ID for clones
-vm_id=222
+vm_id=221
 
 for target in "${!nodes[@]}"; do
     for node in ${nodes[$target]}; do
