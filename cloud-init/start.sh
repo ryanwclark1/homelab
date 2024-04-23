@@ -2,22 +2,30 @@
 
 template_node="james"
 
-# List of VM IDs to start
-vm_ids=(221 222 223 224 225 226 227 228 229 230 231 232 233 234 235 236)
 
-# Function to start a VM
+# Associative array of hosts and corresponding VM IDs
+declare -A vms_to_start=(
+    [james]="221"
+    [andrew]="222 227 228"
+    [john]="223 229 230"
+    [peter]="224 231 232"
+    [judas]="225 233 234"
+    [philip]="226 235 236"
+)
+
+# Function to start a VM on a specific host
 start_vm() {
     local vm_id=$1
-    echo "Starting VM ID $vm_id..."
-    ssh root@"$template_node.techcasa.io" "
-      qm start $vm_id
-      exit
-    "
+    local target=$2
+    echo "Starting VM ID $vm_id on $target..."
+    ssh root@"$target.techcasa.io" "qm start $vm_id; qm destroy $vm_id"
 }
 
-# Loop over all VM IDs and start each one
-for vm_id in "${vm_ids[@]}"; do
-    start_vm $vm_id
+# Loop through each host and their corresponding VM IDs
+for target in "${!vms_to_start[@]}"; do
+    for vm_id in ${vms_to_start[$target]}; do
+        delete_vm $vm_id $target
+    done
 done
 
 echo "All VMs have been started."
