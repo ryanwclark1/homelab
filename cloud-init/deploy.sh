@@ -99,6 +99,7 @@ deploy_vm() {
     fi
 
     log_action "Configuring VM on $node_name ($node_ip)..."
+    echo $vm_ip
     ssh -i "$SSH_KEY" "$USER@$node_ip" "
             qm set $vm_id --ipconfig0 ip=$vm_ip/23,gw=10.10.100.1;
             qm move-disk $vm_id scsi0 $disk;
