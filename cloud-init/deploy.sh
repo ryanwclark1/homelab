@@ -18,7 +18,7 @@ vm_gateway="10.10.100.1"
 # Function to check for jq and install if not present
 ensure_jq_installed() {
     if ! command -v jq &> /dev/null; then
-        echo "jq is not installed. Attempting to install..."
+        log_action "jq is not installed. Attempting to install..."
         case $(uname -s) in
             Linux)
                 distro=$(grep ^ID= /etc/os-release | cut -d= -f2 | tr -d '"')
@@ -27,20 +27,20 @@ ensure_jq_installed() {
                     centos|fedora|rocky) sudo yum install -y jq ;;
                     alpine) sudo apk add jq ;;
                     arch) sudo pacman -Sy jq ;;
-                    *) echo "Unsupported distribution: $distro" && exit 1 ;;
+                    *) log_action "Unsupported distribution: $distro" && exit 1 ;;
                 esac
                 ;;
             *)
-                echo "Unsupported OS" && exit 1 ;;
+                log_action "Unsupported OS" && exit 1 ;;
         esac
     fi
-    echo "jq is installed."
+    log_action "jq is installed."
 }
 
 # Function to check if inventory file exists
 ensure_inventory_exists() {
     if [ ! -f "$inventory" ]; then
-        echo "Inventory file not found at $inventory"
+        log_action "Inventory file not found at $inventory"
         exit 1
     fi
 }
