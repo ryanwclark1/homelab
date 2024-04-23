@@ -11,11 +11,16 @@ KVVERSION="v0.8.0"
 k3sVersion="v1.29.3+k3s1"
 
 # Set the IP addresses of the master and work nodes
-master1=10.10.101.21
-master2=10.10.101.22
-master3=10.10.101.23
-worker1=10.10.101.24
-worker2=10.10.101.25
+master1=10.10.101.221
+master2=10.10.101.222
+master3=10.10.101.223
+master4=10.10.101.224
+worker1=10.10.101.225
+worker2=10.10.101.226
+worker3=10.10.101.227
+worker4=10.10.101.228
+worker5=10.10.101.229
+worker6=10.10.101.230
 
 # User of remote machines
 user=administrator
