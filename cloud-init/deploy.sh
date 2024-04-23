@@ -55,7 +55,7 @@ vm_exists() {
     local vm_id=$1
     local node_ip=$2
     # Execute qm status and capture output and exit status
-    local output=$(ssh -i "$SSH_KEY" "$USER@$node_ip" "qm status $vm_id" 2>&1)
+    local output=$(ssh -i "$SSH_KEY" "$USER@$node_ip" "qm status $vm_id 2>&1")
     local status=$?
 
     # Log the output and status for debugging
@@ -66,10 +66,13 @@ vm_exists() {
     if [[ $status -eq 2 ]] || [[ $output =~ "does not exist" ]] || [[ $output =~ "Configuration file .* does not exist" ]]; then
         echo "VM does not exist: $output"
         return 1  # VM does not exist
+    else
+        echo "VM exists: $output"
+        return 0  # VM exists
     fi
 
     # Assume VM exists if no known error messages are found
-    echo "VM exists."
+    echo "Unknown output: $output"
     return 0
 }
 
