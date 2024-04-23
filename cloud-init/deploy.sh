@@ -85,7 +85,7 @@ deploy_vm() {
     local template_ip=$8
     local base_vm=$9
     local user=$10
-    local ssh_key=
+    local ssh_key=$11
 
     # Check if VM already exists
     if vm_exists $vm_id $node_ip; then
