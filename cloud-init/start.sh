@@ -22,7 +22,7 @@ start_vm() {
     local vm_id=$1
     local target_ip=$2
     echo "Starting VM ID $vm_id on $target_ip..."
-    ssh -i "${SSH_KEY}.pub" "$USER@$target_ip" "qm start $vm_id;"
+    ssh "$USER@$target_ip" "qm start $vm_id;"
 }
 
 # Ensure the inventory file exists
