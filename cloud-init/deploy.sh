@@ -55,7 +55,7 @@ vm_exists() {
     local vm_id=$1
     local node_ip=$2
     # Execute qm status and capture output and exit status
-    local status=$(ssh -i "$SSH_KEY" "$USER@$node_ip" "qm status $vm_id 2>&1 | echo $?")
+    local status=$(ssh -i "$SSH_KEY" "$USER@$node_ip" "qm status $vm_id 2>&1 | $?")
     # local status=$?
 
     # Log the output and status for debugging
