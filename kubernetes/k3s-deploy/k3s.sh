@@ -62,6 +62,14 @@ certName=id_rsa
 sudo timedatectl set-ntp off
 sudo timedatectl set-ntp on
 
+if [ ! -f ~/.ssh/$certName ]; then
+    # RSA key does not exist, so create it
+    ssh-keygen -t rsa -b 4096 -f ~/.ssh/id_rsa -N ""
+    echo "RSA key created."
+else
+    echo "RSA key already exists."
+fi
+
 # Move SSH certs to ~/.ssh and change permissions
 cp /home/$user/{$certName,$certName.pub} /home/$user/.ssh
 chmod 600 /home/$user/.ssh/$certName
