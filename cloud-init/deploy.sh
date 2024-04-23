@@ -3,6 +3,8 @@
 # Base VM ID for cloning
 base_vm=5001
 
+template_node="james"
+
 # Array of target hosts and corresponding node names
 declare -A nodes=(
     [james]="k3s-node01"
@@ -19,13 +21,13 @@ vm_id=221
 for target in "${!nodes[@]}"; do
     for node in ${nodes[$target]}; do
         echo "Cloning VM for $node on $target with ID $vm_id..."
-        ssh root@james.techcasa.io" "
-        qm clone $base_vm $vm_id \
-          --name $node \
-          --full true \
-          --target $target \
-          --storage init
-        exit
+        ssh root@"$template_node.techcasa.io" "
+            qm clone $base_vm $vm_id \
+            --name $node \
+            --full true \
+            --target $target \
+            --storage init
+            exit
         "
 
         echo "Configuring VM on $target..."
