@@ -45,6 +45,42 @@ ensure_inventory_exists() {
     fi
 }
 
+# Log Function
+log_action() {
+    echo "[$(date +'%Y-%m-%d %H:%M:%S')] $1"
+}
+
+# Function to check if VM already exists
+vm_exists() {
+    local vm_id=$1
+    local node_ip=$2
+    ssh -i "$SSH_KEY" "$USER@$node_ip" "qm status $vm_id" &> /dev/null
+    return $?
+}
+
+
+# Function to clone and configure VM
+deploy_vm() {
+    local node_ip=$1
+    local vm_id=$2
+    local vm_name=$3
+    local vm_ip=$4
+    local disk=$5
+    local disk_size=$6
+
+    # Check if VM already exists
+    if vm_exists $vm_id $node_ip; then
+        log_action "VM $vm_name ($vm_id) already exists on $node_ip, skipping clone."
+    else
+        log_action "Cloning VM for $vm_name on $node_ip with ID $vm_id..."
+        ssh -i "$SSH_KEY" "$USER@$template_ip" "qm clone $base_vm $vm_id --name $vm_name --full true --target $node_ip --storage init"
+    fi
+
+    log_action "Configuring VM on $node_ip..."
+    ssh -i "$SSH_KEY" "$USER@$node_ip" "qm set $vm_id --ipconfig0 ip=$vm_ip/$vm_cidr,gw=$vm_gateway; qm move-disk $vm_id scsi0 $disk; qm disk resize $vm_id scsi0 $disk_size"
+    log_action "VM $vm_name ($vm_id) deployed and configured at $vm_ip."
+}
+
 # Initialize by checking inventory and jq
 ensure_jq_installed
 ensure_inventory_exists
@@ -53,11 +89,6 @@ ensure_inventory_exists
 # Load template node from inventory
 template_node=$(jq -r '.template_node' $inventory)
 template_ip=$(jq -r '.nodes[] | select(.name == "'$template_node'") | .ip' $inventory)
-
-# Log Function
-log_action() {
-    echo "[$(date +'%Y-%m-%d %H:%M:%S')] $1"
-}
 
 # Loop through VM data and deploy VMs
 jq -c '.nodes[]' $inventory | while read -r node; do
