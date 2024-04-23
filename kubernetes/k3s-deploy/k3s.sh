@@ -32,16 +32,16 @@ interface=eth0
 vip=10.10.101.50
 
 # Array of master nodes
-masters=($master2 $master3)
+masters=($master2 $master3 $master4 )
 
 # Array of worker nodes
-workers=($worker1 $worker2)
+workers=($worker1 $worker2 $worker3 $worker4 $worker5 $worker6)
 
 # Array of all
-all=($master1 $master2 $master3 $worker1 $worker2)
+all=($master1 $master2 $master3 $master4 $worker1 $worker2 $worker3 $worker4 $worker5 $worker6)
 
 # Array of all minus master
-allnomaster1=($master2 $master3 $worker1 $worker2)
+allnomaster1=($master2 $master3 $master4 $worker1 $worker2 $worker3 $worker4 $worker5 $worker6)
 
 #Loadbalancer IP range
 lbrange=10.10.101.60-10.10.101.80
@@ -164,7 +164,7 @@ kubectl apply -f https://raw.githubusercontent.com/kube-vip/kube-vip-cloud-provi
 
 # Step 8: Install Metallb
 kubectl apply -f https://raw.githubusercontent.com/metallb/metallb/v0.12.1/manifests/namespace.yaml
-kubectl apply -f https://raw.githubusercontent.com/metallb/metallb/v0.13.12/config/manifests/metallb-native.yaml
+kubectl apply -f https://raw.githubusercontent.com/metallb/metallb/v0.14.5/config/manifests/metallb-native.yaml
 # Download ipAddressPool and configure using lbrange above
 curl -sO https://raw.githubusercontent.com/ryanwclark1/homelab/main/kubernetes/k3s-deploy/ipAddressPool
 cat ipAddressPool | sed 's/$lbrange/'$lbrange'/g' > $HOME/ipAddressPool.yaml
@@ -183,4 +183,4 @@ kubectl get nodes
 kubectl get svc
 kubectl get pods --all-namespaces -o wide
 
-# echo -e " \033[32;5mHappy Kubing! Access Nginx at EXTERNAL-IP above\033[0m"
+# echo -e " \033[32;5mHappy Kubing!\033[0m"
