@@ -63,13 +63,14 @@ vm_exists() {
     echo "Exit status: $status"
 
     # Check the status and specific output to determine if VM exists
-    if [[ $status -eq 0 ]] || [[ $output =~ "running" ]] || [[ $output =~ "stopped" ]]; then
-        echo "VM exists."
-        return 0  # VM exists
-    else
-        echo "VM does not exist."
+    if [[ $status -eq 2 ]] || [[ $output =~ "does not exist" ]] || [[ $output =~ "Configuration file .* does not exist" ]]; then
+        echo "VM does not exist: $output"
         return 1  # VM does not exist
     fi
+
+    # Assume VM exists if no known error messages are found
+    echo "VM exists."
+    return 0
 }
 
 # Function to clone and configure VM
@@ -90,7 +91,7 @@ deploy_vm() {
     fi
 
     log_action "Configuring VM on $node_ip..."
-    ssh -i "$SSH_KEY" "$USER@$node_ip" "qm set $vm_id --ipconfig0 ip=$vm_ip/$vm_cidr,gw=$vm_gateway; qm move-disk $vm_id scsi0 $disk; qm disk resize $vm_id scsi0 $disk_size"
+    ssh -i "$SSH_KEY" "$USER@$node_ip" "qm set $vm_id --ipconfig0 ip=$vm_ip/$vm_cidr,gw=$vm_gateway; qm move-disk $vm_id scsi0 $disk; qm disk resize $vm_id scsi0 $disk_size exit"
     log_action "VM $vm_name ($vm_id) deployed and configured at $vm_ip."
 }
 
