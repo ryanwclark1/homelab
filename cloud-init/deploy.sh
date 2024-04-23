@@ -87,11 +87,23 @@ deploy_vm() {
         log_action "VM $vm_name ($vm_id) already exists on $node_ip, skipping clone."
     else
         log_action "Cloning VM for $vm_name on $node_ip with ID $vm_id..."
-        ssh -i "$SSH_KEY" "$USER@$template_ip" "qm clone $base_vm $vm_id --name $vm_name --full true --target $node_ip --storage init"
+        ssh -i "$SSH_KEY" "$USER@$template_ip" "
+            qm clone $base_vm $vm_id \
+            --name $vm_name \
+            --full true \
+            --target $node_name \
+            --storage init
+            exit
+        "
     fi
 
     log_action "Configuring VM on $node_ip..."
-    ssh -i "$SSH_KEY" "$USER@$node_ip" "qm set $vm_id --ipconfig0 ip=$vm_ip/$vm_cidr,gw=$vm_gateway; qm move-disk $vm_id scsi0 $disk; qm disk resize $vm_id scsi0 $disk_size exit"
+    ssh -i "$SSH_KEY" "$USER@$node_ip" "
+            qm set $vm_id --ipconfig0 ip=$vm_ip/23,gw=10.10.100.1;
+            qm move-disk $vm_id scsi0 $disk;
+            qm disk resize $vm_id scsi0 $disk_size;
+            exit
+        "
     log_action "VM $vm_name ($vm_id) deployed and configured at $vm_ip."
 }
 
