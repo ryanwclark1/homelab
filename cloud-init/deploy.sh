@@ -58,10 +58,16 @@ vm_exists() {
     local output=$(ssh -i "$SSH_KEY" "$USER@$node_ip" "qm status $vm_id" 2>&1)
     local status=$?
 
-    # Check if the command was successful and if the output indicates the VM is running or stopped
-    if [[ $status -eq 0 ]]; then
+    # Log the output and status for debugging
+    echo "Output of qm status: $output"
+    echo "Exit status: $status"
+
+    # Check the status and specific output to determine if VM exists
+    if [[ $status -eq 0 ]] || [[ $output =~ "running" ]] || [[ $output =~ "stopped" ]]; then
+        echo "VM exists."
         return 0  # VM exists
     else
+        echo "VM does not exist."
         return 1  # VM does not exist
     fi
 }
