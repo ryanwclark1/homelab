@@ -98,18 +98,19 @@ template_node=$(jq -r '.template_node' $inventory)
 template_ip=$(jq -r '.nodes[] | select(.name == "'$template_node'") | .ip' $inventory)
 
 # Process each node and VM
-jq -c '.nodes[]' $inventory | while read -r node; do
-    local node_ip=$(echo $node | jq -r '.ip')
-    local node_name=$(echo $node | jq -r '.name')
+while IFS= read -r node; do
+    node_ip=$(echo "$node" | jq -r '.ip')
+    node_name=$(echo "$node" | jq -r '.name')
 
-    echo $node | jq -c '.vms[]' | while read -r vm; do
-        local vm_id=$(echo $vm | jq -r '.id')
-        local vm_name=$(echo $vm | jq -r '.name')
-        local vm_ip=$(echo $vm | jq -r '.ip')
-        local disk=$(echo $vm | jq -r '.disk')
-        local disk_size=$(echo $vm | jq -r '.disk_size')
+    while IFS= read -r vm; do
+        vm_id=$(echo "$vm" | jq -r '.id')
+        vm_name=$(echo "$vm" | jq -r '.name')
+        vm_ip=$(echo "$vm" | jq -r '.ip')
+        disk=$(echo "$vm" | jq -r '.disk')
+        disk_size=$(echo "$vm" | jq -r '.disk_size')
+
         deploy_vm "$node_ip" "$vm_id" "$vm_name" "$vm_ip" "$disk" "$disk_size"
-    done
-done
+    done < <(echo "$node" | jq -c '.vms[]')
+done < <(jq -c '.nodes[]' $inventory)
 
 log_action "Deployment complete."
