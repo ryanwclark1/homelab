@@ -18,13 +18,13 @@ start_vm() {
     local vm_id=$1
     local target=$2
     echo "Starting VM ID $vm_id on $target..."
-    ssh root@"$target.techcasa.io" "qm start $vm_id; qm destroy $vm_id"
+    ssh root@"$target.techcasa.io" "qm start $vm_id;"
 }
 
 # Loop through each host and their corresponding VM IDs
 for target in "${!vms_to_start[@]}"; do
     for vm_id in ${vms_to_start[$target]}; do
-        delete_vm $vm_id $target
+        start_vm $vm_id $target
     done
 done
 
