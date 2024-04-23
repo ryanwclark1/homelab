@@ -54,10 +54,17 @@ log_action() {
 vm_exists() {
     local vm_id=$1
     local node_ip=$2
-    ssh -i "$SSH_KEY" "$USER@$node_ip" "qm status $vm_id" &> /dev/null
-    return $?
-}
+    # Execute qm status and capture output and exit status
+    local output=$(ssh -i "$SSH_KEY" "$USER@$node_ip" "qm status $vm_id" 2>&1)
+    local status=$?
 
+    # Check if the command was successful and if the output indicates the VM is running or stopped
+    if [[ $status -eq 0 ]]; then
+        return 0  # VM exists
+    else
+        return 1  # VM does not exist
+    fi
+}
 
 # Function to clone and configure VM
 deploy_vm() {
@@ -90,35 +97,18 @@ ensure_inventory_exists
 template_node=$(jq -r '.template_node' $inventory)
 template_ip=$(jq -r '.nodes[] | select(.name == "'$template_node'") | .ip' $inventory)
 
-# Loop through VM data and deploy VMs
+# Process each node and VM
 jq -c '.nodes[]' $inventory | while read -r node; do
-    node_name=$(echo $node | jq -r '.name')
-    node_ip=$(echo $node | jq -r '.ip')
+    local node_ip=$(echo $node | jq -r '.ip')
+    local node_name=$(echo $node | jq -r '.name')
+
     echo $node | jq -c '.vms[]' | while read -r vm; do
-        vm_name=$(echo $vm | jq -r '.name')
-        vm_ip=$(echo $vm | jq -r '.ip')
-        disk=$(echo $vm | jq -r '.disk')
-        disk_size=$(echo $vm | jq -r '.disk_size')
-        vm_id=$(echo $vm | jq -r '.id')
-
-        log_action "Cloning VM for $vm_name on $node_name ($node_ip) with ID $vm_id..."
-        ssh "$USER@$template_ip" "
-            qm clone 5001 $vm_id \
-            --name $vm_name \
-            --full true \
-            --target $node_name \
-            --storage init
-            exit
-        "
-
-        log_action "Configuring VM on $node_ip..."
-        ssh "$USER@$node_ip" "
-            qm set $vm_id --ipconfig0 ip=$vm_ip/$vm_cidr,gw=$vm_gateway;
-            qm move-disk $vm_id scsi0 $disk;
-            qm disk resize $vm_id scsi0 $disk_size;
-            exit
-        "
-        log_action "VM $vm_name ($vm_id) deployed and configured at $vm_ip."
+        local vm_id=$(echo $vm | jq -r '.id')
+        local vm_name=$(echo $vm | jq -r '.name')
+        local vm_ip=$(echo $vm | jq -r '.ip')
+        local disk=$(echo $vm | jq -r '.disk')
+        local disk_size=$(echo $vm | jq -r '.disk_size')
+        deploy_vm "$node_ip" "$vm_id" "$vm_name" "$vm_ip" "$disk" "$disk_size"
     done
 done
 
