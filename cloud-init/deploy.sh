@@ -19,11 +19,14 @@ vm_id=221
 for target in "${!nodes[@]}"; do
     for node in ${nodes[$target]}; do
         echo "Cloning VM for $node on $target with ID $vm_id..."
+        ssh root@james.techcasa.io" "
         qm clone $base_vm $vm_id \
           --name $node \
           --full true \
           --target $target \
           --storage init
+        exit
+        "
 
         echo "Configuring VM on $target..."
         ssh root@"$target.techcasa.io" "
