@@ -78,10 +78,10 @@ deploy_vm() {
     local node_ip=$1
     local node_name=$2
     local vm_id=$3
-    local vm_name=$5
-    local vm_ip=$6
-    local disk=$7
-    local disk_size=$8
+    local vm_name=$4
+    local vm_ip=$5
+    local disk=$6
+    local disk_size=$7
 
     # Check if VM already exists
     if vm_exists $vm_id $node_ip; then
@@ -99,7 +99,6 @@ deploy_vm() {
     fi
 
     log_action "Configuring VM on $node_name ($node_ip)..."
-    echo "VM IP: $vm_ip"
     ssh -i "$SSH_KEY" "$USER@$node_ip" "
             qm set $vm_id --ipconfig0 ip=$vm_ip/23,gw=10.10.100.1;
             qm move-disk $vm_id scsi0 $disk;
