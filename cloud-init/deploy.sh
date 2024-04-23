@@ -45,6 +45,11 @@ ensure_inventory_exists() {
     fi
 }
 
+# Log Function
+log_action() {
+    echo "[$(date +'%Y-%m-%d %H:%M:%S')] $1"
+}
+
 # Initialize by checking inventory and jq
 ensure_jq_installed
 ensure_inventory_exists
@@ -54,22 +59,22 @@ ensure_inventory_exists
 template_node=$(jq -r '.template_node' $inventory)
 template_ip=$(jq -r '.nodes[] | select(.name == "'$template_node'") | .ip' $inventory)
 
-# Log Function
-log_action() {
-    echo "[$(date +'%Y-%m-%d %H:%M:%S')] $1"
-}
 
 # Loop through VM data and deploy VMs
-jq -c '.nodes[]' $inventory | while read -r node; do
-    node_name=$(echo $node | jq -r '.name')
-    node_ip=$(echo $node | jq -r '.ip')
-    echo $node | jq -c '.vms[]' | while read -r vm; do
-        vm_name=$(echo $vm | jq -r '.name')
-        vm_ip=$(echo $vm | jq -r '.ip')
-        disk=$(echo $vm | jq -r '.disk')
-        disk_size=$(echo $vm | jq -r '.disk_size')
-        vm_id=$(echo $vm | jq -r '.id')
+mapfile -t nodes < <(jq -c '.nodes[]' $inventory)
+for node in "${nodes[@]}"; do
+    node_ip=$(echo "$node" | jq -r '.ip')
+    node_name=$(echo "$node" | jq -r '.name')
 
+    mapfile -t vms < <(echo "$node" | jq -c '.vms[]')
+    for vm in "${vms[@]}"; do
+        vm_id=$(echo "$vm" | jq -r '.id')
+        vm_name=$(echo "$vm" | jq -r '.name')
+        vm_ip=$(echo "$vm" | jq -r '.ip')
+        disk=$(echo "$vm" | jq -r '.disk')
+        disk_size=$(echo "$vm" | jq -r '.disk_size')
+
+        # Clone and configure VMs
         log_action "Cloning VM for $vm_name on $node_name ($node_ip) with ID $vm_id..."
         ssh "$USER@$template_ip" "
             qm clone 5001 $vm_id \
