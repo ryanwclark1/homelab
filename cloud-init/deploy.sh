@@ -76,17 +76,18 @@ vm_exists() {
 # Function to clone and configure VM
 deploy_vm() {
     local node_ip=$1
-    local vm_id=$2
-    local vm_name=$3
-    local vm_ip=$4
-    local disk=$5
-    local disk_size=$6
+    local node_name=$2
+    local vm_id=$3
+    local vm_name=$5
+    local vm_ip=$6
+    local disk=$7
+    local disk_size=$8
 
     # Check if VM already exists
     if vm_exists $vm_id $node_ip; then
-        log_action "VM $vm_name ($vm_id) already exists on $node_ip, skipping clone."
+        log_action "VM $vm_name ($vm_id) already exists on $node_name ($node_ip), skipping clone."
     else
-        log_action "Cloning VM for $vm_name on $node_ip with ID $vm_id..."
+        log_action "Cloning VM for $vm_name on $node_name ($node_ip) with ID $vm_id..."
         ssh -i "$SSH_KEY" "$USER@$template_ip" "
             qm clone $base_vm $vm_id \
             --name $vm_name \
@@ -97,7 +98,7 @@ deploy_vm() {
         "
     fi
 
-    log_action "Configuring VM on $node_ip..."
+    log_action "Configuring VM on $node_name ($node_ip)..."
     ssh -i "$SSH_KEY" "$USER@$node_ip" "
             qm set $vm_id --ipconfig0 ip=$vm_ip/23,gw=10.10.100.1;
             qm move-disk $vm_id scsi0 $disk;
@@ -115,6 +116,7 @@ ensure_inventory_exists
 mapfile -t nodes < <(jq -c '.nodes[]' $inventory)
 for node in "${nodes[@]}"; do
     node_ip=$(echo "$node" | jq -r '.ip')
+    node_name=$(echo "$node" | jq -r '.name')
     mapfile -t vms < <(echo "$node" | jq -c '.vms[]')
     for vm in "${vms[@]}"; do
         vm_id=$(echo "$vm" | jq -r '.id')
@@ -123,7 +125,7 @@ for node in "${nodes[@]}"; do
         disk=$(echo "$vm" | jq -r '.disk')
         disk_size=$(echo "$vm" | jq -r '.disk_size')
 
-        deploy_vm "$node_ip" "$vm_id" "$vm_name" "$vm_ip" "$disk" "$disk_size"
+        deploy_vm "$node_ip" "$node_name" "$vm_id" "$vm_name" "$vm_ip" "$disk" "$disk_size"
     done
 done
 
