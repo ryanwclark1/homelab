@@ -12,8 +12,8 @@ USER=root
 # SSH Key File
 SSH_KEY="$HOME/.ssh/id_rsa"
 
-vm_cidr = 23
-vm_gateway = 10.10.100.1
+vm_cidr=23
+vm_gateway="10.10.100.1"
 
 # Function to check for jq and install if not present
 ensure_jq_installed() {
