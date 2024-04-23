@@ -6,11 +6,11 @@ template_node="james"
 # Associative array of hosts and corresponding VM IDs
 declare -A vms_to_start=(
     [james]="221"
-    [andrew]="222 227 228"
-    [john]="223 229 230"
-    [peter]="224 231 232"
-    [judas]="225 233 234"
-    [philip]="226 235 236"
+    [andrew]="222 223 224"
+    [john]="225 226 227"
+    [peter]="228 229 230"
+    [judas]="231 232 233"
+    [philip]="234 235 236"
 )
 
 # Function to start a VM on a specific host
