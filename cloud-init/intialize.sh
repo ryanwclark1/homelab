@@ -12,12 +12,21 @@ SSH_KEY="$HOME/.ssh/id_rsa"
 # Function to check and install jq if not present
 ensure_jq_installed() {
     if ! command -v jq &> /dev/null; then
-        echo "jq is not installed. Installing jq..."
-        sudo apt-get update && sudo apt-get install -y jq
-        if ! command -v jq &> /dev/null; then
-            echo "Failed to install jq. Exiting script."
-            exit 1
-        fi
+        echo "jq is not installed. Attempting to install..."
+        case $(uname -s) in
+            Linux)
+                distro=$(grep ^ID= /etc/os-release | cut -d= -f2 | tr -d '"')
+                case $distro in
+                    debian|ubuntu) sudo apt-get update && sudo apt-get install -y jq ;;
+                    centos|fedora|rocky) sudo yum install -y jq ;;
+                    alpine) sudo apk add jq ;;
+                    arch) sudo pacman -Sy jq ;;
+                    *) echo "Unsupported distribution: $distro" && exit 1 ;;
+                esac
+                ;;
+            *)
+                echo "Unsupported OS" && exit 1 ;;
+        esac
     fi
     echo "jq is installed."
 }
