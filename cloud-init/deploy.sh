@@ -63,9 +63,13 @@ vm_exists() {
     echo "Exit status: $status"
 
     # Check the status and specific output to determine if VM exists
-    if [[ $status -eq 2 ]] #|| [[ $output =~ "does not exist" ]] || [[ $output =~ "Configuration file .* does not exist" ]]; then
+    #|| [[ $output =~ "does not exist" ]] || [[ $output =~ "Configuration file .* does not exist" ]]; then
+    if [[ $status -eq 2 ]]; then
         echo "VM does not exist"
         return 1  # VM does not exist
+    else
+        echo "VM exists"
+        return 0  # VM exists
     fi
 
     # Assume VM exists if no known error messages are found
