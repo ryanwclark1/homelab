@@ -84,13 +84,15 @@ deploy_vm() {
     local disk_size=$7
     local template_ip=$8
     local base_vm=$9
+    local user=$10
+    local ssh_key=$SSH_KEY
 
     # Check if VM already exists
     if vm_exists $vm_id $node_ip; then
         log_action "VM $vm_name ($vm_id) already exists on $node_name ($node_ip), skipping clone."
     else
         log_action "Cloning VM for $vm_name on $node_name ($node_ip) with ID $vm_id..."
-        ssh -i "$SSH_KEY" "$USER@$template_ip" "
+        ssh -i "$SSH_KEY" "$user@$template_ip" "
             qm clone $base_vm $vm_id \
             --name $vm_name \
             --full true \
@@ -101,7 +103,7 @@ deploy_vm() {
     fi
 
     log_action "Configuring VM on $node_name ($node_ip)..."
-    ssh -i "$SSH_KEY" "$USER@$node_ip" "
+    ssh -i "$SSH_KEY" "$user@$node_ip" "
             qm set $vm_id --ipconfig0 ip=$vm_ip/23,gw=10.10.100.1;
             qm move-disk $vm_id scsi0 $disk;
             qm disk resize $vm_id scsi0 $disk_size;
@@ -127,7 +129,7 @@ for node in "${nodes[@]}"; do
         disk=$(echo "$vm" | jq -r '.disk')
         disk_size=$(echo "$vm" | jq -r '.disk_size')
 
-        deploy_vm "$node_ip" "$node_name" "$vm_id" "$vm_name" "$vm_ip" "$disk" "$disk_size" "$template_ip" "$base_vm"
+        deploy_vm "$node_ip" "$node_name" "$vm_id" "$vm_name" "$vm_ip" "$disk" "$disk_size" "$template_ip" "$base_vm" "$USER"
     done
 done
 
