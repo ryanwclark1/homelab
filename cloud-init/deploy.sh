@@ -57,15 +57,19 @@ vm_exists() {
     # When capturing the message remotely with ssh, the exit code is always 0
     # So we are returning the status instead of the message.
     local status=$(ssh -i "$SSH_KEY" "$USER@$node_ip" "qm status $vm_id 2>&1 | echo $?")
+    echo "Status: $status ($vm_id) ($node_ip)"
 
     # Check the status and specific output to determine if VM exists
-    if [[ $status -ne 0 ]]; then
+    if [[ $status -eq 0 ]]; then
         echo "VM does not exist"
         return 1  # VM does not exist
+    else
+        echo "VM exists"
+        return 0  # VM exists
     fi
 
     # Assume VM exists if no known error messages are found
-    echo "VM exists"
+    echo "Unknown output"
     return 0
 }
 
