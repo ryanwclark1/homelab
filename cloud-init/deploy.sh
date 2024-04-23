@@ -9,7 +9,8 @@ inventory='../inventory.json'
 # Define the user for the SSH connections
 USER=root
 
-
+# SSH Key File
+SSH_KEY="$HOME/.ssh/id_rsa"
 
 # Function to check for jq and install if not present
 ensure_jq_installed() {
@@ -66,7 +67,7 @@ jq -c '.nodes[]' $inventory | while read -r node; do
         vm_id=$(echo $vm | jq -r '.id')
 
         log_action "Cloning VM for $vm_name on $node_ip with ID $vm_id..."
-        ssh $USER@"$template_ip" "
+        ssh -i "${SSH_KEY}.pub" "$USER@$template_ip" "
             qm clone 5001 $vm_id \
             --name $vm_name \
             --full true \
@@ -76,7 +77,7 @@ jq -c '.nodes[]' $inventory | while read -r node; do
         "
 
         log_action "Configuring VM on $node_ip..."
-        ssh $USER@"$node_ip" "
+        ssh -i "${SSH_KEY}.pub" "$USER@$node_ip" "
             qm set $vm_id --ipconfig0 ip=$vm_ip/23,gw=10.10.100.1;
             qm move-disk $vm_id scsi0 $disk;
             qm disk resize $vm_id scsi0 $disk_size;

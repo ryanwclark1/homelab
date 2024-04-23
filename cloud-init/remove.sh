@@ -3,6 +3,12 @@
 # Define the path to your inventory JSON file
 inventory='../inventory.json'
 
+# Define the user for the SSH connections
+USER=root
+
+# SSH Key File
+SSH_KEY="$HOME/.ssh/id_rsa"
+
 # Check if the inventory file exists
 check_inventory() {
     if [ ! -f "$inventory" ]; then
@@ -16,7 +22,7 @@ delete_vm() {
     local vm_id=$1
     local target_ip=$2
     echo "Deleting VM ID $vm_id on $target_ip..."
-    ssh root@"$target_ip" "qm stop $vm_id; qm destroy $vm_id"
+    ssh -i "${SSH_KEY}.pub" "$USER@$target_ip" "qm stop $vm_id; qm destroy $vm_id"
 }
 
 # Function to log summary of actions
