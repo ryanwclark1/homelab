@@ -6,6 +6,11 @@ base_vm=5001
 # Define the path to your inventory JSON file
 inventory='../inventory.json'
 
+# Define the user for the SSH connections
+USER=root
+
+
+
 # Function to check for jq and install if not present
 ensure_jq_installed() {
     if ! command -v jq &> /dev/null; then
@@ -40,38 +45,45 @@ ensure_inventory_exists() {
 ensure_jq_installed
 ensure_inventory_exists
 
+
 # Load template node from inventory
 template_node=$(jq -r '.template_node' $inventory)
+template_ip=$(jq -r '.nodes[] | select(.name == "'$template_node'") | .ip' $inventory)
 
-# Start VM ID for clones (dynamic)
-vm_id=$(jq -r '.nodes[].vms[].id' $inventory | sort -n | tail -n 1)
-((vm_id++))
+# Log Function
+log_action() {
+    echo "[$(date +'%Y-%m-%d %H:%M:%S')] $1"
+}
 
 # Loop through VM data and deploy VMs
 jq -c '.nodes[]' $inventory | while read -r node; do
-    dns=$(echo $node | jq -r '.dns')
+    node_ip=$(echo $node | jq -r '.ip')
     echo $node | jq -c '.vms[]' | while read -r vm; do
-        name=$(echo $vm | jq -r '.name')
+        vm_name=$(echo $vm | jq -r '.name')
+        vm_ip=$(echo $vm | jq -r '.ip')
         disk=$(echo $vm | jq -r '.disk')
         disk_size=$(echo $vm | jq -r '.disk_size')
-        echo "Cloning VM for $name on $dns with ID $vm_id..."
-        ssh root@"$template_node.techcasa.io" "
-            qm clone $base_vm $vm_id \
-            --name $name \
+        vm_id=$(echo $vm | jq -r '.id')
+
+        log_action "Cloning VM for $vm_name on $node_ip with ID $vm_id..."
+        ssh $USER@"$template_ip" "
+            qm clone 5001 $vm_id \
+            --name $vm_name \
             --full true \
-            --target $dns \
+            --target $node_ip \
             --storage init
             exit
         "
-        echo "Configuring VM on $dns..."
-        ssh root@"$dns" "
-            qm set $vm_id --ipconfig0 ip=10.10.101.$vm_id/23,gw=10.10.100.1;
+
+        log_action "Configuring VM on $node_ip..."
+        ssh $USER@"$node_ip" "
+            qm set $vm_id --ipconfig0 ip=$vm_ip/23,gw=10.10.100.1;
             qm move-disk $vm_id scsi0 $disk;
             qm disk resize $vm_id scsi0 $disk_size;
             exit
         "
-        ((vm_id++))
+        log_action "VM $vm_name ($vm_id) deployed and configured at $vm_ip."
     done
 done
 
-echo "Deployment complete."
+log_action "Deployment complete."
