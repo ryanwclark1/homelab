@@ -45,91 +45,49 @@ ensure_inventory_exists() {
     fi
 }
 
+# Initialize by checking inventory and jq
+ensure_jq_installed
+ensure_inventory_exists
+
+
+# Load template node from inventory
+template_node=$(jq -r '.template_node' $inventory)
+template_ip=$(jq -r '.nodes[] | select(.name == "'$template_node'") | .ip' $inventory)
+
 # Log Function
 log_action() {
     echo "[$(date +'%Y-%m-%d %H:%M:%S')] $1"
 }
 
-# Function to check if VM already exists
-vm_exists() {
-    local vm_id=$1
-    local node_ip=$2
-    # When capturing the message remotely with ssh, the exit code is always 0
-    # So we are returning the status instead of the message.
-    local status=$(ssh -i "$SSH_KEY" "$USER@$node_ip" "qm status $vm_id 2>&1 | echo $?")
-    echo "Status: $status ($vm_id) ($node_ip)"
+# Loop through VM data and deploy VMs
+jq -c '.nodes[]' $inventory | while read -r node; do
+    node_name=$(echo $node | jq -r '.name')
+    node_ip=$(echo $node | jq -r '.ip')
+    echo $node | jq -c '.vms[]' | while read -r vm; do
+        vm_name=$(echo $vm | jq -r '.name')
+        vm_ip=$(echo $vm | jq -r '.ip')
+        disk=$(echo $vm | jq -r '.disk')
+        disk_size=$(echo $vm | jq -r '.disk_size')
+        vm_id=$(echo $vm | jq -r '.id')
 
-    # Check the status and specific output to determine if VM exists
-    if [[ $status -eq 0 ]]; then
-        echo "VM exist"
-        return 1
-    else
-        echo "VM does not exist"
-        return 0  # VM exists
-    fi
-
-    # Assume VM exists if no known error messages are found
-    echo "Unknown output"
-    return 0
-}
-
-# Function to clone and configure VM
-deploy_vm() {
-    local node_ip=$1
-    local node_name=$2
-    local vm_id=$3
-    local vm_name=$4
-    local vm_ip=$5
-    local disk=$6
-    local disk_size=$7
-    local template_ip=$8
-    local base_vm=$9
-    local user=$10
-    local ssh_key=$11
-
-    # Check if VM already exists
-    if vm_exists $vm_id $node_ip; then
-        log_action "VM $vm_name ($vm_id) already exists on $node_name ($node_ip), skipping clone."
-    else
         log_action "Cloning VM for $vm_name on $node_name ($node_ip) with ID $vm_id..."
-        ssh -i "$SSH_KEY" "$user@$template_ip" "
-            qm clone $base_vm $vm_id \
+        ssh "$USER@$template_ip" "
+            qm clone 5001 $vm_id \
             --name $vm_name \
             --full true \
             --target $node_name \
             --storage init
             exit
         "
-    fi
 
-    log_action "Configuring VM on $node_name ($node_ip)..."
-    ssh -i "$SSH_KEY" "$user@$node_ip" "
-            qm set $vm_id --ipconfig0 ip=$vm_ip/23,gw=10.10.100.1;
+        log_action "Configuring VM on $node_ip..."
+        ssh "$USER@$node_ip" "
+            qm set $vm_id --ipconfig0 ip=$vm_ip/$vm_cidr,gw=$vm_gateway;
             qm move-disk $vm_id scsi0 $disk;
             qm disk resize $vm_id scsi0 $disk_size;
             exit
         "
-    log_action "VM $vm_name ($vm_id) deployed and configured at $vm_ip."
-}
-
-# Initialize by checking inventory and jq
-ensure_jq_installed
-ensure_inventory_exists
-
-
-mapfile -t nodes < <(jq -c '.nodes[]' $inventory)
-for node in "${nodes[@]}"; do
-    node_ip=$(echo "$node" | jq -r '.ip')
-    node_name=$(echo "$node" | jq -r '.name')
-    mapfile -t vms < <(echo "$node" | jq -c '.vms[]')
-    for vm in "${vms[@]}"; do
-        vm_id=$(echo "$vm" | jq -r '.id')
-        vm_name=$(echo "$vm" | jq -r '.name')
-        vm_ip=$(echo "$vm" | jq -r '.ip')
-        disk=$(echo "$vm" | jq -r '.disk')
-        disk_size=$(echo "$vm" | jq -r '.disk_size')
-
-        deploy_vm "$node_ip" "$node_name" "$vm_id" "$vm_name" "$vm_ip" "$disk" "$disk_size" "$template_ip" "$base_vm" "$USER" "$SSH_KEY"
+        log_action "VM $vm_name ($vm_id) deployed and configured at $vm_ip."
     done
 done
 
