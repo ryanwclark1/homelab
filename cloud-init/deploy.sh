@@ -102,6 +102,7 @@ for node in "${nodes[@]}"; do
             echo $SSH_KEY_TEXT > $TEMP_FILE \
             cat ~/.ssh/id_rsa.pub >> $TEMP_FILE;
             qm set $vm_id --sshkey "$TEMP_FILE";
+            rm "${TEMP_FILE}"
         "
         log_action "VM $vm_name ($vm_id) deployed and configured at $vm_ip."
     done
