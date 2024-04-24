@@ -100,7 +100,7 @@ for node in "${nodes[@]}"; do
             qm disk resize $vm_id scsi0 $disk_size;
             TEMP_FILE="/tmp/key_temp.txt";
             touch $TEMP_FILE;
-            echo $SSH_KEY_TEXT > $TEMP_FILE \
+            echo $SSH_KEY_TEXT > $TEMP_FILE;
             cat ~/.ssh/id_rsa.pub >> $TEMP_FILE;
             qm set $vm_id --sshkey "$TEMP_FILE";
             rm "${TEMP_FILE}"
