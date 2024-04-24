@@ -49,8 +49,7 @@ HOSTS=($(jq -r '.nodes[].ip' $inventory))
 # Copy SSH public key to each host
 for HOST in "${HOSTS[@]}"; do
     echo "Copying SSH public key to $HOST..."
-    # TODO: Test this on a fresh VM
-    # ssh-keyscan -H $HOST >> ~/.ssh/known_hosts
+    ssh-keyscan -H $HOST >> ~/.ssh/known_hosts
     ssh-copy-id -i "${SSH_KEY}.pub" "$USER@$HOST"
 done
 
