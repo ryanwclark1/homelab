@@ -101,7 +101,7 @@ for node in "${nodes[@]}"; do
             temp_file=\$(mktemp -t tmp_key.XXX);
             echo $SSH_KEY_TEXT > \$temp_file;
             cat ~/.ssh/id_rsa.pub >> \$temp_file;
-            qm set 223 --sshkey $temp_file;
+            qm set 223 --sshkey "${temp_file}";
             rm \$temp_file;
             exit
         "
