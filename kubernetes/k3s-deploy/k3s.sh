@@ -97,7 +97,7 @@ done
 
 # Install policycoreutils for each node
 for newnode in "${all[@]}"; do
-  ssh $user@$newnode -i ~/.ssh/$certName.pub sudo su <<EOF
+  ssh $user@$newnode -i ~/.ssh/$certName sudo su <<EOF
   NEEDRESTART_MODE=a apt install policycoreutils -y
   exit
 EOF
