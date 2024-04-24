@@ -54,6 +54,7 @@ lbrange=10.10.101.60-10.10.101.80
 
 #ssh certificate name variable
 certName=id_rsa
+SSH_KEY="$HOME/.ssh/$certName"
 
 #############################################
 #            DO NOT EDIT BELOW              #
@@ -88,11 +89,12 @@ else
 fi
 
 # Create SSH Config file to ignore checking (don't use in production!)
-sed -i '1s/^/StrictHostKeyChecking no\n/' ~/.ssh/config
+# sed -i '1s/^/StrictHostKeyChecking no\n/' ~/.ssh/config
 
 #add ssh keys for all nodes
 for node in "${all[@]}"; do
-  ssh-copy-id $user@$node
+  ssh-keyscan -H $HOST >> ~/.ssh/known_hosts
+  ssh-copy-id -i "${SSH_KEY}" $user@$node
 done
 
 # Install policycoreutils for each node

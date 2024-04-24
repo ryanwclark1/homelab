@@ -50,7 +50,7 @@ HOSTS=($(jq -r '.nodes[].ip' $INVENTORY))
 for HOST in "${HOSTS[@]}"; do
     echo "Copying SSH public key to $HOST..."
     ssh-keyscan -H $HOST >> ~/.ssh/known_hosts
-    ssh-copy-id -i "${SSH_KEY}.pub" "$USER@$HOST"
+    ssh-copy-id -i "${SSH_KEY}" "$USER@$HOST"
 done
 
 echo "SSH setup complete."
