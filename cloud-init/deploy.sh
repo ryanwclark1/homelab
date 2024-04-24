@@ -98,7 +98,7 @@ for node in "${nodes[@]}"; do
             qm set $vm_id --tags "$TAG,$role";
             qm move-disk $vm_id scsi0 $disk;
             qm disk resize $vm_id scsi0 $disk_size;
-            temp_file=$(mktemp -t tmp_key.XXX);
+            temp_file=$('mktemp -t tmp_key.XXX');
             echo $SSH_KEY_TEXT > "${temp_file}";
             cat ~/.ssh/id_rsa.pub >> "${temp_file}";
             qm set 223 --sshkey "$temp_file";
