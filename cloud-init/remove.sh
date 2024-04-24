@@ -17,6 +17,14 @@ check_inventory() {
     fi
 }
 
+# Function to delete a VM on a specific host
+delete_vm() {
+    local vm_id=$1
+    local target_ip=$2
+    echo "Deleting VM ID $vm_id on $target_ip..."
+    ssh "$USER@$target_ip" "qm stop $vm_id; qm destroy $vm_id"
+}
+
 # Log Function
 log_action() {
     echo "[$(date +'%Y-%m-%d %H:%M:%S')] $1"
@@ -35,8 +43,7 @@ for entry in "${vm_data[@]}"; do
     vm_id=$(echo $entry | cut -d' ' -f2)
 
     # Delete the VM and log the action
-    echo "Deleting VM ID $vm_id on $target_ip..."
-    ssh "$USER@$target_ip" "qm stop $vm_id; qm destroy $vm_id"
+    delete_vm $vm_id $ip
     log_action "Deleted VM ID $vm_id on $target_ip"
 done
 
