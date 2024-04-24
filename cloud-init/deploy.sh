@@ -102,7 +102,7 @@ for node in "${nodes[@]}"; do
             echo $SSH_KEY_TEXT > \$temp_file;
             cat ~/.ssh/id_rsa.pub >> \$temp_file;
             cat \$temp_file
-            qm set 223 --sshkey "${temp_file}";
+            qm set 223 --sshkey \$temp_file;
             rm \$temp_file;
             exit
         "
