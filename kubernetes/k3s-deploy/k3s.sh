@@ -71,21 +71,21 @@ chmod 644 $HOME/.ssh/$certName.pub
 # Install k3sup to local machine if not already present
 if ! command -v k3sup version &> /dev/null
 then
-    echo -e " \033[31;5mk3sup not found, installing\033[0m"
-    curl -sLS https://get.k3sup.dev | sh
-    sudo install k3sup /usr/local/bin/
+  echo -e " \033[31;5mk3sup not found, installing\033[0m"
+  curl -sLS https://get.k3sup.dev | sh
+  sudo install k3sup /usr/local/bin/
 else
-    echo -e " \033[32;5mk3sup already installed\033[0m"
+  echo -e " \033[32;5mk3sup already installed\033[0m"
 fi
 
 # Install Kubectl if not already present
 if ! command -v kubectl version &> /dev/null
 then
-    echo -e " \033[31;5mKubectl not found, installing\033[0m"
-    curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
-    sudo install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl
+  echo -e " \033[31;5mKubectl not found, installing\033[0m"
+  curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
+  sudo install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl
 else
-    echo -e " \033[32;5mKubectl already installed\033[0m"
+  echo -e " \033[32;5mKubectl already installed\033[0m"
 fi
 
 # Create SSH Config file to ignore checking (don't use in production!)
@@ -115,10 +115,10 @@ k3sup install \
   --cluster \
   --k3s-version $k3sVersion \
   --k3s-extra-args " \
-    --disable servicelb \
-    --flannel-iface=$interface \
-    --node-ip=$master1 \
-    --node-taint node-role.kubernetes.io/master=true:NoSchedule" \
+  --disable servicelb \
+  --flannel-iface=$interface \
+  --node-ip=$master1 \
+  --node-taint node-role.kubernetes.io/master=true:NoSchedule" \
   --merge \
   --sudo \
   --local-path $HOME/.kube/config \
@@ -146,34 +146,34 @@ EOF
 # Step 6: Add new master nodes (servers) & workers
 for newnode in "${masters[@]}"; do
   k3sup join \
-    --ip $newnode \
-    --user $user \
-    --sudo \
-    --k3s-version $k3sVersion \
-    --server \
-    --server-ip $master1 \
-    --ssh-key $HOME/.ssh/$certName \
-    --k3s-extra-args " \
-        --disable servicelb \
-        --flannel-iface=$interface \
-        --node-ip=$newnode \
-        --node-taint node-role.kubernetes.io/master=true:NoSchedule" \
-    --server-user $user
+  --ip $newnode \
+  --user $user \
+  --sudo \
+  --k3s-version $k3sVersion \
+  --server \
+  --server-ip $master1 \
+  --ssh-key $HOME/.ssh/$certName \
+  --k3s-extra-args " \
+    --disable servicelb \
+    --flannel-iface=$interface \
+    --node-ip=$newnode \
+    --node-taint node-role.kubernetes.io/master=true:NoSchedule" \
+  --server-user $user
   echo -e " \033[32;5mMaster node joined successfully!\033[0m"
 done
 
 # add workers
 for newagent in "${workers[@]}"; do
   k3sup join \
-    --ip $newagent \
-    --user $user \
-    --sudo \
-    --k3s-version $k3sVersion \
-    --server-ip $master1 \
-    --ssh-key $HOME/.ssh/$certName \
-    --k3s-extra-args " \
-      --node-label "longhorn=true" \
-      --node-label "worker=true""
+  --ip $newagent \
+  --user $user \
+  --sudo \
+  --k3s-version $k3sVersion \
+  --server-ip $master1 \
+  --ssh-key $HOME/.ssh/$certName \
+  --k3s-extra-args " \
+    --node-label "longhorn=true" \
+    --node-label "worker=true""
   echo -e " \033[32;5mAgent node joined successfully!\033[0m"
 done
 
@@ -191,9 +191,9 @@ kubectl apply -f $HOME/ipAddressPool.yaml
 
 # Step 9: Deploy IP Pools and l2Advertisement
 kubectl wait --namespace metallb-system \
-                --for=condition=ready pod \
-                --selector=component=controller \
-                --timeout=120s
+        --for=condition=ready pod \
+        --selector=component=controller \
+        --timeout=120s
 kubectl apply -f $HOME/ipAddressPool.yaml
 kubectl apply -f https://raw.githubusercontent.com/ryanwclark1/homelab/main/kubernetes/k3s-deploy/l2Advertisement.yaml
 
@@ -227,12 +227,12 @@ response=$(curl -s -H "User-Agent: MyClient/1.0.0" "$API_URL")
 
 # Check if the request was successful
 if echo "$response" | grep -q '"tag_name":'; then
-    # Extract the tag name which typically is the version
-    latest_version=$(echo "$response" | jq -r '.tag_name')
-    echo "Latest release version of $REPO_NAME: $latest_version"
+  # Extract the tag name which typically is the version
+  latest_version=$(echo "$response" | jq -r '.tag_name')
+  echo "Latest release version of $REPO_NAME: $latest_version"
 else
-    echo "Failed to fetch the latest release version of $REPO_NAME."
-    echo "$response"
+  echo "Failed to fetch the latest release version of $REPO_NAME."
+  echo "$response"
 fi
 
 kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/${latest_version}/cert-manager.crds.yaml

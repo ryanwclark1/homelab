@@ -14,12 +14,12 @@ response=$(curl -s -H "User-Agent: MyClient/1.0.0" "$API_URL")
 
 # Check if the request was successful
 if echo "$response" | grep -q '"tag_name":'; then
-    # Extract the tag name which typically is the version
-    latest_version=$(echo "$response" | jq -r '.tag_name')
-    echo "Latest release version of $REPO_NAME: $latest_version"
+  # Extract the tag name which typically is the version
+  latest_version=$(echo "$response" | jq -r '.tag_name')
+  echo "Latest release version of $REPO_NAME: $latest_version"
 else
-    echo "Failed to fetch the latest release version of $REPO_NAME."
-    echo "$response"
+  echo "Failed to fetch the latest release version of $REPO_NAME."
+  echo "$response"
 fi
 
 
@@ -36,11 +36,11 @@ fi
 # Kubectl
 if ! command -v kubectl version &> /dev/null
 then
-    echo -e " \033[31;5mKubectl not found, installing\033[0m"
-    curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
-    sudo install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl
+  echo -e " \033[31;5mKubectl not found, installing\033[0m"
+  curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
+  sudo install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl
 else
-    echo -e " \033[32;5mKubectl already installed\033[0m"
+  echo -e " \033[32;5mKubectl already installed\033[0m"
 fi
 
 
@@ -78,22 +78,22 @@ kubectl apply -f ~/helm/traefik/dashboard/ingress.yaml
 namespaceStatus=$(kubectl get ns cert-manager -o json | jq .status.phase -r)
 if [ $namespaceStatus == "Active" ]
 then
-    echo -e " \033[32;5mCert-Manager already installed, upgrading with new values.yaml...\033[0m"
-    kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/${latest_version}/cert-manager.crds.yaml
-    helm upgrade \
-    cert-manager \
-    jetstack/cert-manager \
-    --namespace cert-manager \
-    --values ~/helm/traefik/cert-manager/values.yaml
+  echo -e " \033[32;5mCert-Manager already installed, upgrading with new values.yaml...\033[0m"
+  kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/${latest_version}/cert-manager.crds.yaml
+  helm upgrade \
+  cert-manager \
+  jetstack/cert-manager \
+  --namespace cert-manager \
+  --values ~/helm/traefik/cert-manager/values.yaml
 else
-    echo "Cert-Manager is not present, installing..."
-    kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/${latest_version}/cert-manager.crds.yaml
-    helm repo add jetstack https://charts.jetstack.io
-    helm repo update
-    helm install cert-manager jetstack/cert-manager \
-    --namespace cert-manager \
-    --create-namespace \
-    --version ${latest_version}
+  echo "Cert-Manager is not present, installing..."
+  kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/${latest_version}/cert-manager.crds.yaml
+  helm repo add jetstack https://charts.jetstack.io
+  helm repo update
+  helm install cert-manager jetstack/cert-manager \
+  --namespace cert-manager \
+  --create-namespace \
+  --version ${latest_version}
 fi
 
 # Step 11: Apply secret for certificate (Cloudflare)
