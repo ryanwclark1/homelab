@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Define the path to your inventory JSON file
-inventory='../inventory.json'
+INVENTORY='../inventory.json'
 
 # Define the user for the SSH connections
 USER=root
@@ -11,8 +11,8 @@ SSH_KEY="$HOME/.ssh/id_rsa"
 
 # Check if the inventory file exists
 check_inventory() {
-    if [ ! -f "$inventory" ]; then
-        echo "Inventory file not found at $inventory"
+    if [ ! -f "$INVENTORY" ]; then
+        echo "Inventory file not found at $INVENTORY"
         exit 1
     fi
 }
@@ -37,7 +37,7 @@ log_action() {
 check_inventory
 
 # Load VM IDs and their corresponding IPs from the JSON inventory using jq
-mapfile -t vm_data < <(jq -r '.nodes[] | .ip as $ip | .vms[] | "\($ip) \(.id)"' $inventory)
+mapfile -t vm_data < <(jq -r '.nodes[] | .ip as $ip | .vms[] | "\($ip) \(.id)"' $INVENTORY)
 
 # Loop through VM data and delete VMs
 for entry in "${vm_data[@]}"; do

@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Path to your inventory JSON file
-inventory='../inventory.json'
+INVENTORY='../inventory.json'
 
 # Define the user for the SSH connections
 USER=root
@@ -44,7 +44,7 @@ else
 fi
 
 # Extract hosts from the JSON inventory using jq
-HOSTS=($(jq -r '.nodes[].ip' $inventory))
+HOSTS=($(jq -r '.nodes[].ip' $INVENTORY))
 
 # Copy SSH public key to each host
 for HOST in "${HOSTS[@]}"; do

@@ -4,7 +4,7 @@
 base_vm=5001
 
 # Define the path to your inventory JSON file
-inventory='../inventory.json'
+INVENTORY='../inventory.json'
 
 # Define the user for the SSH connections
 USER=root
@@ -41,8 +41,8 @@ ensure_jq_installed() {
 
 # Function to check if inventory file exists
 ensure_inventory_exists() {
-    if [ ! -f "$inventory" ]; then
-        log_action "Inventory file not found at $inventory"
+    if [ ! -f "$INVENTORY" ]; then
+        log_action "Inventory file not found at $INVENTORY"
         exit 1
     fi
 }
@@ -58,13 +58,13 @@ ensure_inventory_exists
 
 
 # Load template node from inventory
-template_node=$(jq -r '.template_node' $inventory)
-template_ip=$(jq -r '.nodes[] | select(.name == "'$template_node'") | .ip' $inventory)
+template_node=$(jq -r '.template_node' $INVENTORY)
+template_ip=$(jq -r '.nodes[] | select(.name == "'$template_node'") | .ip' $INVENTORY)
 
 
 
 # Loop through VM data and deploy VMs
-mapfile -t nodes < <(jq -c '.nodes[]' $inventory)
+mapfile -t nodes < <(jq -c '.nodes[]' $INVENTORY)
 for node in "${nodes[@]}"; do
     node_ip=$(echo "$node" | jq -r '.ip')
     node_name=$(echo "$node" | jq -r '.name')
@@ -76,6 +76,7 @@ for node in "${nodes[@]}"; do
         vm_ip=$(echo "$vm" | jq -r '.ip')
         disk=$(echo "$vm" | jq -r '.disk')
         disk_size=$(echo "$vm" | jq -r '.disk_size')
+        role=$(echo "$vm" | jq -r '.role')
 
         # Clone and configure VMs
         log_action "Cloning VM for $vm_name on $node_name ($node_ip) with ID $vm_id..."
@@ -96,6 +97,7 @@ for node in "${nodes[@]}"; do
             qm set $vm_id --sshkey "$temp_file";
             qm set $vm_id --ipconfig0 ip=$vm_ip/$CIDR,gw=$GATEWAY;
             qm set $vm_id --tags $TAG;
+            qm set $vm_id --tags $role;
             qm move-disk $vm_id scsi0 $disk;
             qm disk resize $vm_id scsi0 $disk_size;
             exit
