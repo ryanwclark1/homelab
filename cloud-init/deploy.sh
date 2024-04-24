@@ -99,8 +99,7 @@ for node in "${nodes[@]}"; do
             cat ~/.ssh/id_rsa.pub >> $temp_file \
             qm set $vm_id --sshkey "$temp_file";
             qm set $vm_id --ipconfig0 ip=$vm_ip/$CIDR,gw=$GATEWAY;
-            qm set $vm_id --tags $TAG;
-            qm set $vm_id --tags $role;
+            qm set $vm_id --tags $TAG,$role;
             qm move-disk $vm_id scsi0 $disk;
             qm disk resize $vm_id scsi0 $disk_size;
             exit
