@@ -17,17 +17,17 @@ check_inventory() {
     fi
 }
 
+# Log Function
+log_action() {
+    echo "[$(date +'%Y-%m-%d %H:%M:%S')] $1"
+}
+
 # Function to delete a VM on a specific host
 delete_vm() {
     local vm_id=$1
     local target_ip=$2
-    echo "Deleting VM ID $vm_id on $target_ip..."
+    log_action "Deleting VM ID $vm_id on $target_ip"
     ssh "$USER@$target_ip" "qm stop $vm_id; qm destroy $vm_id"
-}
-
-# Log Function
-log_action() {
-    echo "[$(date +'%Y-%m-%d %H:%M:%S')] $1"
 }
 
 # Ensure the inventory file exists
