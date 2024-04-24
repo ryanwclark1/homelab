@@ -11,9 +11,11 @@ USER=root
 
 # SSH Key File
 SSH_KEY="$HOME/.ssh/id_rsa"
+SSH_KEY_TEXT=$(cat $SSH_KEY.pub)
 
-vm_cidr=23
-vm_gateway="10.10.100.1"
+TAG="k3s"
+CIDR=23
+GATEWAY="10.10.100.1"
 
 # Function to check for jq and install if not present
 ensure_jq_installed() {
@@ -60,6 +62,7 @@ template_node=$(jq -r '.template_node' $inventory)
 template_ip=$(jq -r '.nodes[] | select(.name == "'$template_node'") | .ip' $inventory)
 
 
+
 # Loop through VM data and deploy VMs
 mapfile -t nodes < <(jq -c '.nodes[]' $inventory)
 for node in "${nodes[@]}"; do
@@ -87,7 +90,9 @@ for node in "${nodes[@]}"; do
 
         log_action "Configuring VM on $node_ip..."
         ssh "$USER@$node_ip" "
-            qm set $vm_id --ipconfig0 ip=$vm_ip/$vm_cidr,gw=$vm_gateway;
+            qm set $vm_id --ipconfig0 ip=$vm_ip/$CIDR,gw=$GATEWAY;
+            qm set $vm_id --sshkey <(cat <<<"${SSH_KEY_TEXT}");
+            qm set $vm_id --tags $TAG
             qm move-disk $vm_id scsi0 $disk;
             qm disk resize $vm_id scsi0 $disk_size;
             exit
