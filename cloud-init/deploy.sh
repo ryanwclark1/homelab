@@ -90,7 +90,7 @@ for node in "${nodes[@]}"; do
     disk_size=$(echo "$vm" | jq -r '.disk_size')
     role=$(echo "$vm" | jq -r '.role')
 
-    # clone_vm
+    clone_vm
 
     log_action "Configuring VM on $node_ip..."
     ssh "$USER@$node_ip" "
