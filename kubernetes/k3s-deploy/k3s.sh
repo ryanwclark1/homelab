@@ -114,11 +114,11 @@ k3sup install \
   --tls-san $vip \
   --cluster \
   --k3s-version $k3sVersion \
-  --k3s-extra-args ' \
+  --k3s-extra-args " \
     --disable servicelb \
     --flannel-iface=$interface \
     --node-ip=$master1 \
-    --node-taint node-role.kubernetes.io/master=true:NoSchedule' \
+    --node-taint node-role.kubernetes.io/master=true:NoSchedule" \
   --merge \
   --sudo \
   --local-path $HOME/.kube/config \
@@ -153,11 +153,11 @@ for newnode in "${masters[@]}"; do
     --server \
     --server-ip $master1 \
     --ssh-key $HOME/.ssh/$certName \
-    --k3s-extra-args '
+    --k3s-extra-args "
         --disable servicelb \
         --flannel-iface=$interface \
         --node-ip=$newnode \
-        --node-taint node-role.kubernetes.io/master=true:NoSchedule' \
+        --node-taint node-role.kubernetes.io/master=true:NoSchedule" \
     --server-user $user
   echo -e " \033[32;5mMaster node joined successfully!\033[0m"
 done
@@ -171,9 +171,9 @@ for newagent in "${workers[@]}"; do
     --k3s-version $k3sVersion \
     --server-ip $master1 \
     --ssh-key $HOME/.ssh/$certName \
-    --k3s-extra-args '
+    --k3s-extra-args "
       --node-label "longhorn=true"
-      --node-label "worker=true"'
+      --node-label "worker=true""
   echo -e " \033[32;5mAgent node joined successfully!\033[0m"
 done
 
