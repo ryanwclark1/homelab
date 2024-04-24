@@ -51,6 +51,19 @@ log_action() {
     echo "[$(date +'%Y-%m-%d %H:%M:%S')] $1"
 }
 
+# Clone and configure VMs
+clone_vm() {
+    log_action "Cloning VM for $vm_name on $node_name ($node_ip) with ID $vm_id..."
+    ssh "$USER@$template_ip" "
+        qm clone $BASE_VM $vm_id \
+        --name $vm_name \
+        --full true \
+        --target $node_name \
+        --storage init
+        exit
+    "
+}
+
 # Initialize by checking inventory and jq
 ensure_jq_installed
 ensure_inventory_exists
@@ -77,16 +90,7 @@ for node in "${nodes[@]}"; do
         disk_size=$(echo "$vm" | jq -r '.disk_size')
         role=$(echo "$vm" | jq -r '.role')
 
-        # Clone and configure VMs
-        log_action "Cloning VM for $vm_name on $node_name ($node_ip) with ID $vm_id..."
-        ssh "$USER@$template_ip" "
-            qm clone $BASE_VM $vm_id \
-            --name $vm_name \
-            --full true \
-            --target $node_name \
-            --storage init
-            exit
-        "
+        # clone_vm
 
         log_action "Configuring VM on $node_ip..."
         ssh "$USER@$node_ip" "
