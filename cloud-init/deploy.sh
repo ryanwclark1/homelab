@@ -3,6 +3,8 @@
 # Define the path to your inventory JSON file
 INVENTORY='../inventory.json'
 
+BASE_VM=5001
+
 # Define the user for the SSH connections
 USER=root
 
@@ -78,7 +80,7 @@ for node in "${nodes[@]}"; do
         # Clone and configure VMs
         log_action "Cloning VM for $vm_name on $node_name ($node_ip) with ID $vm_id..."
         ssh "$USER@$template_ip" "
-            qm clone 5001 $vm_id \
+            qm clone $BASE_VM $vm_id \
             --name $vm_name \
             --full true \
             --target $node_name \
