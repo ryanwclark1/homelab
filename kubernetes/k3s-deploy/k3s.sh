@@ -93,7 +93,7 @@ fi
 
 #add ssh keys for all nodes
 for node in "${all[@]}"; do
-  ssh-keyscan -H $HOST >> ~/.ssh/known_hosts
+  ssh-keyscan -H $node >> ~/.ssh/known_hosts
   ssh-copy-id -i "${SSH_KEY}" $user@$node
 done
 
