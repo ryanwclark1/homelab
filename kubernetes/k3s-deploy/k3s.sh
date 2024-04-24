@@ -153,7 +153,7 @@ for newnode in "${masters[@]}"; do
     --server \
     --server-ip $master1 \
     --ssh-key $HOME/.ssh/$certName \
-    --k3s-extra-args "
+    --k3s-extra-args " \
         --disable servicelb \
         --flannel-iface=$interface \
         --node-ip=$newnode \
@@ -171,8 +171,8 @@ for newagent in "${workers[@]}"; do
     --k3s-version $k3sVersion \
     --server-ip $master1 \
     --ssh-key $HOME/.ssh/$certName \
-    --k3s-extra-args "
-      --node-label "longhorn=true"
+    --k3s-extra-args " \
+      --node-label "longhorn=true" \
       --node-label "worker=true""
   echo -e " \033[32;5mAgent node joined successfully!\033[0m"
 done
