@@ -1,8 +1,5 @@
 #!/bin/bash
 
-# Base VM ID for cloning
-base_vm=5001
-
 # Define the path to your inventory JSON file
 INVENTORY='../inventory.json'
 
