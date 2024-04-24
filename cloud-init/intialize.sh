@@ -37,7 +37,7 @@ ensure_jq_installed
 # Generate SSH key if it doesn't exist
 if [ ! -f "$SSH_KEY" ]; then
     echo "Generating SSH key..."
-    ssh-keygen -t rsa -b 2048 -f "$SSH_KEY" -N ""
+    ssh-keygen -t rsa -b 4096 -o -a 100 -f "$SSH_KEY" -N ""
     echo "SSH key generated."
 else
     echo "SSH key already exists."
