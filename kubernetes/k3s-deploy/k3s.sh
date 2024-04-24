@@ -65,8 +65,8 @@ sudo timedatectl set-ntp on
 
 # Move SSH certs to ~/.ssh and change permissions
 # cp /home/$user/{$certName,$certName.pub} /home/$user/.ssh
-# chmod 600 /home/$user/.ssh/$certName
-# chmod 644 /home/$user/.ssh/$certName.pub
+chmod 600 $HOME/.ssh/$certName
+chmod 644 $HOME/.ssh/$certName.pub
 
 # Install k3sup to local machine if not already present
 if ! command -v k3sup version &> /dev/null
@@ -94,7 +94,7 @@ fi
 #add ssh keys for all nodes
 for node in "${all[@]}"; do
   ssh-keyscan -H $node >> ~/.ssh/known_hosts
-  ssh-copy-id -i "${SSH_KEY}" $user@$node
+  ssh-copy-id $user@$node
 done
 
 # Install policycoreutils for each node
