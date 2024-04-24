@@ -1,8 +1,5 @@
 #!/bin/bash
 
-
-#!/bin/bash
-
 # Define the repository owner and name
 REPO_OWNER="cert-manager"
 REPO_NAME="cert-manager"
@@ -30,6 +27,7 @@ fi
 # chmod 700 get_helm.sh
 # ./get_helm.sh
 
+# Helm install
 if ! command -v helm version &> /dev/null
 then
   echo -e " \033[31;5mHelm not found, installing\033[0m"
