@@ -194,7 +194,7 @@ kubectl wait --namespace metallb-system \
                 --for=condition=ready pod \
                 --selector=component=controller \
                 --timeout=120s
-kubectl apply -f ipAddressPool.yaml
+kubectl apply -f $HOME/ipAddressPool.yaml
 kubectl apply -f https://raw.githubusercontent.com/ryanwclark1/homelab/main/kubernetes/k3s-deploy/l2Advertisement.yaml
 
 kubectl get nodes
