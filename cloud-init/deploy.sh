@@ -98,10 +98,10 @@ for node in "${nodes[@]}"; do
             qm set $vm_id --tags "$TAG,$role";
             qm move-disk $vm_id scsi0 $disk;
             qm disk resize $vm_id scsi0 $disk_size;
-            temp_file=$(mktemp -t tmp_key.XXX);
-            echo $SSH_KEY_TEXT > $temp_file && \
-            cat ~/.ssh/id_rsa.pub >> $temp_file;
-            qm set $vm_id --sshkey "$temp_file";
+            TEMP_FILE=$(mktemp -t tmp_key.XXX);
+            echo $SSH_KEY_TEXT > $TEMP_FILE \
+            cat ~/.ssh/id_rsa.pub >> $TEMP_FILE;
+            qm set $vm_id --sshkey "$TEMP_FILE";
         "
         log_action "VM $vm_name ($vm_id) deployed and configured at $vm_ip."
     done
