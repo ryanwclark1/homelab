@@ -90,11 +90,13 @@ for node in "${nodes[@]}"; do
 
         log_action "Configuring VM on $node_ip..."
         ssh "$USER@$node_ip" "
+            echo "LOGIN";
             temp_file=$(mktemp);
+            echo temp_file;
             echo $SSH_KEY_TEXT > $temp_file;
             qm set $vm_id --ipconfig0 ip=$vm_ip/$CIDR,gw=$GATEWAY;
             qm set $vm_id --sshkey $temp_file;
-            qm set $vm_id --tags $TAG
+            qm set $vm_id --tags $TAG;
             qm move-disk $vm_id scsi0 $disk;
             qm disk resize $vm_id scsi0 $disk_size;
             exit
