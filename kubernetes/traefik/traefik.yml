@@ -15,7 +15,7 @@ spec:
       labels:
         app: traefik
     spec:
-      serviceAccountName: traefik-ingress-controller
+      serviceAccountName: traefik
       containers:
       - name: traefik
         image: traefik:v3.0
