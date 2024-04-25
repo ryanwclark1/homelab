@@ -25,10 +25,6 @@ master1_name=$(jq -r '.master1_name' "$inventory")
 master1=$(jq -r --arg vm_name "$master1_name" \
     '.nodes[].vms[] | select(.name == $vm_name) | .ip' "$inventory")
 
-echo "Master1: $master1"
-echo "Master1: $master1"
-echo "Master1: $master1"
-echo "Master1: $master1"
 
 # Set the IP addresses of the master and work nodes
 # master1=10.10.101.221
@@ -58,17 +54,12 @@ interface=eth0
 vip=10.10.101.50
 
 # Array of master nodes excluding master1
-# masters=($master2 $master3 $master4 $master5 $master6)
 mapfile -t masters < <(jq -r --arg ip "$master1" '.nodes[].vms[] | select(.role == "master" and .ip != $ip) | .ip' "$inventory")
 
 # Array of worker nodes
-# workers=($worker1 $worker2 $worker3 $worker4 $worker5 $worker6 $workers7 $worker8 $worker9 $worker10)
-# Use jq to extract all VM IP addresses where the role is not 'master' and read them into a Bash array
 mapfile -t workers < <(jq -r '.nodes[].vms[] | select(.role != "master") | .ip' "$inventory")
 
 # Array of all
-# all=($master1 $master2 $master3 $master4 $master5 $master6 $worker1 $worker2 $worker3 $worker4 $worker5 $worker6 $worker7 $worker8 $worker9 $worker10)
-# Use jq to extract all VM IP addresses and read them into a Bash array
 mapfile -t all < <(jq -r '.nodes[].vms[].ip' "$inventory")
 
 # Array of all minus master
@@ -153,7 +144,8 @@ k3sup install \
 echo -e " \033[32;5mFirst Node bootstrapped successfully!\033[0m"
 
 # Step 2: Install Kube-VIP for HA
-kubectl apply -f https://kube-vip.io/manifests/rbac.yaml
+# https://kube-vip.io/manifests/rbac.yaml
+kubectl apply -f https://raw.githubusercontent.com/ryanwclark1/homelab/main/kubernetes/kube-vip/rbac.yaml
 
 # Step 3: Download kube-vip
 curl -sO https://raw.githubusercontent.com/ryanwclark1/homelab/main/kubernetes/k3s-deploy/kube-vip
