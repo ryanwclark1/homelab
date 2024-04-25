@@ -19,7 +19,11 @@ if [ ! -f "$inventory" ]; then
     exit 1
 fi
 
-master1=$(jq -r '.nodes[].vms[] | select(.name == (. | fromjson? // .).bootstrap_master) | .ip' <(echo $(jq -r '{bootstrap_master: .bootstrap_master, nodes: .nodes}' "$inventory")))
+bootstrap_master_name=$(jq -r '.bootstrap_master' "$inventory")
+
+# Use jq to find the IP of the bootstrap_master
+master1=$(jq -r --arg vm_name "$bootstrap_master_name" \
+    '.nodes[].vms[] | select(.name == $vm_name) | .ip' "$inventory")
 
 echo "Master1: $master1"
 echo "Master1: $master1"
