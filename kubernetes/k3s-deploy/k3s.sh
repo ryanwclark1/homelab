@@ -4,29 +4,41 @@
 # YOU SHOULD ONLY NEED TO EDIT THIS SECTION #
 #############################################
 
+
+# Define the path to your inventory JSON file
+inventory='../../inventory.json'
+
 # Version of Kube-VIP to deploy
 KVVERSION="v0.8.0"
 
 # K3S Version
 k3sVersion="v1.29.3+k3s1"
 
+if [ ! -f "$inventory" ]; then
+    echo "Inventory file not found at $inventory"
+    exit 1
+fi
+
+master1=$(jq -r '.nodes[].vms[] | select(.name == (. | fromjson? // .).bootstrap_master) | .ip' <(echo $(jq -r '{bootstrap_master: .bootstrap_master, nodes: .nodes}' "$inventory")))
+
+
 # Set the IP addresses of the master and work nodes
-master1=10.10.101.221
-master2=10.10.101.222
-master3=10.10.101.225
-master4=10.10.101.228
-master5=10.10.101.231
-master6=10.10.101.234
-worker1=10.10.101.223
-worker2=10.10.101.224
-worker3=10.10.101.226
-worker4=10.10.101.228
-worker5=10.10.101.231
-worker6=10.10.101.232
-worker7=10.10.101.233
-worker8=10.10.101.234
-worker9=10.10.101.235
-worker10=10.10.101.236
+# master1=10.10.101.221
+# master2=10.10.101.222
+# master3=10.10.101.225
+# master4=10.10.101.228
+# master5=10.10.101.231
+# master6=10.10.101.234
+# worker1=10.10.101.223
+# worker2=10.10.101.224
+# worker3=10.10.101.226
+# worker4=10.10.101.228
+# worker5=10.10.101.231
+# worker6=10.10.101.232
+# worker7=10.10.101.233
+# worker8=10.10.101.234
+# worker9=10.10.101.235
+# worker10=10.10.101.236
 
 # User of remote machines
 user=administrator
@@ -37,17 +49,22 @@ interface=eth0
 # Set the virtual IP address (VIP)
 vip=10.10.101.50
 
-# Array of master nodes
-masters=($master2 $master3 $master4 $master5 $master6)
+# Array of master nodes excluding master1
+# masters=($master2 $master3 $master4 $master5 $master6)
+mapfile -t master_vm_ips < <(jq -r --arg ip "$master1" '.nodes[].vms[] | select(.role == "master" and .ip != $ip) | .ip' "$inventory")
 
 # Array of worker nodes
-workers=($worker1 $worker2 $worker3 $worker4 $worker5 $worker6 $workers7 $worker8 $worker9 $worker10)
+# workers=($worker1 $worker2 $worker3 $worker4 $worker5 $worker6 $workers7 $worker8 $worker9 $worker10)
+# Use jq to extract all VM IP addresses where the role is not 'master' and read them into a Bash array
+mapfile -t workers < <(jq -r '.nodes[].vms[] | select(.role != "master") | .ip' "$inventory")
 
 # Array of all
-all=($master1 $master2 $master3 $master4 $master5 $master6 $worker1 $worker2 $worker3 $worker4 $worker5 $worker6 $worker7 $worker8 $worker9 $worker10)
+# all=($master1 $master2 $master3 $master4 $master5 $master6 $worker1 $worker2 $worker3 $worker4 $worker5 $worker6 $worker7 $worker8 $worker9 $worker10)
+# Use jq to extract all VM IP addresses and read them into a Bash array
+mapfile -t all < <(jq -r '.nodes[].vms[].ip' "$inventory")
 
 # Array of all minus master
-allnomaster1=($master2 $master3 $master4 $master5 $master6 $worker1 $worker2 $worker3 $worker4 $worker5 $worker6 $worker7 $worker8 $worker9 $worker10)
+# allnomaster1=($master2 $master3 $master4 $master5 $master6 $worker1 $worker2 $worker3 $worker4 $worker5 $worker6 $worker7 $worker8 $worker9 $worker10)
 
 #Loadbalancer IP range
 lbrange=10.10.101.60-10.10.101.100
@@ -115,10 +132,11 @@ k3sup install \
   --cluster \
   --k3s-version $k3sVersion \
   --k3s-extra-args " \
-  --disable servicelb \
-  --flannel-iface=$interface \
-  --node-ip=$master1 \
-  --node-taint node-role.kubernetes.io/master=true:NoSchedule" \
+    --disable traefik \
+    --disable servicelb \
+    --flannel-iface=$interface \
+    --node-ip=$master1 \
+    --node-taint node-role.kubernetes.io/master=true:NoSchedule" \
   --merge \
   --sudo \
   --local-path $HOME/.kube/config \
@@ -154,6 +172,7 @@ for newnode in "${masters[@]}"; do
   --server-ip $master1 \
   --ssh-key $HOME/.ssh/$certName \
   --k3s-extra-args " \
+    --disable traefik \
     --disable servicelb \
     --flannel-iface=$interface \
     --node-ip=$newnode \
@@ -191,9 +210,9 @@ kubectl apply -f $HOME/ipAddressPool.yaml
 
 # Step 9: Deploy IP Pools and l2Advertisement
 kubectl wait --namespace metallb-system \
-        --for=condition=ready pod \
-        --selector=component=controller \
-        --timeout=120s
+  --for=condition=ready pod \
+  --selector=component=controller \
+  --timeout=120s
 kubectl apply -f $HOME/ipAddressPool.yaml
 kubectl apply -f https://raw.githubusercontent.com/ryanwclark1/homelab/main/kubernetes/k3s-deploy/l2Advertisement.yaml
 
@@ -239,9 +258,9 @@ kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/
 helm repo add jetstack https://charts.jetstack.io
 helm repo update
 helm install cert-manager jetstack/cert-manager \
---namespace cert-manager \
---create-namespace \
---version ${latest_version}
+  --namespace cert-manager \
+  --create-namespace \
+  --version ${latest_version}
 kubectl get pods --namespace cert-manager
 
 

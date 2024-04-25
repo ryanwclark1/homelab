@@ -1,5 +1,6 @@
 {
   "template_node": "james",
+  "bootstrap_master": "k3s-node01",
   "nodes": [
     {
       "name": "james",
@@ -159,7 +160,7 @@
           "id": 235,
           "disk_size": "10G",
           "disk": "tank",
-          "role": "storage"
+          "role": "worker"
         },
         {
           "name": "k3s-node16",
@@ -167,7 +168,7 @@
           "id": 236,
           "disk_size": "10G",
           "disk": "tank",
-          "role": "storage"
+          "role": "worker"
         }
       ]
     }
