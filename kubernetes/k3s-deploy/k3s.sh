@@ -21,6 +21,10 @@ fi
 
 master1=$(jq -r '.nodes[].vms[] | select(.name == (. | fromjson? // .).bootstrap_master) | .ip' <(echo $(jq -r '{bootstrap_master: .bootstrap_master, nodes: .nodes}' "$inventory")))
 
+echo "Master1: $master1"
+echo "Master1: $master1"
+echo "Master1: $master1"
+echo "Master1: $master1"
 
 # Set the IP addresses of the master and work nodes
 # master1=10.10.101.221
