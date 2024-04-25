@@ -1,6 +1,6 @@
 {
   "template_node": "james",
-  "bootstrap_master": "k3s-node01",
+  "master1_name": "k3s-node01",
   "nodes": [
     {
       "name": "james",
