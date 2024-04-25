@@ -281,7 +281,7 @@ cat ipAddressPool | sed 's/$lbrange/'$lbrange'/g' > $HOME/ipAddressPool.yaml
 kubectl apply -f $HOME/ipAddressPool.yaml
 
 # Step 9: Test with Traefik
-kubectl apply -f https://raw.githubusercontent.com/ryanwclark1/homelab/main/kubernetes/traefik/traefik.yaml -n default
+kubectl apply -f https://raw.githubusercontent.com/ryanwclark1/homelab/main/kubernetes/traefik/traefik.yml -n default
 kubectl expose deployment traefik-1 --port=80 --type=LoadBalancer -n default
 
 # Step 9: Deploy IP Pools and l2Advertisement
