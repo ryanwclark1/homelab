@@ -94,32 +94,32 @@ fi
 
 # TODO: Add fish and zsh support https://kubernetes.io/docs/tasks/tools/install-kubectl-linux/
 # Add kubectl & alias to completions to bashrc
-SHELL_NAME=$(basename "$SHELL")
+# SHELL_NAME=$(basename "$SHELL")
 
-# Check if the shell is Bash
-if [ "$SHELL_NAME" = "bash" ]; then
-  # Check if autocompletions are enabled
-  if type _init_completion &>/dev/null; then
-    echo "Autocompletions are enabled."
-    # Check if kubectl completions are already added to bashrc
-    if ! grep -q 'source <(kubectl completion bash)' ~/.bashrc; then
-      echo "Adding kubectl completions to ~/.bashrc"
-      echo 'source <(kubectl completion bash)' >> ~/.bashrc
-    if ! grep -q 'alias k=kubectl' ~/.bashrc; then
-      echo "Adding kubectl alias to ~/.bashrc"
-      echo 'alias k=kubectl' >> ~/.bashrc
-      echo 'complete -o default -F __start_kubectl k' >> ~/.bashrc
-    else
-      echo "kubectl completions are already added to ~/.bashrc. Skipping."
-    fi
-  else
-    # Reload bashrc
-    source ~/.bashrc
-    echo "Autocompletions are not enabled. Skipping kubectl completions setup."
-  fi
-else
-  echo "The shell is not Bash. Skipping kubectl completions setup."
-fi
+# # Check if the shell is Bash
+# if [ "$SHELL_NAME" = "bash" ]; then
+#   # Check if autocompletions are enabled
+#   if type _init_completion &>/dev/null; then
+#     echo "Autocompletions are enabled."
+#     # Check if kubectl completions are already added to bashrc
+#     if ! grep -q 'source <(kubectl completion bash)' ~/.bashrc; then
+#       echo "Adding kubectl completions to ~/.bashrc"
+#       echo 'source <(kubectl completion bash)' >> ~/.bashrc
+#     if ! grep -q 'alias k=kubectl' ~/.bashrc; then
+#       echo "Adding kubectl alias to ~/.bashrc"
+#       echo 'alias k=kubectl' >> ~/.bashrc
+#       echo 'complete -o default -F __start_kubectl k' >> ~/.bashrc
+#     else
+#       echo "kubectl completions are already added to ~/.bashrc. Skipping."
+#     fi
+#   else
+#     # Reload bashrc
+#     source ~/.bashrc
+#     echo "Autocompletions are not enabled. Skipping kubectl completions setup."
+#   fi
+# else
+#   echo "The shell is not Bash. Skipping kubectl completions setup."
+# fi
 
 # Create SSH Config file to ignore checking (don't use in production!)
 # sed -i '1s/^/StrictHostKeyChecking no\n/' ~/.ssh/config
@@ -180,19 +180,19 @@ append_export_statement() {
 SHELL_NAME=$(basename "$SHELL")
 
 case "$SHELL_NAME" in
-    "bash")
-        CONFIG_FILE="/home/$CURRENT_USER/.bashrc"
-        ;;
-    "zsh")
-        CONFIG_FILE="/home/$CURRENT_USER/.zshrc"
-        ;;
-    "fish")
-        CONFIG_FILE="/home/$CURRENT_USER/.config/fish/config.fish"
-        ;;
-    *)
-        echo "Unknown shell: $SHELL_NAME"
-        exit 1
-        ;;
+  "bash")
+      CONFIG_FILE="/home/$CURRENT_USER/.bashrc"
+      ;;
+  "zsh")
+      CONFIG_FILE="/home/$CURRENT_USER/.zshrc"
+      ;;
+  "fish")
+      CONFIG_FILE="/home/$CURRENT_USER/.config/fish/config.fish"
+      ;;
+  *)
+      echo "Unknown shell: $SHELL_NAME"
+      exit 1
+      ;;
 esac
 
 # Check if the export statement already exists in the configuration file
