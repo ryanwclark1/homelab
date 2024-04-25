@@ -286,9 +286,9 @@ kubectl expose deployment traefik --port=80 --type=LoadBalancer -n default
 
 echo -e " \033[32;5mWaiting for K3S to sync and LoadBalancer to come online\033[0m"
 
-while [[ $(kubectl get pods -l app=traefik -o 'jsonpath={..status.conditions[?(@.type=="Ready")].status}') != "True" ]]; do
-   sleep 1
-done
+# while [[ $(kubectl get pods -l app=traefik 'jsonpath={..status.conditions[?(@.type=="Ready")].status}') != "True" ]]; do
+#    sleep 1
+# done
 
 # Step 10: Deploy IP Pools and l2Advertisement
 kubectl wait --namespace metallb-system \
