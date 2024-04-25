@@ -51,7 +51,7 @@ vip=10.10.101.50
 
 # Array of master nodes excluding master1
 # masters=($master2 $master3 $master4 $master5 $master6)
-mapfile -t master_vm_ips < <(jq -r --arg ip "$master1" '.nodes[].vms[] | select(.role == "master" and .ip != $ip) | .ip' "$inventory")
+mapfile -t masters < <(jq -r --arg ip "$master1" '.nodes[].vms[] | select(.role == "master" and .ip != $ip) | .ip' "$inventory")
 
 # Array of worker nodes
 # workers=($worker1 $worker2 $worker3 $worker4 $worker5 $worker6 $workers7 $worker8 $worker9 $worker10)
