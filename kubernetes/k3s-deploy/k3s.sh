@@ -284,7 +284,13 @@ kubectl apply -f $HOME/ipAddressPool.yaml
 kubectl apply -f https://raw.githubusercontent.com/ryanwclark1/homelab/main/kubernetes/traefik/traefik.yml -n default
 kubectl expose deployment traefik --port=80 --type=LoadBalancer -n default
 
-# Step 9: Deploy IP Pools and l2Advertisement
+echo -e " \033[32;5mWaiting for K3S to sync and LoadBalancer to come online\033[0m"
+
+while [[ $(kubectl get pods -l app=traefik -o 'jsonpath={..status.conditions[?(@.type=="Ready")].status}') != "True" ]]; do
+   sleep 1
+done
+
+# Step 10: Deploy IP Pools and l2Advertisement
 kubectl wait --namespace metallb-system \
   --for=condition=ready pod \
   --selector=component=controller \
@@ -297,7 +303,7 @@ kubectl get svc
 kubectl get pods --all-namespaces -o wide
 
 
-# Step 10: Install helm
+# Step 11: Install helm
 if ! command -v helm version &> /dev/null
 then
   echo -e " \033[31;5mHelm not found, installing\033[0m"
