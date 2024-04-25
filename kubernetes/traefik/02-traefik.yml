@@ -27,7 +27,7 @@ spec:
             - --entrypoints.websecure.address=:443
             - --providers.kubernetescrd
             # - --providers.kubernetesingress
-            -  --certificatesresolvers.myresolver.acme.tlschallenge
+            - --certificatesresolvers.myresolver.acme.tlschallenge
             - --certificatesresolvers.myresolver.acme.email=ryanwclark@yahoo.com
             - --certificatesresolvers.myresolver.acme.storage=acme.json
             # Please note that this is the staging Let's Encrypt server.
