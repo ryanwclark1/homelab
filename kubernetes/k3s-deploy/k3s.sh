@@ -25,25 +25,6 @@ master1_name=$(jq -r '.master1_name' "$inventory")
 master1=$(jq -r --arg vm_name "$master1_name" \
     '.nodes[].vms[] | select(.name == $vm_name) | .ip' "$inventory")
 
-
-# Set the IP addresses of the master and work nodes
-# master1=10.10.101.221
-# master2=10.10.101.222
-# master3=10.10.101.225
-# master4=10.10.101.228
-# master5=10.10.101.231
-# master6=10.10.101.234
-# worker1=10.10.101.223
-# worker2=10.10.101.224
-# worker3=10.10.101.226
-# worker4=10.10.101.228
-# worker5=10.10.101.231
-# worker6=10.10.101.232
-# worker7=10.10.101.233
-# worker8=10.10.101.234
-# worker9=10.10.101.235
-# worker10=10.10.101.236
-
 # User of remote machines
 user=administrator
 
@@ -99,9 +80,45 @@ if ! command -v kubectl version &> /dev/null
 then
   echo -e " \033[31;5mKubectl not found, installing\033[0m"
   curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
+  curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl.sha256"
+  echo "$(<kubectl.sha256) kubectl" | sha256sum --check || {
+    echo -e "\033[31;5mChecksum verification failed. Installation aborted.\033[0m"
+    exit 1
+  }
   sudo install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl
+  kubectl version --client --output=yaml
+  echo -e "\033[32;5mKubectl installed successfully!\033[0m"
 else
   echo -e " \033[32;5mKubectl already installed\033[0m"
+fi
+
+# TODO: Add fish and zsh support https://kubernetes.io/docs/tasks/tools/install-kubectl-linux/
+# Add kubectl & alias to completions to bashrc
+SHELL_NAME=$(basename "$SHELL")
+
+# Check if the shell is Bash
+if [ "$SHELL_NAME" = "bash" ]; then
+  # Check if autocompletions are enabled
+  if type _init_completion &>/dev/null; then
+    echo "Autocompletions are enabled."
+    # Check if kubectl completions are already added to bashrc
+    if ! grep -q 'source <(kubectl completion bash)' ~/.bashrc; then
+      echo "Adding kubectl completions to ~/.bashrc"
+      echo 'source <(kubectl completion bash)' >> ~/.bashrc
+    if ! grep -q 'alias k=kubectl' ~/.bashrc; then
+      echo "Adding kubectl alias to ~/.bashrc"
+      echo 'alias k=kubectl' >> ~/.bashrc
+      echo 'complete -o default -F __start_kubectl k' >> ~/.bashrc
+    else
+      echo "kubectl completions are already added to ~/.bashrc. Skipping."
+    fi
+  else
+    # Reload bashrc
+    source ~/.bashrc
+    echo "Autocompletions are not enabled. Skipping kubectl completions setup."
+  fi
+else
+  echo "The shell is not Bash. Skipping kubectl completions setup."
 fi
 
 # Create SSH Config file to ignore checking (don't use in production!)
