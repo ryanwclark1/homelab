@@ -141,7 +141,63 @@ k3sup install \
   --local-path $HOME/.kube/config \
   --ssh-key $HOME/.ssh/$certName \
   --context k3s-ha
+
+
+# Set the user
+CURRENT_USER=$(whoami)
+
+# Set the kubeconfig path
+KUBECONFIG_PATH="/home/$CURRENT_USER/.kube/config"
+
+# Check if the export statement already exists
+check_export_statement() {
+    grep -qF "export KUBECONFIG=$KUBECONFIG_PATH" "$1"
+}
+
+# Append the export statement to the appropriate shell configuration file
+append_export_statement() {
+    echo "export KUBECONFIG=$KUBECONFIG_PATH" >> "$1"
+}
+
+# Determine the shell and the corresponding configuration file
+SHELL_NAME=$(basename "$SHELL")
+
+case "$SHELL_NAME" in
+    "bash")
+        CONFIG_FILE="/home/$CURRENT_USER/.bashrc"
+        ;;
+    "zsh")
+        CONFIG_FILE="/home/$CURRENT_USER/.zshrc"
+        ;;
+    "fish")
+        CONFIG_FILE="/home/$CURRENT_USER/.config/fish/config.fish"
+        ;;
+    *)
+        echo "Unknown shell: $SHELL_NAME"
+        exit 1
+        ;;
+esac
+
+# Check if the export statement already exists in the configuration file
+if ! check_export_statement "$CONFIG_FILE"; then
+    # If not, append the export statement
+    append_export_statement "$CONFIG_FILE"
+    echo "Export statement added to $CONFIG_FILE"
+else
+    echo "Export statement already exists in $CONFIG_FILE"
+fi
+
 echo -e " \033[32;5mFirst Node bootstrapped successfully!\033[0m"
+
+
+# Test the cluster
+echo "Test your cluster with:"
+echo "export KUBECONFIG=/home/$CURRENT_USER/.kube/config"
+export KUBECONFIG=/home/$CURRENT_USER/.kube/config
+echo "kubectl config use-context k3s-ha"
+kubectl config use-context k3s-ha
+echo "kubectl get node -o wide"
+kubectl get node -o wide
 
 # Step 2: Install Kube-VIP for HA
 # https://kube-vip.io/manifests/rbac.yaml
