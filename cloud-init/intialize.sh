@@ -11,7 +11,7 @@ SSH_KEY="$HOME/.ssh/id_rsa"
 
 
 # Ensure jq is installed
-source ../../ensure_jq_installed.sh
+source ../base/ensure_jq_installed.sh
 
 # Generate SSH key if it doesn't exist
 if [ ! -f "$SSH_KEY" ]; then
