@@ -73,6 +73,37 @@ ask_to_intialize() {
     done
 }
 
+ask_to_start_vm() {
+    while true; do
+        # Prompt the user. The colon after the question suggests a default value of 'yes'
+        echo -n "Do you want to start the VMs? [Y/n]: "
+        read -r user_input
+
+        # Default to 'yes' if the input is empty
+        if [[ -z "$user_input" ]]; then
+            user_input="yes"
+        fi
+
+        # Convert to lowercase to simplify the comparison
+        user_input=$(echo "$user_input" | tr '[:upper:]' '[:lower:]')
+
+        case "$user_input" in
+            y|yes)
+                source ./start.sh
+                break
+                ;;
+            n|no)
+                echo "Function will not run."
+                break
+                ;;
+            *)
+                echo "Invalid input, please type 'Y' for yes or 'n' for no."
+                ask_to_start_vm
+                ;;
+        esac
+    done
+}
+
 ask_to_intialize
 # Initialize by checking inventory and jq
 source ../base/ensure_jq_installed.sh
@@ -129,5 +160,7 @@ for node in "${nodes[@]}"; do
 
   done
 done
+
+ask_to_start_vm
 
 log_action "🎉 Deployment complete 🎉"
