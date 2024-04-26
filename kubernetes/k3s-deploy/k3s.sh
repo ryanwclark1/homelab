@@ -55,6 +55,59 @@ DOMAIN="techcasa.io"
 #############################################
 #            DO NOT EDIT BELOW              #
 #############################################
+
+intialize_nodes() {
+  #add ssh keys for all nodes
+  for node in "${all[@]}"; do
+    ssh-keyscan -H $node >> ~/.ssh/known_hosts
+    ssh-copy-id $user@$node
+  done
+}
+
+add_policycoreutils() {
+for newnode in "${all[@]}"; do
+  ssh $user@$newnode -i ~/.ssh/$certName sudo su <<EOF
+  NEEDRESTART_MODE=a apt install policycoreutils -y
+  exit
+EOF
+  echo -e " \033[32;5mPolicyCoreUtils installed!\033[0m"
+done
+}
+
+
+
+ask_to_intialize() {
+  while true; do
+      # Prompt the user. The colon after the question suggests a default value of 'yes'
+      echo -n "Do you want to run intialize the environment? [Y/n]: "
+      read -r user_input
+
+      # Default to 'yes' if the input is empty
+      if [[ -z "$user_input" ]]; then
+        user_input="yes"
+      fi
+
+      # Convert to lowercase to simplify the comparison
+      user_input=$(echo "$user_input" | tr '[:upper:]' '[:lower:]')
+
+      case "$user_input" in
+        y|yes)
+          intialize_nodes
+          add_policycoreutils
+          break
+          ;;
+        n|no)
+          echo "Function will not run."
+          break
+          ;;
+        *)
+          echo "Invalid input, please type 'Y' for yes or 'n' for no."
+          ask_to_intialize
+          ;;
+      esac
+  done
+}
+
 # For testing purposes - in case time is wrong due to VM snapshots
 sudo timedatectl set-ntp off
 sudo timedatectl set-ntp on
@@ -63,6 +116,8 @@ sudo timedatectl set-ntp on
 # cp /home/$user/{$certName,$certName.pub} /home/$user/.ssh
 chmod 600 $HOME/.ssh/$certName
 chmod 644 $HOME/.ssh/$certName.pub
+
+ask_to_intialize
 
 # Install k3sup to local machine if not already present
 if ! command -v k3sup version &> /dev/null
@@ -124,20 +179,8 @@ fi
 # Create SSH Config file to ignore checking (don't use in production!)
 # sed -i '1s/^/StrictHostKeyChecking no\n/' ~/.ssh/config
 
-#add ssh keys for all nodes
-for node in "${all[@]}"; do
-  ssh-keyscan -H $node >> ~/.ssh/known_hosts
-  ssh-copy-id $user@$node
-done
 
-# Install policycoreutils for each node
-for newnode in "${all[@]}"; do
-  ssh $user@$newnode -i ~/.ssh/$certName sudo su <<EOF
-  NEEDRESTART_MODE=a apt install policycoreutils -y
-  exit
-EOF
-  echo -e " \033[32;5mPolicyCoreUtils installed!\033[0m"
-done
+
 
 # Step 1: Bootstrap First k3s Node
 mkdir ~/.kube
