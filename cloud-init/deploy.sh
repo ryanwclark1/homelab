@@ -87,11 +87,13 @@ template_ip=$(jq -r '.nodes[] | select(.name == "'$template_node'") | .ip' $INVE
 
 # Loop through VM data and deploy VMs
 mapfile -t nodes < <(jq -c '.nodes[]' $INVENTORY)
+
 for node in "${nodes[@]}"; do
   node_ip=$(echo "$node" | jq -r '.ip')
   node_name=$(echo "$node" | jq -r '.name')
 
   mapfile -t vms < <(echo "$node" | jq -c '.vms[]')
+
   for vm in "${vms[@]}"; do
     vm_id=$(echo "$vm" | jq -r '.id')
     vm_name=$(echo "$vm" | jq -r '.name')
@@ -104,9 +106,11 @@ for node in "${nodes[@]}"; do
     role=$(echo "$vm" | jq -r '.role')
 
     log_action "Cloning VM for $vm_name on $node_name ($node_ip) with ID $vm_id..."
+
     clone_vm
 
     log_action "Configuring VM on $node_ip..."
+
     ssh "$USER@$node_ip" "
       qm set $vm_id --ipconfig0 ip=$vm_ip/$CIDR,gw=$GATEWAY;
       qm set $vm_id --tags "$TAG,$role";
@@ -120,8 +124,10 @@ for node in "${nodes[@]}"; do
       rm \$temp_file;
       exit
     "
+
     log_action "VM $vm_name ($vm_id) deployed and configured at $vm_ip."
+
   done
 done
 
-log_action "Deployment complete."
+log_action "🎉 Deployment complete 🎉"
