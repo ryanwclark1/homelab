@@ -59,7 +59,7 @@ ask_to_intialize() {
 
         case "$user_input" in
             y|yes)
-                source ../base/intialize.sh
+                source ./intialize.sh
                 break
                 ;;
             n|no)
