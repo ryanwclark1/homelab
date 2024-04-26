@@ -73,6 +73,7 @@ ask_to_intialize() {
     done
 }
 
+ask_to_intialize
 # Initialize by checking inventory and jq
 source ../base/ensure_jq_installed.sh
 ensure_inventory_exists
