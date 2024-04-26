@@ -13,6 +13,9 @@
           "id": 221,
           "disk_size": "10G",
           "disk": "tank",
+          "cores": 2,
+          "sockets": 1,
+          "memory": 4096,
           "role": "master"
         }
       ]
@@ -28,6 +31,9 @@
           "id": 222,
           "disk_size": "10G",
           "disk": "tank",
+          "cores": 2,
+          "sockets": 1,
+          "memory": 4096,
           "role": "master"
         },
         {
@@ -36,6 +42,9 @@
           "id": 227,
           "disk_size": "10G",
           "disk": "tank",
+          "cores": 2,
+          "sockets": 1,
+          "memory": 4096,
           "role": "worker"
         },
         {
@@ -44,6 +53,9 @@
           "id": 228,
           "disk_size": "10G",
           "disk": "tank",
+          "cores": 2,
+          "sockets": 1,
+          "memory": 4096,
           "role": "worker"
         }
       ]
@@ -59,6 +71,9 @@
           "id": 223,
           "disk_size": "10G",
           "disk": "tank",
+          "cores": 2,
+          "sockets": 1,
+          "memory": 4096,
           "role": "master"
         },
         {
@@ -67,6 +82,9 @@
           "id": 229,
           "disk_size": "10G",
           "disk": "tank",
+          "cores": 2,
+          "sockets": 1,
+          "memory": 4096,
           "role": "worker"
         },
         {
@@ -75,6 +93,9 @@
           "id": 230,
           "disk_size": "10G",
           "disk": "tank",
+          "cores": 2,
+          "sockets": 1,
+          "memory": 4096,
           "role": "worker"
         }
       ]
@@ -90,6 +111,9 @@
           "id": 224,
           "disk_size": "10G",
           "disk": "tank",
+          "cores": 2,
+          "sockets": 1,
+          "memory": 4096,
           "role": "master"
         },
         {
@@ -98,6 +122,9 @@
           "id": 231,
           "disk_size": "10G",
           "disk": "tank",
+          "cores": 2,
+          "sockets": 1,
+          "memory": 4096,
           "role": "worker"
         },
         {
@@ -106,6 +133,9 @@
           "id": 232,
           "disk_size": "10G",
           "disk": "tank",
+          "cores": 2,
+          "sockets": 1,
+          "memory": 4096,
           "role": "worker"
         }
       ]
@@ -121,6 +151,9 @@
           "id": 225,
           "disk_size": "10G",
           "disk": "tank",
+          "cores": 2,
+          "sockets": 1,
+          "memory": 4096,
           "role": "master"
         },
         {
@@ -129,6 +162,9 @@
           "id": 233,
           "disk_size": "10G",
           "disk": "tank",
+          "cores": 2,
+          "sockets": 1,
+          "memory": 4096,
           "role": "worker"
         },
         {
@@ -137,6 +173,9 @@
           "id": 234,
           "disk_size": "10G",
           "disk": "tank",
+          "cores": 2,
+          "sockets": 1,
+          "memory": 4096,
           "role": "worker"
         }
       ]
@@ -152,6 +191,9 @@
           "id": 226,
           "disk_size": "10G",
           "disk": "tank",
+          "cores": 2,
+          "sockets": 1,
+          "memory": 4096,
           "role": "master"
         },
         {
@@ -160,6 +202,9 @@
           "id": 235,
           "disk_size": "10G",
           "disk": "tank",
+          "cores": 2,
+          "sockets": 1,
+          "memory": 4096,
           "role": "worker"
         },
         {
@@ -168,6 +213,9 @@
           "id": 236,
           "disk_size": "10G",
           "disk": "tank",
+          "cores": 2,
+          "sockets": 1,
+          "memory": 4096,
           "role": "worker"
         }
       ]
