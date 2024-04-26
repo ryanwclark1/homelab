@@ -29,3 +29,5 @@ kubectl apply -f $WORKING_DIR/helm/dashboard/middleware.yaml
 
 # Step 9: Apply Ingress to Access Service
 kubectl apply -f $WORKING_DIR/helm/dashboard/ingress.yaml
+
+kubectl expose deployment traefik --port=80 --type=LoadBalancer -n traefik
