@@ -25,8 +25,9 @@ else
 fi
 
 
-# Step 10: Install Cert-Manager (should already have this with Rancher deployment)
+# Install Cert-Manager (should already have this with Rancher deployment)
 # Check if we already have it by querying namespace
+namespaceStatus=""
 namespaceStatus=$(kubectl get ns cert-manager -o json | jq .status.phase -r)
 if [ $namespaceStatus == "Active" ]; then
   echo -e " \033[32;5mCert-Manager already installed, upgrading with new values.yaml...\033[0m"
