@@ -27,12 +27,11 @@ ensure_inventory_exists() {
 
 # Log Function
 log_action() {
-  echo "[$(date +'%Y-%m-%d %H:%M:%S')] $1"
+  echo "[$(date +'%Y-%m-%d %H:%M:%S')]  \033[31;5m $1 \033[0m"
 }
 
 # Clone and configure VMs
 clone_vm() {
-  log_action "Cloning VM for $vm_name on $node_name ($node_ip) with ID $vm_id..."
   ssh "$USER@$template_ip" "
     qm clone $BASE_VM $vm_id \
     --name $vm_name \
@@ -68,6 +67,7 @@ ask_to_intialize() {
                 ;;
             *)
                 echo "Invalid input, please type 'Y' for yes or 'n' for no."
+                ask_to_intialize
                 ;;
         esac
     done
@@ -103,6 +103,7 @@ for node in "${nodes[@]}"; do
     memory=$(echo "$vm" | jq -r '.memory')
     role=$(echo "$vm" | jq -r '.role')
 
+    log_action "Cloning VM for $vm_name on $node_name ($node_ip) with ID $vm_id..."
     clone_vm
 
     log_action "Configuring VM on $node_ip..."
