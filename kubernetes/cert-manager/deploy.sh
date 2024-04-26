@@ -2,4 +2,4 @@
 
 
 export $(cat .env | xargs)
-envsubst < cert-manager-clusterissuer.yaml | kubectl apply -f -
+envsubst < cert-manager.yaml | kubectl apply -f -
