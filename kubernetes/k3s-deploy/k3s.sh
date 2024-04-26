@@ -53,6 +53,8 @@ lbrange=10.10.101.60-10.10.101.100
 certName=id_rsa
 SSH_KEY="$HOME/.ssh/$certName"
 
+DOMAIN="techcasa.io"
+
 #############################################
 #            DO NOT EDIT BELOW              #
 #############################################
@@ -281,10 +283,10 @@ cat ipAddressPool | sed 's/$lbrange/'$lbrange'/g' > $HOME/ipAddressPool.yaml
 kubectl apply -f $HOME/ipAddressPool.yaml
 
 # Step 9: Test with Traefik
-kubectl apply -f https://raw.githubusercontent.com/ryanwclark1/homelab/main/kubernetes/traefik/traefik.yml -n default
-kubectl expose deployment traefik --port=80 --type=LoadBalancer -n default
+# kubectl apply -f https://raw.githubusercontent.com/ryanwclark1/homelab/main/kubernetes/traefik/traefik.yml -n default
+# kubectl expose deployment traefik --port=80 --type=LoadBalancer -n default
 
-echo -e " \033[32;5mWaiting for K3S to sync and LoadBalancer to come online\033[0m"
+# echo -e " \033[32;5mWaiting for K3S to sync and LoadBalancer to come online\033[0m"
 
 # while [[ $(kubectl get pods -l app=traefik 'jsonpath={..status.conditions[?(@.type=="Ready")].status}') != "True" ]]; do
 #    sleep 1
@@ -317,7 +319,6 @@ fi
 # Define the repository owner and name
 REPO_OWNER="cert-manager"
 REPO_NAME="cert-manager"
-DOMAIN="techcasa.io"
 
 # GitHub API URL for the latest release
 API_URL="https://api.github.com/repos/$REPO_OWNER/$REPO_NAME/releases/latest"
@@ -344,6 +345,22 @@ helm install cert-manager jetstack/cert-manager \
   --create-namespace \
   --version ${latest_version}
 kubectl get pods --namespace cert-manager
+
+
+# Step 14: Add rancher helm repo
+helm repo add rancher-latest https://releases.rancher.com/server-charts/latest
+kubectl create namespace cattle-system
+
+
+# Step 15: Install Rancher
+helm install rancher rancher-latest/rancher \
+  --namespace cattle-system \
+  --set hostname=rancher.$DOMAIN \
+  --set replicas=1 \
+  --set bootstrapPassword=admin
+kubectl -n cattle-system rollout status deploy/rancher
+kubectl -n cattle-system get deploy rancher
+
 
 
 # echo -e " \033[32;5mHappy Kubing!\033[0m"
