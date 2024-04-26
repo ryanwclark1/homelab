@@ -1,9 +1,8 @@
 #!/bin/bash
 
-# Step 14: Add rancher helm repo
+# Add rancher helm repo
 helm repo add rancher-latest https://releases.rancher.com/server-charts/latest
-kubectl create namespace cattle-system
-
+helm repo update
 
 helm install rancher rancher-latest/rancher \
   --namespace cattle-system \
@@ -12,6 +11,7 @@ helm install rancher rancher-latest/rancher \
 kubectl -n cattle-system rollout status deploy/rancher
 kubectl -n cattle-system get deploy rancher
 
+# Expose Rancher via Loadbalancer
 kubectl get svc -n cattle-system
 kubectl expose deployment rancher --name=rancher-lb --port=443 --type=LoadBalancer -n cattle-system
 kubectl get svc -n cattle-system
