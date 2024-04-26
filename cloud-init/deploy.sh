@@ -67,6 +67,9 @@ for node in "${nodes[@]}"; do
     vm_ip=$(echo "$vm" | jq -r '.ip')
     disk=$(echo "$vm" | jq -r '.disk')
     disk_size=$(echo "$vm" | jq -r '.disk_size')
+    cores=$(echo "$vm" | jq -r '.cores')
+    sockets=$(echo "$vm" | jq -r '.sockets')
+    memory=$(echo "$vm" | jq -r '.memory')
     role=$(echo "$vm" | jq -r '.role')
 
     clone_vm
@@ -75,6 +78,7 @@ for node in "${nodes[@]}"; do
     ssh "$USER@$node_ip" "
       qm set $vm_id --ipconfig0 ip=$vm_ip/$CIDR,gw=$GATEWAY;
       qm set $vm_id --tags "$TAG,$role";
+      qm set $vm_id --cores "$cores" --sockets "$sockets" --memory "$memory";
       qm move-disk $vm_id scsi0 $disk;
       qm disk resize $vm_id scsi0 $disk_size;
       temp_file=\$(mktemp -t tmp_key.XXX);
