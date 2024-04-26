@@ -11,8 +11,8 @@ inventory='../../inventory.json'
 # Version of Kube-VIP to deploy
 KVVERSION="v0.8.0"
 
-# K3S Version
-k3sVersion="v1.29.3+k3s1"
+# K3S Version, Rancher lags behind a bit so we need to specify the version
+k3sVersion="v1.28.8+k3s1"
 
 if [ ! -f "$inventory" ]; then
     echo "Inventory file not found at $inventory"
@@ -42,9 +42,6 @@ mapfile -t workers < <(jq -r '.nodes[].vms[] | select(.role != "master") | .ip' 
 
 # Array of all
 mapfile -t all < <(jq -r '.nodes[].vms[].ip' "$inventory")
-
-# Array of all minus master
-# allnomaster1=($master2 $master3 $master4 $master5 $master6 $worker1 $worker2 $worker3 $worker4 $worker5 $worker6 $worker7 $worker8 $worker9 $worker10)
 
 #Loadbalancer IP range
 lbrange=10.10.101.60-10.10.101.100
@@ -285,11 +282,14 @@ kubectl apply -f $HOME/ipAddressPool.yaml
 
 # Step 9: Test with Traefik
 echo -e " \033[32;5mInstalling Traefik\033[0m"
+
 source ../traefik/deploy.sh
+
 kubectl expose deployment traefik --port=80 --type=LoadBalancer -n default
 echo -e " \033[32;5mWaiting for K3S to sync and LoadBalancer to come online\033[0m"
 
 # Step 10: Deploy IP Pools and l2Advertisement
+echo -e " \033[32;5mDeploying IP Pools and l2Advertisement\033[0m"
 kubectl wait --namespace metallb-system \
   --for=condition=ready pod \
   --selector=component=controller \
