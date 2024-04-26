@@ -44,7 +44,7 @@ clone_vm() {
 }
 
 # Initialize by checking inventory and jq
-source ../../ensure_jq_installed.sh
+source ../base/ensure_jq_installed.sh
 ensure_inventory_exists
 
 
