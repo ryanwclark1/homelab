@@ -68,8 +68,8 @@ safe_rm() {
 
 # Remove the kubeconfig file and directory
 safe_rm "/usr/local/helm"
-safe_rm "~/.config/helm"
-safe_rm "~/.cache/helm"
+safe_rm "$HOME/.config/helm"
+safe_rm "$HOME/.cache/helm"
 safe_rm "$KUBECONFIG_PATH"
 safe_rm "$HOME/kube-vip.yaml"
 safe_rm "$HOME/ipAddressPool.yaml"
