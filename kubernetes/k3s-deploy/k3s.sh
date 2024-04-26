@@ -159,7 +159,6 @@ k3sup install \
   --ssh-key $HOME/.ssh/$certName \
   --context k3s-ha
 
-
 # Set the user
 CURRENT_USER=$(whoami)
 
@@ -285,7 +284,7 @@ echo -e " \033[32;5mInstalling Traefik\033[0m"
 
 source ../traefik/deploy.sh
 
-kubectl expose deployment traefik --port=80 --type=LoadBalancer -n default
+
 echo -e " \033[32;5mWaiting for K3S to sync and LoadBalancer to come online\033[0m"
 
 # Step 10: Deploy IP Pools and l2Advertisement
