@@ -22,15 +22,39 @@ else
 fi
 
 
-export $(cat .env | xargs)
-envsubst < cert-manager.yaml | kubectl apply -f -
+# TODO: Work around for traefik namespace
+kubectl create namespace traefik
 
-
-kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/${latest_version}/cert-manager.crds.yaml
-helm repo add jetstack https://charts.jetstack.io
-helm repo update
-helm install cert-manager jetstack/cert-manager \
+# Step 10: Install Cert-Manager (should already have this with Rancher deployment)
+# Check if we already have it by querying namespace
+namespaceStatus=$(kubectl get ns cert-manager -o json | jq .status.phase -r)
+if [ $namespaceStatus == "Active" ]; then
+  echo -e " \033[32;5mCert-Manager already installed, upgrading with new values.yaml...\033[0m"
+  kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/${latest_version}/cert-manager.crds.yaml
+  helm upgrade \
+  cert-manager \
+  jetstack/cert-manager \
+  --namespace cert-manager \
+  --values ./helm/values.yaml
+else
+  echo "Cert-Manager is not present, installing..."
+  kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/${latest_version}/cert-manager.crds.yaml
+  helm repo add jetstack https://charts.jetstack.io
+  helm repo update
+  helm install cert-manager jetstack/cert-manager \
   --namespace cert-manager \
   --create-namespace \
   --version ${latest_version}
-kubectl get pods --namespace cert-manager
+fi
+
+export $(cat .env | xargs)
+envsubst < ./helm/issuers/secret-cf-token.yaml | kubectl apply -f -
+
+# Step 11: Apply secret for certificate (Cloudflare)
+kubectl apply -f ./helm/issuers/secret-cf-token.yaml
+
+# Step 12: Apply production certificate issuer (technically you should use the staging to test as per documentation)
+kubectl apply -f ./helm/issuers/letsencrypt-production.yaml
+
+# Step 13: Apply production certificate
+kubectl apply -f ./helm/production/techcasa-production.yaml

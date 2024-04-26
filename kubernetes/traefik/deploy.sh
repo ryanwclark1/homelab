@@ -70,5 +70,3 @@ kubectl apply -f ./helm/dashboard/middleware.yaml
 
 # Step 9: Apply Ingress to Access Service
 kubectl apply -f ./helm/dashboard/ingress.yaml
-
-source ../cert-manager/cert-manager.sh

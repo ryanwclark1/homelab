@@ -317,7 +317,7 @@ fi
 
 
 # Step 13: Install Cert-Manager
-source ../cert-manager/cert-manager.sh
+source ../cert-manager/deploy.sh
 
 
 source ../rancher/deploy.sh
