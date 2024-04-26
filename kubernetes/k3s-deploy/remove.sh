@@ -10,10 +10,15 @@ KUBECONFIG_PATH="/home/$CURRENT_USER/.kube"
 remove_export_statement() {
   local file="$1"
   local pattern="export KUBECONFIG=${KUBECONFIG_PATH}/config"
+  # Use printf to safely escape the path for use in a regular expression
+  local escaped_pattern=$(printf '%s\n' "$pattern" | sed -e 's:[][\/.^$*]:\\&:g')
+
   echo "Checking for the export statement in ${file}"
-  if grep -q "$pattern" "$file"; then
+  if grep -Fq "$pattern" "$file"; then
     echo "Removing export statement from ${file}"
-    sed -i "/$pattern/d" "$file"
+    # Use the escaped pattern with sed and create a backup for safety
+    sed -i.bak "/$escaped_pattern/d" "$file"
+    echo "Backup of original file created as ${file}.bak"
   else
     echo "No export statement found in ${file}. Skipping..."
   fi
@@ -68,11 +73,11 @@ safe_rm() {
 
 # Remove the kubeconfig file and directory
 safe_rm "/usr/local/helm"
-safe_rm "$HOME/.config/helm"
-safe_rm "$HOME/.cache/helm"
+safe_rm "/home/$CURRENT_USER/.config/helm"
+safe_rm "/home/$CURRENT_USER/.cache/helm"
 safe_rm "$KUBECONFIG_PATH"
-safe_rm "$HOME/kube-vip.yaml"
-safe_rm "$HOME/ipAddressPool.yaml"
+safe_rm "/home/$CURRENT_USER/kube-vip.yaml"
+safe_rm "/home/$CURRENT_USER/ipAddressPool.yaml"
 safe_rm "/usr/local/bin/kubectl"
 safe_rm "/usr/local/bin/k3sup"
 
