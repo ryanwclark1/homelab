@@ -46,17 +46,30 @@ remove_export_statement "$CONFIG_FILE"
 safe_rm() {
   local target="$1"
   if [ -e "$target" ]; then
-    rm -rf "$target"
-    echo "Removed ${target}"
+    # Try to remove normally
+    rm -rf "$target" 2>/dev/null
+    if [ $? -ne 0 ]; then
+      # If the removal failed, try it with sudo
+      echo "Normal removal failed for ${target}, attempting with sudo..."
+      sudo rm -rf "$target"
+      if [ $? -ne 0 ]; then
+        echo "Failed to remove ${target} with sudo."
+      else
+        echo "Removed ${target} using sudo."
+      fi
+    else
+      echo "Removed ${target}"
+    fi
   else
     echo "Target ${target} not found. Skipping..."
   fi
 }
 
+
 # Remove the kubeconfig file and directory
-safe_rm "$XDG_CACHE_HOME/helm"
-safe_rm "$XDG_CONFIG_HOME/helm"
-safe_rm "$XDG_DATA_HOME/helm"
+safe_rm "/usr/local/helm"
+safe_rm "~/.config/helm"
+safe_rm "~/.cache/helm"
 safe_rm "$KUBECONFIG_PATH"
 safe_rm "$HOME/kube-vip.yaml"
 safe_rm "$HOME/ipAddressPool.yaml"
