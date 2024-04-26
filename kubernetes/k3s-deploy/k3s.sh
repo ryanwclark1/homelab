@@ -284,14 +284,10 @@ cat ipAddressPool | sed 's/$lbrange/'$lbrange'/g' > $HOME/ipAddressPool.yaml
 kubectl apply -f $HOME/ipAddressPool.yaml
 
 # Step 9: Test with Traefik
-# kubectl apply -f https://raw.githubusercontent.com/ryanwclark1/homelab/main/kubernetes/traefik/traefik.yml -n default
-# kubectl expose deployment traefik --port=80 --type=LoadBalancer -n default
-
-# echo -e " \033[32;5mWaiting for K3S to sync and LoadBalancer to come online\033[0m"
-
-# while [[ $(kubectl get pods -l app=traefik 'jsonpath={..status.conditions[?(@.type=="Ready")].status}') != "True" ]]; do
-#    sleep 1
-# done
+echo -e " \033[32;5mInstalling Traefik\033[0m"
+source ../traefik/deploy.sh
+kubectl expose deployment traefik --port=80 --type=LoadBalancer -n default
+echo -e " \033[32;5mWaiting for K3S to sync and LoadBalancer to come online\033[0m"
 
 # Step 10: Deploy IP Pools and l2Advertisement
 kubectl wait --namespace metallb-system \
@@ -300,10 +296,6 @@ kubectl wait --namespace metallb-system \
   --timeout=120s
 kubectl apply -f $HOME/ipAddressPool.yaml
 kubectl apply -f https://raw.githubusercontent.com/ryanwclark1/homelab/main/kubernetes/k3s-deploy/l2Advertisement.yaml
-
-kubectl get nodes
-kubectl get svc
-kubectl get pods --all-namespaces -o wide
 
 
 # Step 11: Install helm
@@ -319,7 +311,11 @@ fi
 # Step 13: Install Cert-Manager
 source ../cert-manager/deploy.sh
 
-
+# Step 14: Install Rancher
 source ../rancher/deploy.sh
 
-# echo -e " \033[32;5mHappy Kubing!\033[0m"
+kubectl get nodes
+kubectl get svc
+kubectl get pods --all-namespaces -o wide
+
+echo -e " \033[32;5mHappy Kubing!\033[0m"
