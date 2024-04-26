@@ -22,6 +22,9 @@ else
 fi
 
 
+# TODO: Work around for traefik namespace
+kubectl create namespace traefik
+
 # Step 10: Install Cert-Manager (should already have this with Rancher deployment)
 # Check if we already have it by querying namespace
 namespaceStatus=$(kubectl get ns cert-manager -o json | jq .status.phase -r)
