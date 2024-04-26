@@ -1,5 +1,9 @@
 #!/bin/bash
 
+# Step 14: Add rancher helm repo
+helm repo add rancher-latest https://releases.rancher.com/server-charts/latest
+kubectl create namespace cattle-system
+
 
 helm install rancher rancher-latest/rancher \
   --namespace cattle-system \
