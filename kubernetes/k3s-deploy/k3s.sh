@@ -316,12 +316,7 @@ fi
 
 
 # Step 13: Install Cert-Manager
-source ../cert-manager/deploy.sh
-
-
-# Step 14: Add rancher helm repo
-helm repo add rancher-latest https://releases.rancher.com/server-charts/latest
-kubectl create namespace cattle-system
+source ../cert-manager/cert-manager.sh
 
 
 source ../rancher/deploy.sh
