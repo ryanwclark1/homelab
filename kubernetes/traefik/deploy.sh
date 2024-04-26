@@ -53,22 +53,22 @@ helm repo update
 kubectl create namespace traefik
 
 # Step 4: Install Traefik
-helm install --namespace=traefik traefik traefik/traefik -f ~/helm/traefik/values.yaml
+helm install --namespace=traefik traefik traefik/traefik -f ./helm/traefik/values.yaml
 
 # Step 5: Check Traefik deployment
 kubectl get svc -n traefik
 kubectl get pods -n traefik
 
 # Step 6: Apply Middleware
-kubectl apply -f ~/helm/traefik/default-headers.yaml
+kubectl apply -f ./helm/traefik/default-headers.yaml
 
 # Step 7: Create Secret for Traefik Dashboard
-kubectl apply -f ~/helm/traefik/dashboard/secret-dashboard.yaml
+kubectl apply -f ./helm/traefik/dashboard/secret-dashboard.yaml
 
 # Step 8: Apply Middleware
-kubectl apply -f ~/helm/traefik/dashboard/middleware.yaml
+kubectl apply -f ./helm/traefik/dashboard/middleware.yaml
 
 # Step 9: Apply Ingress to Access Service
-kubectl apply -f ~/helm/traefik/dashboard/ingress.yaml
+kubectl apply -f ./helm/traefik/dashboard/ingress.yaml
 
 source ../cert-manager/cert-manager.sh
