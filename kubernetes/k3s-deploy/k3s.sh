@@ -267,13 +267,13 @@ curl -sO https://raw.githubusercontent.com/ryanwclark1/homelab/main/kubernetes/k
 cat kube-vip | sed 's/$interface/'$interface'/g; s/$vip/'$vip'/g' > $HOME/kube-vip.yaml
 
 # Step 4: Copy kube-vip.yaml to master1
-scp -i ~/.ssh/$certName $HOME/kube-vip.yaml $user@$master1:~/kube-vip.yaml
+scp -i ~/.ssh/$certName $HOME/kube-vip.yaml $user@$master1:kube-vip.yaml
 
 
 # Step 5: Connect to Master1 and move kube-vip.yaml
-ssh $user@$master1 -i ~/.ssh/$certName <<- EOF
-  sudo mkdir -p /var/lib/rancher/k3s/server/manifests
-  sudo mv kube-vip.yaml /var/lib/rancher/k3s/server/manifests/kube-vip.yaml
+ssh -i ~/.ssh/$certName $user@$master1 sudo su <<- EOF
+  mkdir -p /var/lib/rancher/k3s/server/manifests
+  mv kube-vip.yaml /var/lib/rancher/k3s/server/manifests/kube-vip.yaml
 EOF
 
 # Step 6: Add new master nodes (servers) & workers
