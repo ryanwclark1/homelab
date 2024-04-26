@@ -25,8 +25,7 @@ fi
 # Step 10: Install Cert-Manager (should already have this with Rancher deployment)
 # Check if we already have it by querying namespace
 namespaceStatus=$(kubectl get ns cert-manager -o json | jq .status.phase -r)
-if [ $namespaceStatus == "Active" ]
-then
+if [ $namespaceStatus == "Active" ]; then
   echo -e " \033[32;5mCert-Manager already installed, upgrading with new values.yaml...\033[0m"
   kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/${latest_version}/cert-manager.crds.yaml
   helm upgrade \
