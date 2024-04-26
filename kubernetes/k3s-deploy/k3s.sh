@@ -334,9 +334,7 @@ kubectl apply -f $HOME/ipAddressPool.yaml
 
 # Step 9: Test with Traefik
 echo -e " \033[32;5mInstalling Traefik\033[0m"
-
 source ../traefik/deploy.sh
-
 echo -e " \033[32;5mWaiting for K3S to sync and LoadBalancer to come online\033[0m"
 
 # Step 10: Deploy IP Pools and l2Advertisement
