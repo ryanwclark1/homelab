@@ -44,7 +44,7 @@ if [ -f "/etc/rancher/k3s.yaml" ]; then
     k3s-killall
     k3s-agent-uninstall.sh
 else
-    k3s-agent-uninstall.sh
+    echo "This is not a master node."
 fi
 
 echo "Removal completed successfully."
