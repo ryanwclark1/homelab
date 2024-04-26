@@ -35,7 +35,7 @@ if [ $namespaceStatus == "Active" ]; then
   cert-manager \
   jetstack/cert-manager \
   --namespace cert-manager \
-  --values ${WORKING_DIR}/helm/values.yaml
+  --values $WORKING_DIR/helm/values.yaml
 else
   echo "Cert-Manager is not present, installing..."
   kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/${latest_version}/cert-manager.crds.yaml
@@ -48,13 +48,13 @@ else
 fi
 
 export $(cat .env | xargs)
-envsubst < ${WORKING_DIR}/helm/issuers/secret-cf-token.yaml | kubectl apply -f -
+envsubst < $WORKING_DIR/helm/issuers/secret-cf-token.yaml | kubectl apply -f -
 
 # Step 11: Apply secret for certificate (Cloudflare)
-kubectl apply -f ${WORKING_DIR}/helm/issuers/secret-cf-token.yaml
+kubectl apply -f $WORKING_DIR/helm/issuers/secret-cf-token.yaml
 
 # Step 12: Apply production certificate issuer (technically you should use the staging to test as per documentation)
-kubectl apply -f ${WORKING_DIR}/helm/issuers/letsencrypt-production.yaml
+kubectl apply -f $WORKING_DIR/helm/issuers/letsencrypt-production.yaml
 
 # Step 13: Apply production certificate
-kubectl apply -f ${WORKING_DIR}/helm/production/techcasa-production.yaml
+kubectl apply -f $WORKING_DIR/helm/production/techcasa-production.yaml
