@@ -268,6 +268,16 @@ for newagent in "${workers[@]}"; do
   echo -e " \033[32;5mAgent node joined successfully!\033[0m"
 done
 
+# Install helm
+if ! command -v helm version &> /dev/null
+then
+  echo -e " \033[31;5mHelm not found, installing\033[0m"
+  curl -fsSL https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
+else
+  echo -e " \033[32;5mHelm already installed\033[0m"
+fi
+
+
 # Step 7: Install kube-vip as network LoadBalancer - Install the kube-vip Cloud Provider
 kubectl apply -f https://raw.githubusercontent.com/kube-vip/kube-vip-cloud-provider/main/manifest/kube-vip-cloud-controller.yaml
 
@@ -284,7 +294,6 @@ echo -e " \033[32;5mInstalling Traefik\033[0m"
 
 source ../traefik/deploy.sh
 
-
 echo -e " \033[32;5mWaiting for K3S to sync and LoadBalancer to come online\033[0m"
 
 # Step 10: Deploy IP Pools and l2Advertisement
@@ -295,16 +304,6 @@ kubectl wait --namespace metallb-system \
   --timeout=120s
 kubectl apply -f $HOME/ipAddressPool.yaml
 kubectl apply -f https://raw.githubusercontent.com/ryanwclark1/homelab/main/kubernetes/k3s-deploy/l2Advertisement.yaml
-
-
-# Step 11: Install helm
-if ! command -v helm version &> /dev/null
-then
-  echo -e " \033[31;5mHelm not found, installing\033[0m"
-  curl -fsSL https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
-else
-  echo -e " \033[32;5mHelm already installed\033[0m"
-fi
 
 
 # Step 13: Install Cert-Manager
