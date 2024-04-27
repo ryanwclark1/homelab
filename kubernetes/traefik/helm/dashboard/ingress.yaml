@@ -9,7 +9,7 @@ spec:
   entryPoints:
     - websecure
   routes:
-    - match: Host(`techcasa.io`) # change this to your domain
+    - match: Host(`traefik.techcasa.io`) # change this to your domain
       kind: Rule
       middlewares:
         - name: traefik-dashboard-basicauth
