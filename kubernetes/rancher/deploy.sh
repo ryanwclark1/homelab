@@ -2,12 +2,15 @@
 
 # Add rancher helm repo
 helm repo add rancher-latest https://releases.rancher.com/server-charts/latest
+
 helm repo update
+
 
 kubectl create namespace cattle-system
 helm install rancher rancher-latest/rancher \
   --namespace cattle-system \
   --set hostname=rancher.${DOMAIN} \
+  --set replicas=1 \
   --set bootstrapPassword=password123
 kubectl -n cattle-system rollout status deploy/rancher
 kubectl -n cattle-system get deploy rancher
