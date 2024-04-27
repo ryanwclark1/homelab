@@ -51,7 +51,7 @@ else
   --set installCRDs=true
 fi
 
-export $(cat .env | xargs)
+export $(cat $WORKING_DIR/.env | xargs)
 envsubst < $WORKING_DIR/helm/issuers/secret-cf-token.yaml | kubectl apply -f -
 
 # Step 11: Apply secret for certificate (Cloudflare)
