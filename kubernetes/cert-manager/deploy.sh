@@ -45,8 +45,7 @@ else
   helm repo update
   helm install cert-manager jetstack/cert-manager \
   --namespace cert-manager \
-  --create-namespace \
-  --version ${latest_version} \
+  --version ${latest_version}
 fi
 
 export $(cat $WORKING_DIR/.env | xargs)
