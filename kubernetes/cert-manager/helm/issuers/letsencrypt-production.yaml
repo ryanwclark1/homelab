@@ -19,3 +19,4 @@ spec:
         selector:
           dnsZones:
             - "techcasa.io" # change to your zone on CloudFlare
+            - "*.techcasa.io"
