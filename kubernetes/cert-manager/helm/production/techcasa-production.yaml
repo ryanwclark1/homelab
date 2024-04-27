@@ -9,7 +9,9 @@ spec:
   issuerRef:
     name: letsencrypt-production
     kind: ClusterIssuer
+    group: cert-manager.io
   commonName: "*.techcasa.io" # change to your domain
   dnsNames:
   - "*.techcasa.io" # change to your domain
   - techcasa.io # change to your domain
+
