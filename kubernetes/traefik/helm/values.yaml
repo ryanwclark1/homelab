@@ -8,14 +8,14 @@ additionalArguments:
 
 deployment:
   enabled: true
-  replicas: 2 # match with number of workers
+  replicas: 3 # match with number of workers
   annotations: {}
   podAnnotations: {}
   additionalContainers: []
   initContainers: []
 
 nodeSelector:
-  worker: "true" # add these labels to your worker nodes before running - see video
+  worker: "true" # add these labels to your worker nodes before running
 
 ports:
   web:
