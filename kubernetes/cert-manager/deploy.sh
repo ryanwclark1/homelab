@@ -37,8 +37,7 @@ if [ $namespaceStatus == "Active" ]; then
   jetstack/cert-manager \
   --namespace cert-manager \
   --values $WORKING_DIR/helm/values.yaml \
-  --version ${latest_version} \
-  --set installCRDs=true
+  --version ${latest_version}
 else
   echo "Cert-Manager is not present, installing..."
   kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/${latest_version}/cert-manager.crds.yaml
@@ -48,7 +47,6 @@ else
   --namespace cert-manager \
   --create-namespace \
   --version ${latest_version} \
-  --set installCRDs=true
 fi
 
 export $(cat $WORKING_DIR/.env | xargs)
