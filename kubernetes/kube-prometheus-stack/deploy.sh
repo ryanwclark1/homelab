@@ -57,20 +57,21 @@ echo -e "\n"
 
 # More information: https://github.com/prometheus-community/helm-charts/blob/main/charts/kube-prometheus-stack/README.md
 
-namespaceStatus=""
-namespaceStatus=$(kubectl get ns "$NAME_SPACE" -o json | jq .status.phase -r)
-if [ $namespaceStatus == "Active" ]; then
-  echo -e " \033[32;5m$NAME_SPACE already installed, upgrading with new values.yaml...\033[0m"
-  helm upgrade kube-prometheus-stack prometheus-community/kube-prometheus-stack \
-  --namespace $NAME_SPACE \
-  --values $WORKING_DIR/helm/values.yaml \
-  --version ${latest_version}
-else
-  echo "$NAME_SPACE is not present, installing..."
+release_exists=$(helm list -n "$NAME_SPACE" | grep 'kube-prometheus-stack' | wc -l)
+
+if [ "$release_exists" -eq 0 ]; then
+  echo "No active release found. Installing..."
   helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
   helm repo update
   kubectl create namespace $NAME_SPACE
   helm install kube-prometheus-stack prometheus-community/kube-prometheus-stack \
+  --namespace $NAME_SPACE \
+  --values $WORKING_DIR/helm/values.yaml \
+  --version ${latest_version}
+else
+
+  echo -e " \033[32;5Release found, upgrading...\033[0m"
+  helm upgrade kube-prometheus-stack prometheus-community/kube-prometheus-stack \
   --namespace $NAME_SPACE \
   --values $WORKING_DIR/helm/values.yaml \
   --version ${latest_version}
