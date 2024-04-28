@@ -38,9 +38,8 @@ fi
 export $(cat .env | xargs)
 kubectl create secret generic grafana-admin-credentials
   --from-literal=admin-user="$GF_ADMIN_USER" \
-  --from-literal=admin-password="$GF_ADMIN_PASSWORD"
+  --from-literal=admin-password="$GF_ADMIN_PASSWORD" \
   --namespace $NAME_SPACE
-
 
 echo -e " \033[32;5mGrafana admin credentials\033[0m"
 kubectl describe secret -n $NAME_SPACE grafana-admin-credentials
