@@ -3,6 +3,8 @@
 WORKING_DIR=$(dirname "$BASH_SOURCE")
 WORKING_DIR=$(cd "$WORKING_DIR"; pwd)
 
+NAME_SPACE="kube-prometheus-stack"
+
 REPO_OWNER="prometheus-community"
 REPO_NAME="kube-prometheus-stack"
 
@@ -33,16 +35,37 @@ else
   echo "$response"
 fi
 
-# kubectl create secret generic grafana-admin-credentials
+export $(cat .env | xargs)
+kubectl create secret generic grafana-admin-credentials
+  --from-literal=admin-user="$GF_ADMIN_USER" \
+  --from-literal=admin-password="$GF_ADMIN_PASSWORD"
+  --namespace $NAME_SPACE
 
 
-# # More information: https://github.com/prometheus-community/helm-charts/blob/main/charts/kube-prometheus-stack/README.md
-# helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
-# helm repo update
+echo -e " \033[32;5mGrafana admin credentials\033[0m"
+kubectl describe secret -n $NAME_SPACE grafana-admin-credentials
+echo -e " \033[32;5mGrafana user name\033[0m"
+kubectl get secret -n $NAME_SPACE grafana-admin-credentials -o jsonpath="{.data.admin-user}" | base64 --decode
+echo -e " \033[32;5mGrafana password\033[0m"
+kubectl get secret -n $NAME_SPACE grafana-admin-credentials -o jsonpath="{.data.admin-password}" | base64 --decode
 
-# kubectl create namespace kube-prometheus-stack
-# helm install kube-prometheus-stack prometheus-community/kube-prometheus-stack \
-#   --namespace kube-prometheus-stack \
-#   --values $WORKING_DIR/helm/values.yaml \
-#   --version ${latest_version}
+# More information: https://github.com/prometheus-community/helm-charts/blob/main/charts/kube-prometheus-stack/README.md
 
+namespaceStatus=""
+namespaceStatus=$(kubectl get ns "$NAME_SPACE" -o json | jq .status.phase -r)
+if [ $namespaceStatus == "Active" ]; then
+  echo -e " \033[32;5m$NAME_SPACE already installed, upgrading with new values.yaml...\033[0m"
+  helm upgrade kube-prometheus-stack prometheus prometheus-community/kube-prometheus-stack \
+  --namespace $NAME_SPACE \
+  --values $WORKING_DIR/helm/values.yaml \
+  --version ${latest_version}
+else
+  echo "$NAME_SPACE is not present, installing..."
+  helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
+  helm repo update
+  kubectl create namespace $NAME_SPACE
+  helm install kube-prometheus-stack prometheus prometheus-community/kube-prometheus-stack \
+  --namespace $NAME_SPACE \
+  --values $WORKING_DIR/helm/values.yaml \
+  --version ${latest_version}
+fi

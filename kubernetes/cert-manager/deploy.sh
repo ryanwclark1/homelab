@@ -3,6 +3,8 @@
 WORKING_DIR=$(dirname "$BASH_SOURCE")
 WORKING_DIR=$(cd "$WORKING_DIR"; pwd)
 
+NAME_SPACE="cert-manager"
+
 # Define the repository owner and name
 REPO_OWNER="cert-manager"
 REPO_NAME="cert-manager"
@@ -28,7 +30,7 @@ fi
 # Install Cert-Manager (should already have this with Rancher deployment)
 # Check if we already have it by querying namespace
 namespaceStatus=""
-namespaceStatus=$(kubectl get ns cert-manager -o json | jq .status.phase -r)
+namespaceStatus=$(kubectl get ns "$NAME_SPACE" -o json | jq .status.phase -r)
 if [ $namespaceStatus == "Active" ]; then
   echo -e " \033[32;5mCert-Manager already installed, upgrading with new values.yaml...\033[0m"
   kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/${latest_version}/cert-manager.crds.yaml
