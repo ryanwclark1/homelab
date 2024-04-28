@@ -35,7 +35,7 @@ else
   echo "$response"
 fi
 
-export $(cat .env | xargs)
+export $(cat $WORKING_DIR/.env | xargs)
 kubectl create secret generic grafana-admin-credentials
   --from-literal=admin-user="$GF_ADMIN_USER" \
   --from-literal=admin-password="$GF_ADMIN_PASSWORD" \
