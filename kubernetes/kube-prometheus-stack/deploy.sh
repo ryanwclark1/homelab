@@ -10,13 +10,26 @@ REPO_NAME="kube-prometheus-stack"
 API_URL="https://artifacthub.io/api/v1/packages/helm/$REPO_OWNER/$REPO_NAME/feed/rss"
 
 # Fetch the latest version number using curl and parse it using xmllint
-response=$(curl -s  -H "User-Agent: MyClient/1.0.0" "$API_URL")
+response=$(curl -s "$API_URL")
 
-if echo "$response"; then
-  latest_version=$(xmllint --xpath 'string(//rss/channel/item[1]/title)' $response)
-  echo "Latest release version of $REPO_NAME: $latest_version"
+# Check if the curl command succeeded
+if [ $? -eq 0 ]; then
+  echo "Response received, checking content..."
+  # Check if the response contains <title> tags
+  if echo "$response" | grep -q '<title>'; then
+    echo "Valid response, processing..."
+    latest_version=$(echo "$response" | xmllint --xpath 'string(//rss/channel/item[1]/title)' -)
+    if [ -n "$latest_version" ]; then
+      echo "Latest release version of $REPO_NAME: $latest_version"
+    else
+      echo "Failed to extract version, please check the XML structure and XPath."
+    fi
+  else
+    echo "Invalid response, no <title> tags found."
+    echo "$response"
+  fi
 else
-  echo "Failed to fetch the latest release version of $REPO_NAME."
+  echo "Failed to fetch the RSS feed."
   echo "$response"
 fi
 
