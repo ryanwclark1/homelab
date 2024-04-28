@@ -12,7 +12,7 @@ API_URL="https://artifacthub.io/api/v1/packages/helm/$REPO_OWNER/$REPO_NAME/feed
 # Fetch the latest version number using curl and parse it using xmllint
 response=$(curl -s  -H "User-Agent: MyClient/1.0.0" "$API_URL")
 
-if echo "$response" | grep -q "title"; then
+if echo "$response"; then
   latest_version=$(xmllint --xpath 'string(//rss/channel/item[1]/title)' $response)
   echo "Latest release version of $REPO_NAME: $latest_version"
 else
