@@ -49,9 +49,9 @@ fi
 echo -e " \033[32;5mGrafana admin credentials\033[0m"
 kubectl describe secret -n $NAME_SPACE grafana-admin-credentials
 echo -e " \033[32;5mGrafana user name\033[0m"
-kubectl get secret -n $NAME_SPACE grafana-admin-credentials -o jsonpath="{.data.admin-user}" | base64 --decode
+kubectl get secret -n $NAME_SPACE grafana-admin-credentials -o jsonpath="{.data.GF_ADMIN_USER}" | base64 --decode
 echo -e " \033[32;5mGrafana password\033[0m"
-kubectl get secret -n $NAME_SPACE grafana-admin-credentials -o jsonpath="{.data.admin-password}" | base64 --decode
+kubectl get secret -n $NAME_SPACE grafana-admin-credentials -o jsonpath="{.data.GF_ADMIN_PASSWORD}" | base64 --decode
 
 # More information: https://github.com/prometheus-community/helm-charts/blob/main/charts/kube-prometheus-stack/README.md
 
