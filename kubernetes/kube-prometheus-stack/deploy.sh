@@ -35,11 +35,16 @@ else
   echo "$response"
 fi
 
-export $(cat $WORKING_DIR/.env | xargs)
-kubectl create secret generic grafana-admin-credentials
-  --from-literal=admin-user="$GF_ADMIN_USER" \
-  --from-literal=admin-password="$GF_ADMIN_PASSWORD" \
+# Create secret using .env file
+if [ -f "$WORKING_DIR/.env" ]; then
+  kubectl create secret generic grafana-admin-credentials \
+  --from-env-file="$WORKING_DIR/.env" \
   --namespace $NAME_SPACE
+  echo "Grafana admin credentials created successfully."
+else
+  echo "No .env file found at $WORKING_DIR"
+  exit 1
+fi
 
 echo -e " \033[32;5mGrafana admin credentials\033[0m"
 kubectl describe secret -n $NAME_SPACE grafana-admin-credentials
