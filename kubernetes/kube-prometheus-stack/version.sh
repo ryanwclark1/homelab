@@ -10,3 +10,4 @@ API_URL="https://artifacthub.io/api/v1/packages/helm/prometheus-community/kube-p
 
 # Fetch the latest version number using curl and parse it using xmllint
 latest_version=$(curl -s $API_URL | xmllint --xpath 'string(//rss/channel/item[1]/title)' -)
+echo latest_version
