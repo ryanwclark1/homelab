@@ -1,7 +1,5 @@
 #!/bin/bash
 
-#!/bin/bash
-
 # Set the LH_URL of the YAML file
 LH_URL="https://raw.githubusercontent.com/longhorn/longhorn/master/deploy/longhorn.yaml"
 # Set the file name to save the downloaded YAML

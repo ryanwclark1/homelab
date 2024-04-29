@@ -5,7 +5,6 @@ WORKING_DIR=$(cd "$WORKING_DIR"; pwd)
 
 NAME_SPACE="traefik"
 
-
 release_exists=$(helm list -n "$NAME_SPACE" | grep 'traefik' | wc -l)
 
 if [ "$release_exists" -eq 0 ]; then
