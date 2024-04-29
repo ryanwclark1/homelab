@@ -1,12 +1,17 @@
 #!/bin/bash
 
 # Define the path to your inventory JSON file
-INVENTORY='../inventory.json'
+inventory='../../inventory.json'
+
+if [ ! -f "$inventory" ]; then
+    echo "Inventory file not found at $inventory"
+    exit 1
+fi
 
 BASE_VM=5001
 
 # Define the user for the SSH connections
-PROX_USER=root
+prox_user=$(jq -r '.prox_user' "$inventory")
 
 # SSH Key File
 SSH_KEY="$HOME/.ssh/id_rsa"
@@ -19,8 +24,8 @@ GATEWAY="10.10.100.1"
 
 # Function to check if inventory file exists
 ensure_inventory_exists() {
-  if [ ! -f "$INVENTORY" ]; then
-    log_action "Inventory file not found at $INVENTORY"
+  if [ ! -f "$inventory" ]; then
+    log_action "Inventory file not found at $inventory"
     exit 1
   fi
 }
@@ -32,7 +37,7 @@ log_action() {
 
 # Clone and configure VMs
 clone_vm() {
-  ssh "$PROX_USER@$template_ip" "
+  ssh "$prox_user@$template_ip" "
     qm clone $BASE_VM $vm_id \
     --name $vm_name \
     --full true \
@@ -111,13 +116,13 @@ ensure_inventory_exists
 
 
 # Load template node from inventory
-template_node=$(jq -r '.template_node' $INVENTORY)
-template_ip=$(jq -r '.nodes[] | select(.name == "'$template_node'") | .ip' $INVENTORY)
+template_node=$(jq -r '.template_node' $inventory)
+template_ip=$(jq -r '.nodes[] | select(.name == "'$template_node'") | .ip' $inventory)
 
 
 
 # Loop through VM data and deploy VMs
-mapfile -t nodes < <(jq -c '.nodes[]' $INVENTORY)
+mapfile -t nodes < <(jq -c '.nodes[]' $inventory)
 
 for node in "${nodes[@]}"; do
   node_ip=$(echo "$node" | jq -r '.ip')
@@ -142,7 +147,7 @@ for node in "${nodes[@]}"; do
 
     log_action "Configuring VM on $node_ip..."
 
-    ssh "$USER@$node_ip" "
+    ssh "$prox_user@$node_ip" "
       qm set $vm_id --ipconfig0 ip=$vm_ip/$CIDR,gw=$GATEWAY;
       qm set $vm_id --tags "$TAG,$role";
       qm set $vm_id --cores "$cores" --sockets "$sockets" --memory "$memory";
