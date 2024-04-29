@@ -1,6 +1,12 @@
 {
   "template_node": "james",
   "master1_name": "k3s-node01",
+  "lbrange": "10.10.101.60-10.10.101.100",
+  "vip": "10.10.101.50",
+  "interface": "eth0",
+  "k3s_version": "v1.28.8+k3s1",
+  "cert_name": "id_rsa",
+  "domain": "techcasa.io",
   "nodes": [
     {
       "name": "james",
