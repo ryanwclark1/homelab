@@ -27,10 +27,7 @@ mapfile -t workers < <(jq -r '.nodes[].vms[] | select(.role != "master") | .ip' 
 mapfile -t storage < <(jq -r '.nodes[].vms[] | select(.role == "storage") | .ip' "$inventory") # Array of storage nodes
 mapfile -t all < <(jq -r '.nodes[].vms[].ip' "$inventory") # Array of all
 
-#ssh certificate name variable
-
 SSH_KEY="$HOME/.ssh/$cert_name"
-
 SHELL_NAME=$(basename "$SHELL")
 CURRENT_USER=$(whoami)
 
@@ -316,12 +313,7 @@ source ../helm/deploy.sh
 kubectl apply -f https://raw.githubusercontent.com/kube-vip/kube-vip-cloud-provider/main/manifest/kube-vip-cloud-controller.yaml
 
 # Install Metallb
-kubectl apply -f https://raw.githubusercontent.com/metallb/metallb/v0.12.1/manifests/namespace.yaml
-kubectl apply -f https://raw.githubusercontent.com/metallb/metallb/v0.14.5/config/manifests/metallb-native.yaml
-# Download ipAddressPool and configure using lbrange above
-curl -sO https://raw.githubusercontent.com/ryanwclark1/homelab/main/kubernetes/k3s-deploy/ipAddressPool
-cat ipAddressPool | sed 's/$lbrange/'$lbrange'/g' > $HOME/ipAddressPool.yaml
-kubectl apply -f $HOME/ipAddressPool.yaml
+source ../metallb/deploy.sh
 
 # Test with Traefik
 echo -e " \033[32;5mInstalling Traefik\033[0m"
@@ -336,7 +328,6 @@ kubectl wait --namespace metallb-system \
   --timeout=120s
 kubectl apply -f $HOME/ipAddressPool.yaml
 kubectl apply -f https://raw.githubusercontent.com/ryanwclark1/homelab/main/kubernetes/k3s-deploy/l2Advertisement.yaml
-
 
 source ../cert-manager/deploy.sh
 
