@@ -37,7 +37,6 @@ echo "Configuration applied successfully."
 
 kubectl get pods \
   --namespace longhorn-system \
-  --watch
 
 kubectl get nodes
 kubectl get svc -n longhorn-system
