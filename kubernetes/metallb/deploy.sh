@@ -8,4 +8,6 @@ kubectl apply -f https://raw.githubusercontent.com/metallb/metallb/v0.14.5/confi
 # Download ipAddressPool and configure using lbrange above
 curl -sO https://raw.githubusercontent.com/ryanwclark1/homelab/main/kubernetes/metallb/ipAddressPool
 cat ipAddressPool | sed 's/$lbrange/'$lbrange'/g' > $HOME/ipAddressPool.yaml
+# May need to pause for a few seconds
+sleep 10
 kubectl apply -f $HOME/ipAddressPool.yaml

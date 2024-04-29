@@ -12,16 +12,13 @@ if [ "$release_exists" -eq 0 ]; then
   helm repo add traefik https://helm.traefik.io/traefik
   helm repo update
   kubectl create namespace $NAME_SPACE
-  helm install --namespace=traefik traefik traefik/traefik \
-    --namespace $NAME_SPACE \
-    --values $WORKING_DIR/helm/values.yaml
-    # -f $WORKING_DIR/helm/values.yaml
+  helm install --namespace=$NAME_SPACE traefik traefik/traefik \
+    -f $WORKING_DIR/helm/values.yaml
 else
   echo -e " \033[32;5 Release found, upgrading...\033[0m"
   helm repo update
-  helm upgrade traefik traefik/traefik \
-    --namespace $NAME_SPACE \
-    --values $WORKING_DIR/helm/values.yaml
+  helm upgrade --install traefik traefik/traefik  -n $NAME_SPACE \
+    -f $WORKING_DIR/helm/values.yaml
 fi
 
 kubectl apply -f $WORKING_DIR/helm/default-headers.yaml
