@@ -1,44 +1,45 @@
 #!/bin/bash
+inventory='../../inventory.json'
+
+if [ ! -f "$inventory" ]; then
+    echo "Inventory file not found at $inventory"
+    exit 1
+fi
 
 WORKING_DIR=$(dirname "$BASH_SOURCE")
 WORKING_DIR=$(cd "$WORKING_DIR"; pwd)
-DOMAIN="techcasa.io"
 
 NAME_SPACE="cattle-system"
 
-release_exists=$(helm list -n "$NAME_SPACE" | grep 'rancher' | wc -l)
+domain=$(jq -r '.domain' "$inventory")
 
+release_exists=$(helm list -n "$NAME_SPACE" | grep 'rancher' | wc -l)
 if [ "$release_exists" -eq 0 ]; then
   echo "No active release found. Installing..."
-
-  # Add rancher helm repo
   helm repo add rancher-latest https://releases.rancher.com/server-charts/latest
   helm repo update
-
-  kubectl create namespace cattle-system
+  kubectl create namespace $NAME_SPACE
   helm install rancher rancher-latest/rancher \
-    --namespace cattle-system \
-    --set hostname=rancher.${DOMAIN} \
+    --namespace $NAME_SPACE \
+    --set hostname=rancher.${domain} \
     --set replicas=1 \
     --set bootstrapPassword=password123
-  kubectl -n cattle-system rollout status deploy/rancher
-  kubectl -n cattle-system get deploy rancher
-  kubectl apply -f $WORKING_DIR/helm/ingress.yaml
 else
   echo -e " \033[32;5 Release found, upgrading...\033[0m"
   helm upgrade rancher rancher-latest/rancher \
-    --namespace cattle-system \
-    --set hostname=rancher.${DOMAIN} \
+    --namespace $NAME_SPACE \
+    --set hostname=rancher.${domain} \
     --set replicas=1
-  kubectl -n cattle-system get deploy rancher
-  kubectl apply -f $WORKING_DIR/helm/ingress.yaml
 fi
+
+kubectl -n $NAME_SPACE rollout status deploy/rancher
+kubectl -n $NAME_SPACE get deploy rancher
+
 
 # Expose Rancher via Loadbalancer
 # kubectl get svc -n cattle-system
 kubectl expose deployment rancher --name=rancher-lb --port=80 --type=LoadBalancer -n cattle-system
-# kubectl expose deployment rancher --name=rancher-lb2 --port=80 --type=LoadBalancer -n cattle-system
-kubectl get svc -n cattle-system
+kubectl get svc -n $NAME_SPACE
 
 # Profit: Go to Rancher GUI
 echo -e " \033[32;5mHit the url… and create your account\033[0m"
