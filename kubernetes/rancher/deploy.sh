@@ -36,8 +36,9 @@ fi
 
 # Expose Rancher via Loadbalancer
 # kubectl get svc -n cattle-system
-# kubectl expose deployment rancher --name=rancher-lb --port=443 --type=LoadBalancer -n cattle-system
-# kubectl get svc -n cattle-system
+kubectl expose deployment rancher --name=rancher-lb --port=80 --type=LoadBalancer -n cattle-system
+# kubectl expose deployment rancher --name=rancher-lb2 --port=80 --type=LoadBalancer -n cattle-system
+kubectl get svc -n cattle-system
 
 # Profit: Go to Rancher GUI
 echo -e " \033[32;5mHit the url… and create your account\033[0m"

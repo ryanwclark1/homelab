@@ -3,31 +3,34 @@
 WORKING_DIR=$(dirname "$BASH_SOURCE")
 WORKING_DIR=$(cd "$WORKING_DIR"; pwd)
 
-# Step 2: Add Helm Repos
-helm repo add traefik https://helm.traefik.io/traefik
-helm repo update
+NAME_SPACE="traefik"
 
 
-# Step 3: Create Traefik namespace
-kubectl create namespace traefik
+release_exists=$(helm list -n "$NAME_SPACE" | grep 'traefik' | wc -l)
 
-# Step 4: Install Traefik
-helm install --namespace=traefik traefik traefik/traefik -f $WORKING_DIR/helm/values.yaml
+if [ "$release_exists" -eq 0 ]; then
+  echo "No active release found. Installing..."
+  helm repo add traefik https://helm.traefik.io/traefik
+  helm repo update
+  kubectl create namespace $NAME_SPACE
+  helm install --namespace=traefik traefik traefik/traefik \
+    --namespace $NAME_SPACE \
+    --values $WORKING_DIR/helm/values.yaml
+    # -f $WORKING_DIR/helm/values.yaml
+else
+  echo -e " \033[32;5 Release found, upgrading...\033[0m"
+  helm repo update
+  helm upgrade traefik traefik/traefik \
+    --namespace $NAME_SPACE \
+    --values $WORKING_DIR/helm/values.yaml
+fi
 
-# Step 5: Check Traefik deployment
+kubectl apply -f $WORKING_DIR/helm/default-headers.yaml
+kubectl apply -f $WORKING_DIR/helm/dashboard/secret-dashboard.yaml
+kubectl apply -f $WORKING_DIR/helm/dashboard/middleware.yaml
+kubectl apply -f $WORKING_DIR/helm/dashboard/ingress.yaml
+
 kubectl get svc -n traefik
 kubectl get pods -n traefik
-
-# Step 6: Apply Middleware
-kubectl apply -f $WORKING_DIR/helm/default-headers.yaml
-
-# Step 7: Create Secret for Traefik Dashboard
-kubectl apply -f $WORKING_DIR/helm/dashboard/secret-dashboard.yaml
-
-# Step 8: Apply Middleware
-kubectl apply -f $WORKING_DIR/helm/dashboard/middleware.yaml
-
-# Step 9: Apply Ingress to Access Service
-kubectl apply -f $WORKING_DIR/helm/dashboard/ingress.yaml
 
 kubectl expose deployment traefik --port=80 --type=LoadBalancer -n traefik
