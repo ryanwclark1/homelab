@@ -75,3 +75,6 @@ else
   --values $WORKING_DIR/helm/values.yaml \
   --version ${latest_version}
 fi
+
+# Create ingress
+kubectl apply -f $WORKING_DIR/helm/ingress.yaml -n $NAME_SPACE
