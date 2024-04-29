@@ -27,10 +27,7 @@ if [ "$release_exists" -eq 0 ]; then
     --set ingress.tls.source=secret \
     --set privateCA=true \
     --set additionalTrustedCAs=true \
-    --set ingress.className=traefik \
-    --set ingress.extraAnnotations."cert-manager\.io/cluster-issuer"="letsencrypt-prod" \
-    --set ingress.extraTls[0].hosts[0]=rancher.${domain}  \
-    --set ingress.extraTls[0].secretName=techcasa-tls
+
 else
   echo -e " \033[32;5 Release found, upgrading...\033[0m"
   helm upgrade rancher rancher-latest/rancher \
