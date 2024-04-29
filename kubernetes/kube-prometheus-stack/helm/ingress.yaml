@@ -4,10 +4,9 @@ kind: IngressRoute
 metadata:
   name: grafana-ingress
   namespace: monitoring
-  annotations:
-    kubernetes.io/ingress.class: traefik-internal
 spec:
   entryPoints:
+    - web
     - websecure
   routes:
     - match: Host(`grafana.techcasa.io`)

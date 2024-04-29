@@ -3,7 +3,7 @@
 WORKING_DIR=$(dirname "$BASH_SOURCE")
 WORKING_DIR=$(cd "$WORKING_DIR"; pwd)
 
-NAME_SPACE="kube-prometheus-stack"
+NAME_SPACE="monitoring"
 
 REPO_OWNER="prometheus-community"
 REPO_NAME="kube-prometheus-stack"

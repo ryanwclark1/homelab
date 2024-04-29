@@ -24,9 +24,10 @@ if [ "$release_exists" -eq 0 ]; then
     --set hostname=rancher.${domain} \
     --set replicas=3 \
     --set bootstrapPassword=password123 \
-    --set ingress.tls.source=secret \
-    --set privateCA=true \
-    --set additionalTrustedCAs=true \
+    --set ingress.enabled=false
+    # --set ingress.tls.source=secret \
+    # --set privateCA=true \
+    # --set additionalTrustedCAs=true \
 
 else
   echo -e " \033[32;5 Release found, upgrading...\033[0m"
@@ -34,9 +35,9 @@ else
     --namespace $NAME_SPACE \
     --set hostname=rancher.${domain} \
     --set replicas=3 \
-    --set ingress.enabled=false \
-    --set privateCA=true \
-    --set additionalTrustedCAs=true
+    --set ingress.enabled=false
+    # --set privateCA=true \
+    # --set additionalTrustedCAs=true
 fi
 
 kubectl apply -f $WORKING_DIR/helm/ingress.yaml
@@ -45,7 +46,7 @@ kubectl -n $NAME_SPACE rollout status deploy/rancher
 kubectl -n $NAME_SPACE get deploy rancher
 
 # Expose Rancher via Loadbalancer
-kubectl expose deployment rancher --name=rancher-lb --port=80 --type=LoadBalancer -n cattle-system
+# kubectl expose deployment rancher --name=rancher-lb --port=80 --type=LoadBalancer -n cattle-system
 kubectl get svc -n $NAME_SPACE
 
 # Profit: Go to Rancher GUI
