@@ -4,6 +4,7 @@ WORKING_DIR=$(dirname "$BASH_SOURCE")
 WORKING_DIR=$(cd "$WORKING_DIR"; pwd)
 
 NAME_SPACE="cert-manager"
+
 REPO_OWNER="cert-manager"
 REPO_NAME="cert-manager"
 
@@ -51,3 +52,6 @@ envsubst < $WORKING_DIR/helm/issuers/secret-cf-token.yaml | kubectl apply -f -
 kubectl apply -f $WORKING_DIR/helm/issuers/secret-cf-token.yaml
 kubectl apply -f $WORKING_DIR/helm/issuers/letsencrypt-staging.yaml
 kubectl apply -f $WORKING_DIR/helm/staging/techcasa-staging.yaml
+
+kubectl get svc -n $NAME_SPACE
+kubectl get pods -n $NAME_SPACE
