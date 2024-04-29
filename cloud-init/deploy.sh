@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Define the path to your inventory JSON file
-inventory='../../inventory.json'
+inventory='../inventory.json'
 
 if [ ! -f "$inventory" ]; then
     echo "Inventory file not found at $inventory"
