@@ -31,10 +31,18 @@ source ~/.bashrc
 # Verify Go installation
 go version
 
-# Clone the k9s repository and build it
-git clone https://github.com/derailed/k9s.git
-cd k9s
+# Check if k9s repo is already cloned
+if [ -d "~/k9s" ]; then
+    # Repo exists, so pull any new changes
+    cd k9s
+    git pull
+else
+    # Repo does not exist, clone it
+    git clone https://github.com/derailed/k9s.git
+    cd k9s
+fi
+
 
 # Build k9s and run it
 make build
-./execs/k9s
+sudo cp ./execs/k9s /usr/local/bin
