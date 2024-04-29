@@ -232,7 +232,7 @@ kubectl get node -o wide
 kubectl apply --validate=false --insecure-skip-tls-verify -f https://raw.githubusercontent.com/ryanwclark1/homelab/main/kubernetes/kube-vip/rbac.yaml
 
 # Step 3: Download kube-vip
-curl -sO https://raw.githubusercontent.com/ryanwclark1/homelab/main/kubernetes/k3s-deploy/kube-vip
+curl -sO https://raw.githubusercontent.com/ryanwclark1/homelab/main/kubernetes/k3s/kube-vip
 cat kube-vip | sed 's/$interface/'$interface'/g; s/$vip/'$vip'/g' > $HOME/kube-vip.yaml
 
 # Step 4: Copy kube-vip.yaml to master1
@@ -327,7 +327,7 @@ kubectl wait --namespace metallb-system \
   --selector=component=controller \
   --timeout=120s
 kubectl apply -f $HOME/ipAddressPool.yaml
-kubectl apply -f https://raw.githubusercontent.com/ryanwclark1/homelab/main/kubernetes/k3s-deploy/l2Advertisement.yaml
+kubectl apply -f https://raw.githubusercontent.com/ryanwclark1/homelab/main/kubernetes/k3s/l2Advertisement.yaml
 
 source ../cert-manager/deploy.sh
 
