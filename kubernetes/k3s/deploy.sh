@@ -275,6 +275,7 @@ done
 
 # add storage nodes
 for newstorage in "${storage[@]}"; do
+  newstorage_name=$(jq -r --arg ip "$newstorage" '.nodes[].vms[] | select(.ip == $ip) | .name' "$inventory")
   k3sup join \
   --ip $newstorage \
   --user $host_user \
@@ -284,7 +285,7 @@ for newstorage in "${storage[@]}"; do
   --ssh-key $HOME/.ssh/$cert_name \
   --k3s-extra-args " \
     --node-ip=$newstorage \
-    --node-name=$newstorage \
+    --node-name=$newstorage_name \
     --node-label longhorn=true"
   echo -e " \033[32;5mStorage node joined successfully!\033[0m"
 done
