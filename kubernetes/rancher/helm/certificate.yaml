@@ -1,0 +1,14 @@
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: rancher-techcasa-io
+  namespace: cattle-system
+spec:
+  commonName: rancher.techcasa.io
+  dnsNames:
+    - rancher.techcasa-io
+  issuerRef:
+    name: letsencrypt-production
+    kind: ClusterIssuer
+  secretName: tls-rancher-ingress
