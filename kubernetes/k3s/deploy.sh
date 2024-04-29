@@ -227,25 +227,22 @@ kubectl config use-context k3s-ha
 echo "kubectl get node -o wide"
 kubectl get node -o wide
 
-# Step 2: Install Kube-VIP for HA
+# Install Kube-VIP for HA
 # https://kube-vip.io/manifests/rbac.yaml
-kubectl apply --validate=false --insecure-skip-tls-verify -f https://raw.githubusercontent.com/ryanwclark1/homelab/main/kubernetes/kube-vip/rbac.yaml
+kubectl apply -f https://kube-vip.io/manifests/rbac.yaml
 
-# Step 3: Download kube-vip
 curl -sO https://raw.githubusercontent.com/ryanwclark1/homelab/main/kubernetes/k3s/kube-vip
 cat kube-vip | sed 's/$interface/'$interface'/g; s/$vip/'$vip'/g' > $HOME/kube-vip.yaml
 
-# Step 4: Copy kube-vip.yaml to master1
+# Copy kube-vip.yaml to master1 and move it to the correct location
 scp -i ~/.ssh/$cert_name $HOME/kube-vip.yaml $host_user@$master1:kube-vip.yaml
 
-
-# Step 5: Connect to Master1 and move kube-vip.yaml
 ssh -i ~/.ssh/$cert_name $host_user@$master1 sudo su <<- EOF
   mkdir -p /var/lib/rancher/k3s/server/manifests
   mv kube-vip.yaml /var/lib/rancher/k3s/server/manifests/kube-vip.yaml
 EOF
 
-# Step 6: Add new master nodes (servers) & workers
+# Add new master nodes (servers) & workers
 for newmaster in "${masters[@]}"; do
 # Get the name of the newmaster from the inventory file using the newmaster IP
 newmaster_name=$(jq -r --arg ip "$newmaster" '.nodes[].vms[] | select(.ip == $ip) | .name' "$inventory")
@@ -319,6 +316,9 @@ source ../metallb/deploy.sh
 echo -e " \033[32;5mInstalling Traefik\033[0m"
 source ../traefik/deploy.sh
 echo -e " \033[32;5mWaiting for K3S to sync and LoadBalancer to come online\033[0m"
+while [[ $(kubectl get pods -l app=traefik -o 'jsonpath={..status.conditions[?(@.type=="Ready")].status}') != "True" ]]; do
+   sleep 1
+done
 
 # Deploy IP Pools and l2Advertisement
 echo -e " \033[32;5mDeploying IP Pools and l2Advertisement\033[0m"
@@ -329,11 +329,11 @@ kubectl wait --namespace metallb-system \
 kubectl apply -f $HOME/ipAddressPool.yaml
 kubectl apply -f https://raw.githubusercontent.com/ryanwclark1/homelab/main/kubernetes/k3s/l2Advertisement.yaml
 
-source ../cert-manager/deploy.sh
+# source ../cert-manager/deploy.sh
 
-source ../longhorn/deploy.sh
+# source ../longhorn/deploy.sh
 
-source ../rancher/deploy.sh
+# source ../rancher/deploy.sh
 
 kubectl get nodes
 kubectl get svc
