@@ -8,6 +8,7 @@
   "cert_name": "id_rsa",
   "domain": "techcasa.io",
   "host_user": "administrator",
+  "prox_user": "root",
   "nodes": [
     {
       "name": "james",

@@ -1,13 +1,19 @@
 #!/bin/bash
 
 # Path to your inventory JSON file
-INVENTORY='../inventory.json'
+inventory='../../inventory.json'
+
+if [ ! -f "$inventory" ]; then
+    echo "Inventory file not found at $inventory"
+    exit 1
+fi
 
 # Define the user for the SSH connections
-USER=root
+prox_user=($(jq -r '.prox_user' $inventory))
+cert_name=$(jq -r '.cert_name' "$inventory")
+hosts=($(jq -r '.nodes[].ip' $inventory))
 
-# SSH Key File
-SSH_KEY="$HOME/.ssh/id_rsa"
+SSH_KEY="$HOME/.ssh/$cert_name"
 
 
 # Ensure jq is installed
@@ -23,13 +29,13 @@ else
 fi
 
 # Extract hosts from the JSON inventory using jq
-HOSTS=($(jq -r '.nodes[].ip' $INVENTORY))
+
 
 # Copy SSH public key to each host
-for HOST in "${HOSTS[@]}"; do
-  echo "Copying SSH public key to $HOST..."
-  ssh-keyscan -H $HOST >> ~/.ssh/known_hosts
-  ssh-copy-id -i "${SSH_KEY}" "$USER@$HOST"
+for host in "${hosts[@]}"; do
+  echo "Copying SSH public key to $host..."
+  ssh-keyscan -H $host >> ~/.ssh/known_hosts
+  ssh-copy-id -i "${SSH_KEY}" "$prox_user@$host"
 done
 
 echo "SSH setup complete."
