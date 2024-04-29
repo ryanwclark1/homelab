@@ -77,7 +77,16 @@ EOF
 done
 }
 
-
+add_packages() {
+for node in "${all[@]}"; do
+  ssh $user@$node -i ~/.ssh/$certName sudo su <<EOF
+  apt update
+  apt install -y open-iscsi
+  exit
+EOF
+  echo -e " \033[32;5mPolicyCoreUtils installed!\033[0m"
+done
+}
 
 ask_to_intialize() {
   while true; do
@@ -97,6 +106,7 @@ ask_to_intialize() {
         y|yes)
           intialize_nodes
           add_policycoreutils
+          add_packages
           break
           ;;
         n|no)
