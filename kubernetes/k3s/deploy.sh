@@ -302,9 +302,8 @@ source ../metallb/deploy.sh
 echo -e " \033[32;5mInstalling Traefik\033[0m"
 source ../traefik/deploy.sh
 echo -e " \033[32;5mWaiting for K3S to sync and LoadBalancer to come online\033[0m"
-while [[ $(kubectl get pods -l app=traefik -o 'jsonpath={..status.conditions[?(@.type=="Ready")].status}') != "True" ]]; do
-   sleep 1
-done
+
+sleep 10
 
 # Deploy IP Pools and l2Advertisement
 echo -e " \033[32;5mDeploying IP Pools and l2Advertisement\033[0m"
