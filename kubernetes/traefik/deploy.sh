@@ -12,7 +12,7 @@ if [ "$release_exists" -eq 0 ]; then
   helm repo add traefik https://helm.traefik.io/traefik
   helm repo update
   kubectl create namespace $NAME_SPACE
-  helm install --namespace=$NAME_SPACE traefik traefik/traefik \
+  helm install traefik traefik/traefik -n $NAME_SPACE \
     -f $WORKING_DIR/helm/values.yaml
 else
   echo -e " \033[32;5 Release found, upgrading...\033[0m"
@@ -28,5 +28,3 @@ kubectl apply -f $WORKING_DIR/helm/dashboard/ingress.yaml
 
 kubectl get svc -n $NAME_SPACE
 kubectl get pods -n $NAME_SPACE
-
-kubectl expose deployment traefik --port=80 --type=LoadBalancer -n $NAME_SPACE
