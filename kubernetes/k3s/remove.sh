@@ -69,7 +69,6 @@ safe_rm() {
 
 
 # Remove the kubeconfig file and directory
-safe_rm "/usr/local/helm"
 safe_rm "/home/$CURRENT_USER/.config/helm"
 safe_rm "/home/$CURRENT_USER/.cache/helm"
 safe_rm "/home/$CURRENT_USER/.kube/config"
@@ -77,6 +76,7 @@ safe_rm "/home/$CURRENT_USER/kube-vip.yaml"
 safe_rm "/home/$CURRENT_USER/ipAddressPool.yaml"
 safe_rm "/usr/local/bin/kubectl"
 safe_rm "/usr/local/bin/k3sup"
+safe_rm "/usr/local/bin/helm"
 
 
 # If it's a master node, kill k3s
