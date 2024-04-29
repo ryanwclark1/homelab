@@ -26,7 +26,7 @@ kubectl apply -f $WORKING_DIR/helm/dashboard/secret-dashboard.yaml
 kubectl apply -f $WORKING_DIR/helm/dashboard/middleware.yaml
 kubectl apply -f $WORKING_DIR/helm/dashboard/ingress.yaml
 
-kubectl get svc -n traefik
-kubectl get pods -n traefik
+kubectl get svc -n $NAME_SPACE
+kubectl get pods -n $NAME_SPACE
 
-kubectl expose deployment traefik --port=80 --type=LoadBalancer -n traefik
+kubectl expose deployment traefik --port=80 --type=LoadBalancer -n $NAME_SPACE
