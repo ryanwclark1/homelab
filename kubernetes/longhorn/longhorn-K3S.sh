@@ -39,13 +39,19 @@ for node in "${storage[@]}"; do
   ssh-copy-id $user@$node
 done
 
-# add open-iscsi - needed for Debian and non-cloud Ubuntu
-if ! command -v sudo service open-iscsi status &> /dev/null
+# Check if the open-iscsi service is available
+if ! systemctl is-active --quiet open-iscsi
 then
-    echo -e " \033[31;5mOpen-ISCSI not found, installing\033[0m"
-    sudo apt install open-iscsi
+    echo -e " \033[31;5mOpen-ISCSI not found, installing...\033[0m"
+    # Update apt package list
+    sudo apt-get update
+    # Install open-iscsi
+    sudo apt-get install -y open-iscsi
+    # Optionally start the service and enable it to start at boot
+    sudo systemctl start open-iscsi
+    sudo systemctl enable open-iscsi
 else
-    echo -e " \033[32;5mOpen-ISCSI already installed\033[0m"
+    echo -e " \033[32;5mOpen-ISCSI is already installed and active.\033[0m"
 fi
 
 # Step 1: Add new longhorn nodes to cluster (note: label added)
@@ -62,7 +68,7 @@ for newnode in "${storage[@]}"; do
 done
 
 # Step 2: Install Longhorn (using modified Official to pin to Longhorn Nodes)
-kubectl apply -f https://raw.githubusercontent.com/JamesTurland/JimsGarage/main/Kubernetes/Longhorn/longhorn.yaml
+kubectl apply -f https://raw.githubusercontent.com/ryanwclark1/homelab/main/kubernetes/longhorn/longhorn.yaml
 kubectl get pods \
 --namespace longhorn-system \
 --watch
