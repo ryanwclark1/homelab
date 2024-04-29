@@ -69,7 +69,6 @@ if [ "$release_exists" -eq 0 ]; then
   --values $WORKING_DIR/helm/values.yaml \
   --version ${latest_version}
 else
-
   echo -e " \033[32;5Release found, upgrading...\033[0m"
   helm upgrade kube-prometheus-stack prometheus-community/kube-prometheus-stack \
   --namespace $NAME_SPACE \
