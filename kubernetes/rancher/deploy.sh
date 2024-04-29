@@ -2,6 +2,7 @@
 
 WORKING_DIR=$(dirname "$BASH_SOURCE")
 WORKING_DIR=$(cd "$WORKING_DIR"; pwd)
+DOMAIN="techcasa.io"
 
 NAME_SPACE="cattle-system"
 
@@ -24,9 +25,10 @@ if [ "$release_exists" -eq 0 ]; then
   kubectl -n cattle-system get deploy rancher
   kubectl apply -f $WORKING_DIR/helm/ingress.yaml
 else
-  echo -e " \033[32;5Release found, upgrading...\033[0m"
+  echo -e " \033[32;5 Release found, upgrading...\033[0m"
   helm upgrade rancher rancher-latest/rancher \
     --namespace cattle-system \
+    --set hostname=rancher.${DOMAIN} \
     --set replicas=1
   kubectl -n cattle-system get deploy rancher
   kubectl apply -f $WORKING_DIR/helm/ingress.yaml
