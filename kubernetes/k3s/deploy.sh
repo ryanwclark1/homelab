@@ -181,45 +181,52 @@ else
 fi
 
 # Install Kubectl if not already present
+echo -e " \033[32;5m**********************************************\033[0m"
+echo -e " \033[32;5m***        Installing Kubectl           ******\033[0m"
+echo -e " \033[32;5m**********************************************\033[0m"
 source ../kubectl/deploy.sh
 
 # TODO: Add fish and zsh support https://kubernetes.io/docs/tasks/tools/install-kubectl-linux/
 # Add kubectl & alias to completions to bashrc
-# SHELL_NAME=$(basename "$SHELL")
+SHELL_NAME=$(basename "$SHELL")
 
-# # Check if the shell is Bash
-# if [ "$SHELL_NAME" = "bash" ]; then
-#   # Check if autocompletions are enabled
-#   if type _init_completion &>/dev/null; then
-#     echo "Autocompletions are enabled."
-#     # Check if kubectl completions are already added to bashrc
-#     if ! grep -q 'source <(kubectl completion bash)' ~/.bashrc; then
-#       echo "Adding kubectl completions to ~/.bashrc"
-#       echo 'source <(kubectl completion bash)' >> ~/.bashrc
-#     if ! grep -q 'alias k=kubectl' ~/.bashrc; then
-#       echo "Adding kubectl alias to ~/.bashrc"
-#       echo 'alias k=kubectl' >> ~/.bashrc
-#       echo 'complete -o default -F __start_kubectl k' >> ~/.bashrc
-#     else
-#       echo "kubectl completions are already added to ~/.bashrc. Skipping."
-#     fi
-#   else
-#     # Reload bashrc
-#     source ~/.bashrc
-#     echo "Autocompletions are not enabled. Skipping kubectl completions setup."
-#   fi
-# else
-#   echo "The shell is not Bash. Skipping kubectl completions setup."
-# fi
+# Check if the shell is Bash
+if [ "$SHELL_NAME" = "bash" ]; then
+  # Check if autocompletions are enabled
+  if type _init_completion &>/dev/null; then
+    echo "Autocompletions are enabled."
+    # Check if kubectl completions are already added to bashrc
+    if ! grep -q 'source <(kubectl completion bash)' ~/.bashrc; then
+      echo "Adding kubectl completions to ~/.bashrc"
+      echo 'source <(kubectl completion bash)' >> ~/.bashrc
+      source ~/.bashrc
+    if ! grep -q 'alias k=kubectl' ~/.bashrc; then
+      echo "Adding kubectl alias to ~/.bashrc"
+      echo 'alias k=kubectl' >> ~/.bashrc
+      echo 'complete -o default -F __start_kubectl k' >> ~/.bashrc
+      source ~/.bashrc
+    else
+      echo "kubectl completions are already added to ~/.bashrc. Skipping."
+    fi
+  else
+    # Reload bashrc
+    source ~/.bashrc
+    echo "Autocompletions are not enabled. Skipping kubectl completions setup."
+  fi
+else
+  echo "The shell is not Bash. Skipping kubectl completions setup."
+fi
 
 # Create SSH Config file to ignore checking (don't use in production!)
 # sed -i '1s/^/StrictHostKeyChecking no\n/' ~/.ssh/config
 
 
-
-
 # Step 1: Bootstrap First k3s Node
 mkdir ~/.kube
+# Multiline echo with banner for better readability
+echo -e " \033[32;5m**********************************************\033[0m"
+echo -e " \033[32;5m***    Bootstrapping first node...      ******\033[0m"
+echo -e " \033[32;5m**********************************************\033[0m"
 k3sup install \
   --ip $master1 \
   --user $user \
@@ -231,6 +238,12 @@ k3sup install \
     --disable servicelb \
     --flannel-iface=$interface \
     --node-ip=$master1 \
+    --node-name=$master1_name \
+    --node-label master=true \
+    --etcd-expose-metrics=true \
+    --kube-controller-manager-arg bind-address=0.0.0.0 \
+    --kube-proxy-arg bind-address=0.0.0.0 \
+    --kube-scheduler-arg bind-address=0.0.0.0 \
     --node-taint node-role.kubernetes.io/master=true:NoSchedule" \
   --merge \
   --sudo \
@@ -241,9 +254,6 @@ k3sup install \
 # Set the user & kubeconfig path
 CURRENT_USER=$(whoami)
 KUBECONFIG_PATH="/home/$CURRENT_USER/.kube/config"
-
-# Determine the shell and the corresponding configuration file
-SHELL_NAME=$(basename "$SHELL")
 
 echo -e " \033[32;5mFirst Node bootstrapped successfully!\033[0m"
 shell_config
@@ -276,9 +286,11 @@ ssh -i ~/.ssh/$certName $user@$master1 sudo su <<- EOF
 EOF
 
 # Step 6: Add new master nodes (servers) & workers
-for newnode in "${masters[@]}"; do
+for newmaster in "${masters[@]}"; do
+# Get the name of the newmaster from the inventory file using the newmaster IP
+newmaster_name=$(jq -r --arg ip "$newmaster" '.nodes[].vms[] | select(.ip == $ip) | .name' "$inventory")
   k3sup join \
-  --ip $newnode \
+  --ip $newmaster \
   --user $user \
   --sudo \
   --k3s-version $k3sVersion \
@@ -289,23 +301,32 @@ for newnode in "${masters[@]}"; do
     --disable traefik \
     --disable servicelb \
     --flannel-iface=$interface \
-    --node-ip=$newnode \
+    --node-ip=$newmaster \
+    --node-name=$newmaster_name \
+    --node-label master=true \
+    --etcd-expose-metrics=true \
+    --kube-controller-manager-arg bind-address=0.0.0.0 \
+    --kube-proxy-arg bind-address=0.0.0.0 \
+    --kube-scheduler-arg bind-address=0.0.0.0 \
     --node-taint node-role.kubernetes.io/master=true:NoSchedule" \
   --server-user $user
   echo -e " \033[32;5mMaster node joined successfully!\033[0m"
 done
 
 # add workers
-for newagent in "${workers[@]}"; do
+for newworker in "${workers[@]}"; do
+  newworker_name=$(jq -r --arg ip "$newworker" '.nodes[].vms[] | select(.ip == $ip) | .name' "$inventory")
   k3sup join \
-  --ip $newagent \
+  --ip $newworker \
   --user $user \
   --sudo \
   --k3s-version $k3sVersion \
   --server-ip $master1 \
   --ssh-key $HOME/.ssh/$certName \
   --k3s-extra-args " \
-    --node-label "worker=true""
+    --node-ip=$newworker \
+    --node-name=$newworker_name \
+    --node-label worker=true"
   echo -e " \033[32;5mAgent node joined successfully!\033[0m"
 done
 
@@ -319,18 +340,14 @@ for newstorage in "${storage[@]}"; do
   --server-ip $master1 \
   --ssh-key $HOME/.ssh/$certName \
   --k3s-extra-args " \
-    --node-label "longhorn=true""
+    --node-ip=$newstorage \
+    --node-name=$newstorage \
+    --node-label longhorn=true"
   echo -e " \033[32;5mStorage node joined successfully!\033[0m"
 done
 
-# Install helm
-if ! command -v helm version &> /dev/null
-then
-  echo -e " \033[31;5mHelm not found, installing\033[0m"
-  curl -fsSL https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
-else
-  echo -e " \033[32;5mHelm already installed\033[0m"
-fi
+# Step 6: Install Helm
+source ../helm/deploy.sh
 
 # Step 7: Install kube-vip as network LoadBalancer - Install the kube-vip Cloud Provider
 kubectl apply -f https://raw.githubusercontent.com/kube-vip/kube-vip-cloud-provider/main/manifest/kube-vip-cloud-controller.yaml
@@ -358,12 +375,10 @@ kubectl apply -f $HOME/ipAddressPool.yaml
 kubectl apply -f https://raw.githubusercontent.com/ryanwclark1/homelab/main/kubernetes/k3s-deploy/l2Advertisement.yaml
 
 
-# Step 13: Install Cert-Manager
 source ../cert-manager/deploy.sh
 
 source ../longhorn/deploy.sh
 
-# Step 14: Install Rancher
 source ../rancher/deploy.sh
 
 kubectl get nodes
