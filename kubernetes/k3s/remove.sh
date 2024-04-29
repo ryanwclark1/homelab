@@ -3,13 +3,10 @@
 # Set the user
 CURRENT_USER=$(whoami)
 
-# Set the kubeconfig path
-KUBECONFIG_PATH="/home/$CURRENT_USER/.kube"
-
 # Remove the export statement from the appropriate shell configuration file
 remove_export_statement() {
   local file="$1"
-  local pattern="export KUBECONFIG=${KUBECONFIG_PATH}/config"
+  local pattern="export KUBECONFIG=/home/${CURRENT_USER}/.kube/config"
   # Use printf to safely escape the path for use in a regular expression
   local escaped_pattern=$(printf '%s\n' "$pattern" | sed -e 's:[][\/.^$*]:\\&:g')
 
@@ -75,7 +72,7 @@ safe_rm() {
 safe_rm "/usr/local/helm"
 safe_rm "/home/$CURRENT_USER/.config/helm"
 safe_rm "/home/$CURRENT_USER/.cache/helm"
-safe_rm "$KUBECONFIG_PATH"
+safe_rm "/home/$CURRENT_USER/.kube/config"
 safe_rm "/home/$CURRENT_USER/kube-vip.yaml"
 safe_rm "/home/$CURRENT_USER/ipAddressPool.yaml"
 safe_rm "/usr/local/bin/kubectl"
