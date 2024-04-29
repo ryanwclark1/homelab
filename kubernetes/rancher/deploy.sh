@@ -22,14 +22,14 @@ if [ "$release_exists" -eq 0 ]; then
     --set bootstrapPassword=password123
   kubectl -n cattle-system rollout status deploy/rancher
   kubectl -n cattle-system get deploy rancher
-  kubectl apply -f $WORKING_DIR/helm/dashboard/ingress.yaml
+  kubectl apply -f $WORKING_DIR/helm/ingress.yaml
 else
   echo -e " \033[32;5Release found, upgrading...\033[0m"
   helm upgrade rancher rancher-latest/rancher \
     --namespace cattle-system \
     --set replicas=1
   kubectl -n cattle-system get deploy rancher
-  kubectl apply -f $WORKING_DIR/helm/dashboard/ingress.yaml
+  kubectl apply -f $WORKING_DIR/helm/ingress.yaml
 fi
 
 # Expose Rancher via Loadbalancer
