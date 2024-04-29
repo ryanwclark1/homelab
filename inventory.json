@@ -57,6 +57,17 @@
           "sockets": 1,
           "memory": 4096,
           "role": "worker"
+        },
+        {
+          "name": "k3s-storage17",
+          "ip": "10.10.101.237",
+          "id": 237,
+          "disk_size": "200G",
+          "disk": "tank",
+          "cores": 2,
+          "sockets": 1,
+          "memory": 4096,
+          "role": "storage"
         }
       ]
     },
@@ -97,6 +108,17 @@
           "sockets": 1,
           "memory": 4096,
           "role": "worker"
+        },
+        {
+          "name": "k3s-storage18",
+          "ip": "10.10.101.238",
+          "id": 238,
+          "disk_size": "200G",
+          "disk": "tank",
+          "cores": 2,
+          "sockets": 1,
+          "memory": 4096,
+          "role": "storage"
         }
       ]
     },
@@ -137,6 +159,17 @@
           "sockets": 1,
           "memory": 4096,
           "role": "worker"
+        },
+        {
+          "name": "k3s-storage19",
+          "ip": "10.10.101.239",
+          "id": 239,
+          "disk_size": "200G",
+          "disk": "tank",
+          "cores": 2,
+          "sockets": 1,
+          "memory": 4096,
+          "role": "storage"
         }
       ]
     },
