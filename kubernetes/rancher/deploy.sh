@@ -22,7 +22,7 @@ if [ "$release_exists" -eq 0 ]; then
   helm install rancher rancher-latest/rancher \
     --namespace $NAME_SPACE \
     --set hostname=rancher.${domain} \
-    --set replicas=1 \
+    --set replicas=3 \
     --set bootstrapPassword=password123 \
     --set ingress.tls.source=secret \
     --set privateCA=true \
@@ -33,7 +33,7 @@ else
   helm upgrade rancher rancher-latest/rancher \
     --namespace $NAME_SPACE \
     --set hostname=rancher.${domain} \
-    --set replicas=1 \
+    --set replicas=3 \
     --set ingress.enabled=false \
     --set privateCA=true \
     --set additionalTrustedCAs=true
