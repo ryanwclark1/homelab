@@ -1,22 +1,41 @@
 #!/bin/bash
 
-# Add rancher helm repo
-helm repo add rancher-latest https://releases.rancher.com/server-charts/latest
-helm repo update
+WORKING_DIR=$(dirname "$BASH_SOURCE")
+WORKING_DIR=$(cd "$WORKING_DIR"; pwd)
 
-kubectl create namespace cattle-system
-helm install rancher rancher-latest/rancher \
-  --namespace cattle-system \
-  --set hostname=rancher.${DOMAIN} \
-  --set replicas=1 \
-  --set bootstrapPassword=password123
-kubectl -n cattle-system rollout status deploy/rancher
-kubectl -n cattle-system get deploy rancher
+NAME_SPACE="cattle-system"
+
+release_exists=$(helm list -n "$NAME_SPACE" | grep 'rancher' | wc -l)
+
+if [ "$release_exists" -eq 0 ]; then
+  echo "No active release found. Installing..."
+
+  # Add rancher helm repo
+  helm repo add rancher-latest https://releases.rancher.com/server-charts/latest
+  helm repo update
+
+  kubectl create namespace cattle-system
+  helm install rancher rancher-latest/rancher \
+    --namespace cattle-system \
+    # --set hostname=rancher.${DOMAIN} \
+    --set replicas=1 \
+    --set bootstrapPassword=password123
+  kubectl -n cattle-system rollout status deploy/rancher
+  kubectl -n cattle-system get deploy rancher
+  kubectl apply -f $WORKING_DIR/helm/dashboard/ingress.yaml
+else
+  echo -e " \033[32;5Release found, upgrading...\033[0m"
+  helm upgrade rancher rancher-latest/rancher \
+    --namespace cattle-system \
+    --set replicas=1
+  kubectl -n cattle-system get deploy rancher
+  kubectl apply -f $WORKING_DIR/helm/dashboard/ingress.yaml
+fi
 
 # Expose Rancher via Loadbalancer
-kubectl get svc -n cattle-system
-kubectl expose deployment rancher --name=rancher-lb --port=443 --type=LoadBalancer -n cattle-system
-kubectl get svc -n cattle-system
+# kubectl get svc -n cattle-system
+# kubectl expose deployment rancher --name=rancher-lb --port=443 --type=LoadBalancer -n cattle-system
+# kubectl get svc -n cattle-system
 
 # Profit: Go to Rancher GUI
 echo -e " \033[32;5mHit the url… and create your account\033[0m"
