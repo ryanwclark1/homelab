@@ -351,6 +351,8 @@ kubectl apply -f https://raw.githubusercontent.com/ryanwclark1/homelab/main/kube
 # Step 13: Install Cert-Manager
 source ../cert-manager/deploy.sh
 
+source ../longhorn/deploy.sh
+
 # Step 14: Install Rancher
 source ../rancher/deploy.sh
 
