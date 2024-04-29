@@ -40,29 +40,17 @@ intialize_nodes() {
   for node in "${all[@]}"; do
     ssh-keyscan -H $node >> ~/.ssh/known_hosts
     ssh-copy-id $host_user@$node
+    ssh $host_user@$newnode -i ~/.ssh/$cert_name sudo su <<EOF
+    NEEDRESTART_MODE=a
+    apt-get update
+    apt-get install -y policycoreutils open-iscsi nfs-common cryptsetup dmsetup
+    exit
+EOF
+  echo -e " \033[32;5mNode Intialized!\033[0m"
   done
 }
 
-add_policycoreutils() {
-for newnode in "${all[@]}"; do
-  ssh $host_user@$newnode -i ~/.ssh/$cert_name sudo su <<EOF
-  NEEDRESTART_MODE=a apt install policycoreutils -y
-  exit
-EOF
-  echo -e " \033[32;5mPolicyCoreUtils installed!\033[0m"
-done
-}
 
-add_packages() {
-for node in "${all[@]}"; do
-  ssh $host_user@$node -i ~/.ssh/$cert_name sudo su <<EOF
-  apt update
-  apt install -y open-iscsi
-  exit
-EOF
-  echo -e " \033[32;5mPolicyCoreUtils installed!\033[0m"
-done
-}
 
 ask_to_intialize() {
   while true; do
@@ -81,8 +69,6 @@ ask_to_intialize() {
       case "$user_input" in
         y|yes)
           intialize_nodes
-          add_policycoreutils
-          add_packages
           break
           ;;
         n|no)
