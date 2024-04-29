@@ -40,6 +40,7 @@ if [ $namespaceStatus == "Active" ]; then
   --version ${latest_version}
 else
   echo "Cert-Manager is not present, installing..."
+  kubectl create namespace $NAME_SPACE
   kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/${latest_version}/cert-manager.crds.yaml
   helm repo add jetstack https://charts.jetstack.io
   helm repo update
