@@ -64,13 +64,13 @@ if [ "$release_exists" -eq 0 ]; then
   helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
   helm repo update
   kubectl create namespace $NAME_SPACE
-  helm install kube-prometheus-stack prometheus-community/kube-prometheus-stack \
+  helm install kube-prometheus-stack prometheus-community/$NAME_SPACE \
   --namespace $NAME_SPACE \
   --values $WORKING_DIR/helm/values.yaml \
   --version ${latest_version}
 else
   echo -e " \033[32;5Release found, upgrading...\033[0m"
-  helm upgrade kube-prometheus-stack prometheus-community/kube-prometheus-stack \
+  helm upgrade kube-prometheus-stack prometheus-community/$NAME_SPACE \
   --namespace $NAME_SPACE \
   --values $WORKING_DIR/helm/values.yaml \
   --version ${latest_version}
