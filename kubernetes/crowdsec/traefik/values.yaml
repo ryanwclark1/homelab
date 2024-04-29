@@ -19,7 +19,7 @@ deployment:
   additionalContainers: []
   initContainers: []
 
-nodeSelector: 
+nodeSelector:
   worker: "true"
 
 ports:
@@ -30,7 +30,7 @@ ports:
   websecure:
     tls:
       enabled: true
-      
+
 ingressRoute:
   dashboard:
     enabled: false
@@ -56,7 +56,7 @@ service:
   annotations: {}
   labels: {}
   spec:
-    loadBalancerIP: 192.168.3.65 # this should be an IP in the Kube-VIP LB range
+    loadBalancerIP: 10.10.101.65 # this should be an IP in the Kube-VIP LB range
     externalTrafficPolicy: Local # required to show the source IP - Cluster will not show internal IP and crowdsec will not work
   loadBalancerSourceRanges: []
   externalIPs: []
