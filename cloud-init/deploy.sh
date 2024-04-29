@@ -6,7 +6,7 @@ INVENTORY='../inventory.json'
 BASE_VM=5001
 
 # Define the user for the SSH connections
-USER=root
+PROX_USER=root
 
 # SSH Key File
 SSH_KEY="$HOME/.ssh/id_rsa"
@@ -27,12 +27,12 @@ ensure_inventory_exists() {
 
 # Log Function
 log_action() {
-  echo "[$(date +'%Y-%m-%d %H:%M:%S')]  \033[31;5m $1 \033[0m"
+  echo "[$(date +'%Y-%m-%d %H:%M:%S')] $1 "
 }
 
 # Clone and configure VMs
 clone_vm() {
-  ssh "$USER@$template_ip" "
+  ssh "$PROX_USER@$template_ip" "
     qm clone $BASE_VM $vm_id \
     --name $vm_name \
     --full true \
