@@ -23,14 +23,26 @@ if [ "$release_exists" -eq 0 ]; then
     --namespace $NAME_SPACE \
     --set hostname=rancher.${domain} \
     --set replicas=1 \
-    --set bootstrapPassword=password123
+    --set bootstrapPassword=password123 \
+    --set ingress.tls.source=secret \
+    --set privateCA=true \
+    --set additionalTrustedCAs=true \
+    --set ingress.className=traefik \
+    --set ingress.extraAnnotations."cert-manager\.io/cluster-issuer"="letsencrypt-prod" \
+    --set ingress.extraTls[0].hosts[0]=rancher.${domain}  \
+    --set ingress.extraTls[0].secretName=techcasa-tls
 else
   echo -e " \033[32;5 Release found, upgrading...\033[0m"
   helm upgrade rancher rancher-latest/rancher \
     --namespace $NAME_SPACE \
     --set hostname=rancher.${domain} \
-    --set replicas=1
+    --set replicas=1 \
+    --set ingress.enabled=false \
+    --set privateCA=true \
+    --set additionalTrustedCAs=true
 fi
+
+kubectl apply -f $WORKING_DIR/helm/ingress.yaml
 
 kubectl -n $NAME_SPACE rollout status deploy/rancher
 kubectl -n $NAME_SPACE get deploy rancher
