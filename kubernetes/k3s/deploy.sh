@@ -158,32 +158,32 @@ source ../kubectl/deploy.sh
 # https://kubernetes.io/docs/tasks/tools/install-kubectl-linux/
 # Add kubectl & alias to completions to bashrc
 
-# Check if the shell is Bash
-if [ "$SHELL_NAME" = "bash" ]; then
-  # Check if autocompletions are enabled
-  if type _init_completion &>/dev/null; then
-    echo "Autocompletions are enabled."
-    # Check if kubectl completions are already added to bashrc
-    if ! grep -q 'source <(kubectl completion bash)' ~/.bashrc; then
-      echo "Adding kubectl completions to ~/.bashrc"
-      echo 'source <(kubectl completion bash)' >> ~/.bashrc
-      source ~/.bashrc
-    if ! grep -q 'alias k=kubectl' ~/.bashrc; then
-      echo "Adding kubectl alias to ~/.bashrc"
-      echo 'alias k=kubectl' >> ~/.bashrc
-      echo 'complete -o default -F __start_kubectl k' >> ~/.bashrc
-      source ~/.bashrc
-    else
-      echo "kubectl completions are already added to ~/.bashrc. Skipping."
-    fi
-  else
-    # Reload bashrc
-    source ~/.bashrc
-    echo "Autocompletions are not enabled. Skipping kubectl completions setup."
-  fi
-else
-  echo "The shell is not Bash. Skipping kubectl completions setup."
-fi
+# # Check if the shell is Bash
+# if [ "$SHELL_NAME" = "bash" ]; then
+#   # Check if autocompletions are enabled
+#   if type _init_completion &>/dev/null; then
+#     echo "Autocompletions are enabled."
+#     # Check if kubectl completions are already added to bashrc
+#     if ! grep -q 'source <(kubectl completion bash)' ~/.bashrc; then
+#       echo "Adding kubectl completions to ~/.bashrc"
+#       echo 'source <(kubectl completion bash)' >> ~/.bashrc
+#       source ~/.bashrc
+#     if ! grep -q 'alias k=kubectl' ~/.bashrc; then
+#       echo "Adding kubectl alias to ~/.bashrc"
+#       echo 'alias k=kubectl' >> ~/.bashrc
+#       echo 'complete -o default -F __start_kubectl k' >> ~/.bashrc
+#       source ~/.bashrc
+#     else
+#       echo "kubectl completions are already added to ~/.bashrc. Skipping."
+#     fi
+#   else
+#     # Reload bashrc
+#     source ~/.bashrc
+#     echo "Autocompletions are not enabled. Skipping kubectl completions setup."
+#   fi
+# else
+#   echo "The shell is not Bash. Skipping kubectl completions setup."
+# fi
 
 # Step 1: Bootstrap First k3s Node
 mkdir ~/.kube
@@ -265,8 +265,7 @@ newmaster_name=$(jq -r --arg ip "$newmaster" '.nodes[].vms[] | select(.ip == $ip
     --kube-controller-manager-arg bind-address=0.0.0.0 \
     --kube-proxy-arg bind-address=0.0.0.0 \
     --kube-scheduler-arg bind-address=0.0.0.0 \
-    --node-taint node-role.kubernetes.io/master=true:NoSchedule" \
-  --server-user $host_user
+    --node-taint node-role.kubernetes.io/master=true:NoSchedule"
   echo -e " \033[32;5mMaster node joined successfully!\033[0m"
 done
 
