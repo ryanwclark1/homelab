@@ -11,8 +11,8 @@ inventory='../../inventory.json'
 # Version of Kube-VIP to deploy
 KVVERSION="v0.8.0"
 
-# K3S Version
-k3sVersion="v1.29.3+k3s1"
+# K3S Version, Rancher lags behind a bit so we need to specify the version
+k3sVersion="v1.28.8+k3s1"
 
 if [ ! -f "$inventory" ]; then
     echo "Inventory file not found at $inventory"
@@ -43,9 +43,6 @@ mapfile -t workers < <(jq -r '.nodes[].vms[] | select(.role != "master") | .ip' 
 # Array of all
 mapfile -t all < <(jq -r '.nodes[].vms[].ip' "$inventory")
 
-# Array of all minus master
-# allnomaster1=($master2 $master3 $master4 $master5 $master6 $worker1 $worker2 $worker3 $worker4 $worker5 $worker6 $worker7 $worker8 $worker9 $worker10)
-
 #Loadbalancer IP range
 lbrange=10.10.101.60-10.10.101.100
 
@@ -53,9 +50,101 @@ lbrange=10.10.101.60-10.10.101.100
 certName=id_rsa
 SSH_KEY="$HOME/.ssh/$certName"
 
+DOMAIN="techcasa.io"
+
 #############################################
 #            DO NOT EDIT BELOW              #
 #############################################
+
+intialize_nodes() {
+  #add ssh keys for all nodes
+  for node in "${all[@]}"; do
+    ssh-keyscan -H $node >> ~/.ssh/known_hosts
+    ssh-copy-id $user@$node
+  done
+}
+
+add_policycoreutils() {
+for newnode in "${all[@]}"; do
+  ssh $user@$newnode -i ~/.ssh/$certName sudo su <<EOF
+  NEEDRESTART_MODE=a apt install policycoreutils -y
+  exit
+EOF
+  echo -e " \033[32;5mPolicyCoreUtils installed!\033[0m"
+done
+}
+
+
+
+ask_to_intialize() {
+  while true; do
+      # Prompt the user. The colon after the question suggests a default value of 'yes'
+      echo -n "Do you want to run intialize the environment? [Y/n]: "
+      read -r user_input
+
+      # Default to 'yes' if the input is empty
+      if [[ -z "$user_input" ]]; then
+        user_input="yes"
+      fi
+
+      # Convert to lowercase to simplify the comparison
+      user_input=$(echo "$user_input" | tr '[:upper:]' '[:lower:]')
+
+      case "$user_input" in
+        y|yes)
+          intialize_nodes
+          add_policycoreutils
+          break
+          ;;
+        n|no)
+          echo "Function will not run."
+          break
+          ;;
+        *)
+          echo "Invalid input, please type 'Y' for yes or 'n' for no."
+          ask_to_intialize
+          ;;
+      esac
+  done
+}
+
+# Check if the export statement already exists
+check_export_statement() {
+    grep -qF "export KUBECONFIG=$KUBECONFIG_PATH" "$1"
+}
+
+# Append the export statement to the appropriate shell configuration file
+append_export_statement() {
+    echo "export KUBECONFIG=$KUBECONFIG_PATH" >> "$1"
+}
+
+shell_config() {
+  case "$SHELL_NAME" in
+    "bash")
+        CONFIG_FILE="/home/$CURRENT_USER/.bashrc"
+        ;;
+    "zsh")
+        CONFIG_FILE="/home/$CURRENT_USER/.zshrc"
+        ;;
+    "fish")
+        CONFIG_FILE="/home/$CURRENT_USER/.config/fish/config.fish"
+        ;;
+    *)
+        echo "Unknown shell: $SHELL_NAME"
+        exit 1
+        ;;
+  esac
+
+  # Check if the export statement already exists in the configuration file
+  if ! check_export_statement "$CONFIG_FILE"; then
+      # If not, append the export statement
+      append_export_statement "$CONFIG_FILE"
+      echo "Export statement added to $CONFIG_FILE"
+  else
+      echo "Export statement already exists in $CONFIG_FILE"
+  fi
+}
+
 # For testing purposes - in case time is wrong due to VM snapshots
 sudo timedatectl set-ntp off
 sudo timedatectl set-ntp on
@@ -65,12 +154,15 @@ sudo timedatectl set-ntp on
 chmod 600 $HOME/.ssh/$certName
 chmod 644 $HOME/.ssh/$certName.pub
 
+ask_to_intialize
+
 # Install k3sup to local machine if not already present
 if ! command -v k3sup version &> /dev/null
 then
   echo -e " \033[31;5mk3sup not found, installing\033[0m"
   curl -sLS https://get.k3sup.dev | sh
   sudo install k3sup /usr/local/bin/
+  rm k3sup
 else
   echo -e " \033[32;5mk3sup already installed\033[0m"
 fi
@@ -124,20 +216,8 @@ fi
 # Create SSH Config file to ignore checking (don't use in production!)
 # sed -i '1s/^/StrictHostKeyChecking no\n/' ~/.ssh/config
 
-#add ssh keys for all nodes
-for node in "${all[@]}"; do
-  ssh-keyscan -H $node >> ~/.ssh/known_hosts
-  ssh-copy-id $user@$node
-done
 
-# Install policycoreutils for each node
-for newnode in "${all[@]}"; do
-  ssh $user@$newnode -i ~/.ssh/$certName sudo su <<EOF
-  NEEDRESTART_MODE=a apt install policycoreutils -y
-  exit
-EOF
-  echo -e " \033[32;5mPolicyCoreUtils installed!\033[0m"
-done
+
 
 # Step 1: Bootstrap First k3s Node
 mkdir ~/.kube
@@ -159,53 +239,15 @@ k3sup install \
   --ssh-key $HOME/.ssh/$certName \
   --context k3s-ha
 
-
-# Set the user
+# Set the user & kubeconfig path
 CURRENT_USER=$(whoami)
-
-# Set the kubeconfig path
 KUBECONFIG_PATH="/home/$CURRENT_USER/.kube/config"
-
-# Check if the export statement already exists
-check_export_statement() {
-    grep -qF "export KUBECONFIG=$KUBECONFIG_PATH" "$1"
-}
-
-# Append the export statement to the appropriate shell configuration file
-append_export_statement() {
-    echo "export KUBECONFIG=$KUBECONFIG_PATH" >> "$1"
-}
 
 # Determine the shell and the corresponding configuration file
 SHELL_NAME=$(basename "$SHELL")
 
-case "$SHELL_NAME" in
-  "bash")
-      CONFIG_FILE="/home/$CURRENT_USER/.bashrc"
-      ;;
-  "zsh")
-      CONFIG_FILE="/home/$CURRENT_USER/.zshrc"
-      ;;
-  "fish")
-      CONFIG_FILE="/home/$CURRENT_USER/.config/fish/config.fish"
-      ;;
-  *)
-      echo "Unknown shell: $SHELL_NAME"
-      exit 1
-      ;;
-esac
-
-# Check if the export statement already exists in the configuration file
-if ! check_export_statement "$CONFIG_FILE"; then
-    # If not, append the export statement
-    append_export_statement "$CONFIG_FILE"
-    echo "Export statement added to $CONFIG_FILE"
-else
-    echo "Export statement already exists in $CONFIG_FILE"
-fi
-
 echo -e " \033[32;5mFirst Node bootstrapped successfully!\033[0m"
-
+shell_config
 
 # Test the cluster
 echo "Test your cluster with:"
@@ -225,13 +267,13 @@ curl -sO https://raw.githubusercontent.com/ryanwclark1/homelab/main/kubernetes/k
 cat kube-vip | sed 's/$interface/'$interface'/g; s/$vip/'$vip'/g' > $HOME/kube-vip.yaml
 
 # Step 4: Copy kube-vip.yaml to master1
-scp -i ~/.ssh/$certName $HOME/kube-vip.yaml $user@$master1:~/kube-vip.yaml
+scp -i ~/.ssh/$certName $HOME/kube-vip.yaml $user@$master1:kube-vip.yaml
 
 
 # Step 5: Connect to Master1 and move kube-vip.yaml
-ssh $user@$master1 -i ~/.ssh/$certName <<- EOF
-  sudo mkdir -p /var/lib/rancher/k3s/server/manifests
-  sudo mv kube-vip.yaml /var/lib/rancher/k3s/server/manifests/kube-vip.yaml
+ssh -i ~/.ssh/$certName $user@$master1 sudo su <<- EOF
+  mkdir -p /var/lib/rancher/k3s/server/manifests
+  mv kube-vip.yaml /var/lib/rancher/k3s/server/manifests/kube-vip.yaml
 EOF
 
 # Step 6: Add new master nodes (servers) & workers
@@ -269,6 +311,15 @@ for newagent in "${workers[@]}"; do
   echo -e " \033[32;5mAgent node joined successfully!\033[0m"
 done
 
+# Install helm
+if ! command -v helm version &> /dev/null
+then
+  echo -e " \033[31;5mHelm not found, installing\033[0m"
+  curl -fsSL https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
+else
+  echo -e " \033[32;5mHelm already installed\033[0m"
+fi
+
 # Step 7: Install kube-vip as network LoadBalancer - Install the kube-vip Cloud Provider
 kubectl apply -f https://raw.githubusercontent.com/kube-vip/kube-vip-cloud-provider/main/manifest/kube-vip-cloud-controller.yaml
 
@@ -281,16 +332,12 @@ cat ipAddressPool | sed 's/$lbrange/'$lbrange'/g' > $HOME/ipAddressPool.yaml
 kubectl apply -f $HOME/ipAddressPool.yaml
 
 # Step 9: Test with Traefik
-kubectl apply -f https://raw.githubusercontent.com/ryanwclark1/homelab/main/kubernetes/traefik/traefik.yml -n default
-kubectl expose deployment traefik --port=80 --type=LoadBalancer -n default
-
+echo -e " \033[32;5mInstalling Traefik\033[0m"
+source ../traefik/deploy.sh
 echo -e " \033[32;5mWaiting for K3S to sync and LoadBalancer to come online\033[0m"
 
-# while [[ $(kubectl get pods -l app=traefik 'jsonpath={..status.conditions[?(@.type=="Ready")].status}') != "True" ]]; do
-#    sleep 1
-# done
-
 # Step 10: Deploy IP Pools and l2Advertisement
+echo -e " \033[32;5mDeploying IP Pools and l2Advertisement\033[0m"
 kubectl wait --namespace metallb-system \
   --for=condition=ready pod \
   --selector=component=controller \
@@ -298,52 +345,15 @@ kubectl wait --namespace metallb-system \
 kubectl apply -f $HOME/ipAddressPool.yaml
 kubectl apply -f https://raw.githubusercontent.com/ryanwclark1/homelab/main/kubernetes/k3s-deploy/l2Advertisement.yaml
 
+
+# Step 13: Install Cert-Manager
+source ../cert-manager/deploy.sh
+
+# Step 14: Install Rancher
+source ../rancher/deploy.sh
+
 kubectl get nodes
 kubectl get svc
 kubectl get pods --all-namespaces -o wide
 
-
-# Step 11: Install helm
-if ! command -v helm version &> /dev/null
-then
-  echo -e " \033[31;5mHelm not found, installing\033[0m"
-  curl -fsSL https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
-else
-  echo -e " \033[32;5mHelm already installed\033[0m"
-fi
-
-
-# Step 13: Install Cert-Manager
-# Define the repository owner and name
-REPO_OWNER="cert-manager"
-REPO_NAME="cert-manager"
-DOMAIN="techcasa.io"
-
-# GitHub API URL for the latest release
-API_URL="https://api.github.com/repos/$REPO_OWNER/$REPO_NAME/releases/latest"
-
-# Use curl to fetch the latest release data
-# Note: GitHub recommends setting a User-Agent
-response=$(curl -s -H "User-Agent: MyClient/1.0.0" "$API_URL")
-
-# Check if the request was successful
-if echo "$response" | grep -q '"tag_name":'; then
-  # Extract the tag name which typically is the version
-  latest_version=$(echo "$response" | jq -r '.tag_name')
-  echo "Latest release version of $REPO_NAME: $latest_version"
-else
-  echo "Failed to fetch the latest release version of $REPO_NAME."
-  echo "$response"
-fi
-
-kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/${latest_version}/cert-manager.crds.yaml
-helm repo add jetstack https://charts.jetstack.io
-helm repo update
-helm install cert-manager jetstack/cert-manager \
-  --namespace cert-manager \
-  --create-namespace \
-  --version ${latest_version}
-kubectl get pods --namespace cert-manager
-
-
-# echo -e " \033[32;5mHappy Kubing!\033[0m"
+echo -e " \033[32;5mHappy Kubing!\033[0m"

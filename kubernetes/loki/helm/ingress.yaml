@@ -1,0 +1,15 @@
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: loki-grafana-ingress
+  annotations:
+    kubernetes.io/ingress.class: traefik-internal # change with your value
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - match: Host(`grafana.techcasa.io`) # change with your value
+      kind: Rule
+      services:
+        - name: loki-grafana
+          port: 80

@@ -1,9 +1,34 @@
 #!/bin/bash
 
+cat <<EOF > ./helm/test-resources.yaml
+  apiVersion: v1
+  kind: Namespace
+  metadata:
+    name: cert-manager-test
+  ---
+  apiVersion: cert-manager.io/v1
+  kind: Issuer
+  metadata:
+    name: test-selfsigned
+    namespace: cert-manager-test
+  spec:
+    selfSigned: {}
+  ---
+  apiVersion: cert-manager.io/v1
+  kind: Certificate
+  metadata:
+    name: selfsigned-cert
+    namespace: cert-manager-test
+  spec:
+    dnsNames:
+      - example.com
+    secretName: selfsigned-cert-tls
+    issuerRef:
+      name: test-selfsigned
+EOF
+
 WORKING_DIR=$(dirname "$BASH_SOURCE")
 WORKING_DIR=$(cd "$WORKING_DIR"; pwd)
-
-NAME_SPACE="cert-manager"
 
 # Define the repository owner and name
 REPO_OWNER="cert-manager"
@@ -30,14 +55,20 @@ fi
 # Install Cert-Manager (should already have this with Rancher deployment)
 # Check if we already have it by querying namespace
 namespaceStatus=""
-namespaceStatus=$(kubectl get ns "$NAME_SPACE" -o json | jq .status.phase -r)
+namespaceStatus=$(kubectl get ns cert-manager -o json | jq .status.phase -r)
 if [ $namespaceStatus == "Active" ]; then
   echo -e " \033[32;5mCert-Manager already installed, upgrading with new values.yaml...\033[0m"
   kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/${latest_version}/cert-manager.crds.yaml
-  helm upgrade cert-manager jetstack/cert-manager \
+  helm upgrade \
+  cert-manager \
+  jetstack/cert-manager \
   --namespace cert-manager \
-  --values $WORKING_DIR/helm/values.yaml \
-  --version ${latest_version}
+  --version ${latest_version} \
+  --set installCRDs=true
+
+  kubectl apply -f test-resources.yaml
+  kubectl describe certificate -n cert-manager-test
+  kubectl delete -f test-resources.yaml
 else
   echo "Cert-Manager is not present, installing..."
   kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/${latest_version}/cert-manager.crds.yaml
@@ -45,17 +76,11 @@ else
   helm repo update
   helm install cert-manager jetstack/cert-manager \
   --namespace cert-manager \
-  --version ${latest_version}
+  --create-namespace \
+  --version ${latest_version} \
+  --set installCRDs=true
+
+  kubectl apply -f test-resources.yaml
+  kubectl describe certificate -n cert-manager-test
+  kubectl delete -f test-resources.yaml
 fi
-
-export $(cat $WORKING_DIR/.env | xargs)
-envsubst < $WORKING_DIR/helm/issuers/secret-cf-token.yaml | kubectl apply -f -
-
-# Step 11: Apply secret for certificate (Cloudflare)
-kubectl apply -f $WORKING_DIR/helm/issuers/secret-cf-token.yaml
-
-# Step 12: Apply stagomg certificate issuer (technically you should use the staging to test as per documentation)
-kubectl apply -f $WORKING_DIR/helm/issuers/letsencrypt-staging.yaml
-
-# Step 13: Apply stagomg certificate
-kubectl apply -f $WORKING_DIR/helm/staging/techcasa-staging.yaml
