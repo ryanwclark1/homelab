@@ -178,16 +178,15 @@ echo -e " \033[32;5m**********************************************\033[0m"
 echo -e " \033[32;5m***    Bootstrapping first node...      ******\033[0m"
 echo -e " \033[32;5m**********************************************\033[0m"
 k3sup install \
+  --cluster \
   --ip $master1 \
   --user $host_user \
   --tls-san $vip \
-  --cluster \
   --k3s-version $k3s_version \
   --k3s-extra-args " \
     --disable traefik \
     --disable servicelb \
     --flannel-iface=$interface \
-    --node-ip=$master1 \
     --node-name=$master1_name \
     --node-label master=true \
     --etcd-expose-metrics=true \
@@ -199,15 +198,16 @@ k3sup install \
   --sudo \
   --local-path $HOME/.kube/config \
   --ssh-key $HOME/.ssh/$cert_name \
-  --context k3s-ha
+  --context k3s-ha \
+  --print-config
 
 echo -e " \033[32;5mFirst Node bootstrapped successfully!\033[0m"
 shell_config
 
 # Test the cluster
 echo "Test your cluster with:"
-echo "export KUBECONFIG=/home/$CURRENT_USER/.kube/config"
-export KUBECONFIG=/home/$CURRENT_USER/.kube/config
+echo "export KUBECONFIG=$HOME/.kube/config"
+export KUBECONFIG=$HOME/.kube/config
 echo "kubectl config use-context k3s-ha"
 kubectl config use-context k3s-ha
 echo "kubectl get node -o wide"
@@ -251,7 +251,8 @@ newmaster_name=$(jq -r --arg ip "$newmaster" '.nodes[].vms[] | select(.ip == $ip
     --kube-controller-manager-arg bind-address=0.0.0.0 \
     --kube-proxy-arg bind-address=0.0.0.0 \
     --kube-scheduler-arg bind-address=0.0.0.0 \
-    --node-taint node-role.kubernetes.io/master=true:NoSchedule"
+    --node-taint node-role.kubernetes.io/master=true:NoSchedule" \
+  --server-user $host_user
   echo -e " \033[32;5mMaster node joined successfully!\033[0m"
 done
 
