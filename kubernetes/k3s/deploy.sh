@@ -40,7 +40,7 @@ intialize_nodes() {
   for node in "${all[@]}"; do
     ssh-keyscan -H $node >> ~/.ssh/known_hosts
     ssh-copy-id $host_user@$node
-    ssh $host_user@$newnode -i ~/.ssh/$cert_name sudo su <<EOF
+    ssh $host_user@$node -i ~/.ssh/$cert_name sudo su <<EOF
     NEEDRESTART_MODE=a
     apt-get update
     apt-get install -y policycoreutils open-iscsi nfs-common cryptsetup dmsetup
