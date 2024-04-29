@@ -8,52 +8,31 @@
 # Define the path to your inventory JSON file
 inventory='../../inventory.json'
 
-# Version of Kube-VIP to deploy
-KVVERSION="v0.8.0"
-
-# K3S Version, Rancher lags behind a bit so we need to specify the version
-k3sVersion="v1.28.8+k3s1"
-
 if [ ! -f "$inventory" ]; then
     echo "Inventory file not found at $inventory"
     exit 1
 fi
 
+k3s_version=$(jq -r '.k3s_version' "$inventory")
 master1_name=$(jq -r '.master1_name' "$inventory")
+master1=$(jq -r --arg vm_name "$master1_name" '.nodes[].vms[] | select(.name == $vm_name) | .ip' "$inventory")
+lbrange=$(jq -r '.lbrange' "$inventory")
+host_user=$(jq -r '.host_user' "$inventory")
+interface=$(jq -r '.interface' "$inventory")
+vip=$(jq -r '.vip' "$inventory")
+cert_name=$(jq -r '.cert_name' "$inventory")
 
-# Use jq to find the IP of the master1_name
-master1=$(jq -r --arg vm_name "$master1_name" \
-    '.nodes[].vms[] | select(.name == $vm_name) | .ip' "$inventory")
-
-# User of remote machines
-user=administrator
-
-# Interface used on remotes
-interface=eth0
-
-# Set the virtual IP address (VIP)
-vip=10.10.101.50
-
-# Array of master nodes excluding master1
-mapfile -t masters < <(jq -r --arg ip "$master1" '.nodes[].vms[] | select(.role == "master" and .ip != $ip) | .ip' "$inventory")
-
-# Array of worker nodes
-mapfile -t workers < <(jq -r '.nodes[].vms[] | select(.role != "master") | .ip' "$inventory")
-
-# Array of storage nodes
-mapfile -t storage < <(jq -r '.nodes[].vms[] | select(.role == "storage") | .ip' "$inventory")
-
-# Array of all
-mapfile -t all < <(jq -r '.nodes[].vms[].ip' "$inventory")
-
-#Loadbalancer IP range
-lbrange=10.10.101.60-10.10.101.100
+mapfile -t masters < <(jq -r --arg ip "$master1" '.nodes[].vms[] | select(.role == "master" and .ip != $ip) | .ip' "$inventory") # Arrays of masters ex master1
+mapfile -t workers < <(jq -r '.nodes[].vms[] | select(.role != "master") | .ip' "$inventory") # Array of worker nodes
+mapfile -t storage < <(jq -r '.nodes[].vms[] | select(.role == "storage") | .ip' "$inventory") # Array of storage nodes
+mapfile -t all < <(jq -r '.nodes[].vms[].ip' "$inventory") # Array of all
 
 #ssh certificate name variable
-certName=id_rsa
-SSH_KEY="$HOME/.ssh/$certName"
 
-DOMAIN="techcasa.io"
+SSH_KEY="$HOME/.ssh/$cert_name"
+
+SHELL_NAME=$(basename "$SHELL")
+CURRENT_USER=$(whoami)
 
 #############################################
 #            DO NOT EDIT BELOW              #
@@ -63,13 +42,13 @@ intialize_nodes() {
   #add ssh keys for all nodes
   for node in "${all[@]}"; do
     ssh-keyscan -H $node >> ~/.ssh/known_hosts
-    ssh-copy-id $user@$node
+    ssh-copy-id $host_user@$node
   done
 }
 
 add_policycoreutils() {
 for newnode in "${all[@]}"; do
-  ssh $user@$newnode -i ~/.ssh/$certName sudo su <<EOF
+  ssh $host_user@$newnode -i ~/.ssh/$cert_name sudo su <<EOF
   NEEDRESTART_MODE=a apt install policycoreutils -y
   exit
 EOF
@@ -79,7 +58,7 @@ done
 
 add_packages() {
 for node in "${all[@]}"; do
-  ssh $user@$node -i ~/.ssh/$certName sudo su <<EOF
+  ssh $host_user@$node -i ~/.ssh/$cert_name sudo su <<EOF
   apt update
   apt install -y open-iscsi
   exit
@@ -123,12 +102,12 @@ ask_to_intialize() {
 
 # Check if the export statement already exists
 check_export_statement() {
-    grep -qF "export KUBECONFIG=$KUBECONFIG_PATH" "$1"
+    grep -qF "export KUBECONFIG=/home/$CURRENT_USER/.kube/config" "$1"
 }
 
 # Append the export statement to the appropriate shell configuration file
 append_export_statement() {
-    echo "export KUBECONFIG=$KUBECONFIG_PATH" >> "$1"
+    echo "export KUBECONFIG=/home/$CURRENT_USER/.kube/config" >> "$1"
 }
 
 shell_config() {
@@ -162,23 +141,16 @@ shell_config() {
 sudo timedatectl set-ntp off
 sudo timedatectl set-ntp on
 
-# Move SSH certs to ~/.ssh and change permissions
-# cp /home/$user/{$certName,$certName.pub} /home/$user/.ssh
-chmod 600 $HOME/.ssh/$certName
-chmod 644 $HOME/.ssh/$certName.pub
+chmod 600 $HOME/.ssh/$cert_name
+chmod 644 $HOME/.ssh/$cert_name.pub
 
 ask_to_intialize
 
-# Install k3sup to local machine if not already present
-if ! command -v k3sup version &> /dev/null
-then
-  echo -e " \033[31;5mk3sup not found, installing\033[0m"
-  curl -sLS https://get.k3sup.dev | sh
-  sudo install k3sup /usr/local/bin/
-  rm k3sup
-else
-  echo -e " \033[32;5mk3sup already installed\033[0m"
-fi
+# Install Kubectl if not already present
+echo -e " \033[32;5m**********************************************\033[0m"
+echo -e " \033[32;5m***         Installing K3sup            ******\033[0m"
+echo -e " \033[32;5m**********************************************\033[0m"
+source ../k3sup/deploy.sh
 
 # Install Kubectl if not already present
 echo -e " \033[32;5m**********************************************\033[0m"
@@ -186,9 +158,8 @@ echo -e " \033[32;5m***        Installing Kubectl           ******\033[0m"
 echo -e " \033[32;5m**********************************************\033[0m"
 source ../kubectl/deploy.sh
 
-# TODO: Add fish and zsh support https://kubernetes.io/docs/tasks/tools/install-kubectl-linux/
+# https://kubernetes.io/docs/tasks/tools/install-kubectl-linux/
 # Add kubectl & alias to completions to bashrc
-SHELL_NAME=$(basename "$SHELL")
 
 # Check if the shell is Bash
 if [ "$SHELL_NAME" = "bash" ]; then
@@ -217,10 +188,6 @@ else
   echo "The shell is not Bash. Skipping kubectl completions setup."
 fi
 
-# Create SSH Config file to ignore checking (don't use in production!)
-# sed -i '1s/^/StrictHostKeyChecking no\n/' ~/.ssh/config
-
-
 # Step 1: Bootstrap First k3s Node
 mkdir ~/.kube
 # Multiline echo with banner for better readability
@@ -229,10 +196,10 @@ echo -e " \033[32;5m***    Bootstrapping first node...      ******\033[0m"
 echo -e " \033[32;5m**********************************************\033[0m"
 k3sup install \
   --ip $master1 \
-  --user $user \
+  --user $host_user \
   --tls-san $vip \
   --cluster \
-  --k3s-version $k3sVersion \
+  --k3s-version $k3s_version \
   --k3s-extra-args " \
     --disable traefik \
     --disable servicelb \
@@ -248,12 +215,8 @@ k3sup install \
   --merge \
   --sudo \
   --local-path $HOME/.kube/config \
-  --ssh-key $HOME/.ssh/$certName \
+  --ssh-key $HOME/.ssh/$cert_name \
   --context k3s-ha
-
-# Set the user & kubeconfig path
-CURRENT_USER=$(whoami)
-KUBECONFIG_PATH="/home/$CURRENT_USER/.kube/config"
 
 echo -e " \033[32;5mFirst Node bootstrapped successfully!\033[0m"
 shell_config
@@ -276,11 +239,11 @@ curl -sO https://raw.githubusercontent.com/ryanwclark1/homelab/main/kubernetes/k
 cat kube-vip | sed 's/$interface/'$interface'/g; s/$vip/'$vip'/g' > $HOME/kube-vip.yaml
 
 # Step 4: Copy kube-vip.yaml to master1
-scp -i ~/.ssh/$certName $HOME/kube-vip.yaml $user@$master1:kube-vip.yaml
+scp -i ~/.ssh/$cert_name $HOME/kube-vip.yaml $host_user@$master1:kube-vip.yaml
 
 
 # Step 5: Connect to Master1 and move kube-vip.yaml
-ssh -i ~/.ssh/$certName $user@$master1 sudo su <<- EOF
+ssh -i ~/.ssh/$cert_name $host_user@$master1 sudo su <<- EOF
   mkdir -p /var/lib/rancher/k3s/server/manifests
   mv kube-vip.yaml /var/lib/rancher/k3s/server/manifests/kube-vip.yaml
 EOF
@@ -291,12 +254,12 @@ for newmaster in "${masters[@]}"; do
 newmaster_name=$(jq -r --arg ip "$newmaster" '.nodes[].vms[] | select(.ip == $ip) | .name' "$inventory")
   k3sup join \
   --ip $newmaster \
-  --user $user \
+  --user $host_user \
   --sudo \
-  --k3s-version $k3sVersion \
+  --k3s-version $k3s_version \
   --server \
   --server-ip $master1 \
-  --ssh-key $HOME/.ssh/$certName \
+  --ssh-key $HOME/.ssh/$cert_name \
   --k3s-extra-args " \
     --disable traefik \
     --disable servicelb \
@@ -309,7 +272,7 @@ newmaster_name=$(jq -r --arg ip "$newmaster" '.nodes[].vms[] | select(.ip == $ip
     --kube-proxy-arg bind-address=0.0.0.0 \
     --kube-scheduler-arg bind-address=0.0.0.0 \
     --node-taint node-role.kubernetes.io/master=true:NoSchedule" \
-  --server-user $user
+  --server-user $host_user
   echo -e " \033[32;5mMaster node joined successfully!\033[0m"
 done
 
@@ -318,11 +281,11 @@ for newworker in "${workers[@]}"; do
   newworker_name=$(jq -r --arg ip "$newworker" '.nodes[].vms[] | select(.ip == $ip) | .name' "$inventory")
   k3sup join \
   --ip $newworker \
-  --user $user \
+  --user $host_user \
   --sudo \
-  --k3s-version $k3sVersion \
+  --k3s-version $k3s_version \
   --server-ip $master1 \
-  --ssh-key $HOME/.ssh/$certName \
+  --ssh-key $HOME/.ssh/$cert_name \
   --k3s-extra-args " \
     --node-ip=$newworker \
     --node-name=$newworker_name \
@@ -334,11 +297,11 @@ done
 for newstorage in "${storage[@]}"; do
   k3sup join \
   --ip $newstorage \
-  --user $user \
+  --user $host_user \
   --sudo \
-  --k3s-version $k3sVersion \
+  --k3s-version $k3s_version \
   --server-ip $master1 \
-  --ssh-key $HOME/.ssh/$certName \
+  --ssh-key $HOME/.ssh/$cert_name \
   --k3s-extra-args " \
     --node-ip=$newstorage \
     --node-name=$newstorage \
@@ -346,13 +309,13 @@ for newstorage in "${storage[@]}"; do
   echo -e " \033[32;5mStorage node joined successfully!\033[0m"
 done
 
-# Step 6: Install Helm
+# Install Helm
 source ../helm/deploy.sh
 
-# Step 7: Install kube-vip as network LoadBalancer - Install the kube-vip Cloud Provider
+# Install kube-vip as network LoadBalancer - Install the kube-vip Cloud Provider
 kubectl apply -f https://raw.githubusercontent.com/kube-vip/kube-vip-cloud-provider/main/manifest/kube-vip-cloud-controller.yaml
 
-# Step 8: Install Metallb
+# Install Metallb
 kubectl apply -f https://raw.githubusercontent.com/metallb/metallb/v0.12.1/manifests/namespace.yaml
 kubectl apply -f https://raw.githubusercontent.com/metallb/metallb/v0.14.5/config/manifests/metallb-native.yaml
 # Download ipAddressPool and configure using lbrange above
@@ -360,12 +323,12 @@ curl -sO https://raw.githubusercontent.com/ryanwclark1/homelab/main/kubernetes/k
 cat ipAddressPool | sed 's/$lbrange/'$lbrange'/g' > $HOME/ipAddressPool.yaml
 kubectl apply -f $HOME/ipAddressPool.yaml
 
-# Step 9: Test with Traefik
+# Test with Traefik
 echo -e " \033[32;5mInstalling Traefik\033[0m"
 source ../traefik/deploy.sh
 echo -e " \033[32;5mWaiting for K3S to sync and LoadBalancer to come online\033[0m"
 
-# Step 10: Deploy IP Pools and l2Advertisement
+# Deploy IP Pools and l2Advertisement
 echo -e " \033[32;5mDeploying IP Pools and l2Advertisement\033[0m"
 kubectl wait --namespace metallb-system \
   --for=condition=ready pod \
