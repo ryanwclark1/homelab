@@ -17,7 +17,7 @@ if [ "$release_exists" -eq 0 ]; then
   kubectl create namespace cattle-system
   helm install rancher rancher-latest/rancher \
     --namespace cattle-system \
-    # --set hostname=rancher.${DOMAIN} \
+    --set hostname=rancher.${DOMAIN} \
     --set replicas=1 \
     --set bootstrapPassword=password123
   kubectl -n cattle-system rollout status deploy/rancher
