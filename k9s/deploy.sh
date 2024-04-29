@@ -18,7 +18,12 @@ sudo rm -rf /usr/local/go
 sudo tar -C /usr/local -xzf go1.22.2.linux-amd64.tar.gz
 
 # Add Go to PATH for all future terminal sessions
-echo "export PATH=\$PATH:/usr/local/go/bin" >> ~/.bashrc
+export PATH=$PATH:/usr/local/go/bin
+
+# Check if Go PATH is already in .bashrc and add it if not
+if ! grep -q '/usr/local/go/bin' ~/.bashrc; then
+    echo "export PATH=\$PATH:/usr/local/go/bin" >> ~/.bashrc
+fi
 
 # Load the new PATH into the current shell session
 source ~/.bashrc
