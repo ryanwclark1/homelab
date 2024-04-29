@@ -42,8 +42,9 @@ intialize_nodes() {
     ssh-copy-id $host_user@$node
     ssh $host_user@$node -i ~/.ssh/$cert_name sudo su <<EOF
     NEEDRESTART_MODE=a
-    apt-get update
-    apt-get install -y policycoreutils open-iscsi nfs-common cryptsetup dmsetup
+    export DEBIAN_FRONTEND=noninteractive
+    apt-get update -q
+    apt-get install -yq policycoreutils open-iscsi nfs-common cryptsetup dmsetup
     exit
 EOF
   echo -e " \033[32;5mNode Intialized!\033[0m"
