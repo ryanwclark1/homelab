@@ -1,3 +1,6 @@
+image:
+  repository: traefik/traefik
+  tag: experimental-v3.0
 installCRDs: false
 replicaCount: 3 # change to number of masternodes
 extraArgs: # required for querying for certificate
