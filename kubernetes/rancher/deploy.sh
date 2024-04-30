@@ -28,13 +28,11 @@ helm repo update
 if ! kubectl get deployment -n "$NAME_SPACE" | grep -q 'rancher'; then
   echo "No active Rancher release found. Installing..."
   helm install rancher rancher-latest/rancher -n "$NAME_SPACE" \
-    --set hostname=rancher.${domain} \
-    --set replicas=3 \
-    --set bootstrapPassword=password123
+    -f "$WORKING_DIR/helm/values.yaml"
 else
   echo "Rancher release found, upgrading..."
   helm upgrade --install rancher rancher-latest/rancher -n "$NAME_SPACE" \
-    --values "$WORKING_DIR/helm/values.yaml"
+    -f "$WORKING_DIR/helm/values.yaml"
 fi
 
 kubectl apply -f "$WORKING_DIR/helm/ingress.yaml"
