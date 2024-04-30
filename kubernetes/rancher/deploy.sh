@@ -46,7 +46,7 @@ kubectl -n $NAME_SPACE rollout status deploy/rancher
 kubectl -n $NAME_SPACE get deploy rancher
 
 # Expose Rancher via Loadbalancer
-# kubectl expose deployment rancher --name=rancher-lb --port=80 --type=LoadBalancer -n cattle-system
+kubectl expose deployment rancher --name=rancher-lb --port=443 --type=LoadBalancer -n cattle-system
 kubectl get svc -n $NAME_SPACE
 
 # Profit: Go to Rancher GUI
