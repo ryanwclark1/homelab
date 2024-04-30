@@ -9,7 +9,7 @@ release_exists=$(helm list -n "$NAME_SPACE" | grep 'traefik' | wc -l)
 
 if [ "$release_exists" -eq 0 ]; then
   echo "No active release found. Installing..."
-  helm repo add traefik https://helm.traefik.io/traefik
+  helm repo add traefik https://traefik.github.io/charts
   helm repo update
   kubectl create namespace $NAME_SPACE
   helm install traefik traefik/traefik -n $NAME_SPACE \
