@@ -54,8 +54,6 @@ else
   exit 1
 fi
 
-echo "cat yaml file"
-cat $yaml_file
 # Backup the original YAML file
 if [ -f "$yaml_file" ]; then
     cp "$yaml_file" "$backup_file"
@@ -91,6 +89,7 @@ echo -e "\n"
 
 release_exists=$(helm list -n "$NAME_SPACE" | grep 'kube-prometheus-stack' | wc -l)
 
+cat $yaml_file
 if [ "$release_exists" -eq 0 ]; then
   echo "No active release found. Installing..."
   helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
@@ -101,7 +100,7 @@ if [ "$release_exists" -eq 0 ]; then
   --values $WORKING_DIR/helm/values.yaml \
   --version ${latest_version}
 else
-  echo -e " \033[32;5Release found, upgrading...\033[0m"
+  echo -e " Release found, upgrading..."
   helm upgrade --install kube-prometheus-stack prometheus-community/kube-prometheus-stack \
   --namespace $NAME_SPACE \
   --values $WORKING_DIR/helm/values.yaml \
