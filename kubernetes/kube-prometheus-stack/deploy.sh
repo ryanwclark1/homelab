@@ -80,7 +80,7 @@ backup_file
 # Extract IP addresses and format them
 mapfile -t all < <(jq -r '.nodes[].vms[].ip' "$inventory")
 for ip in "${all[@]}"; do
-    echo "- $ip"
+    echo "    - $ip"
 done > "$temp_ips"
 
 # Find the placeholder in the YAML file
