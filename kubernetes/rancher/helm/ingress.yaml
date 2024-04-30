@@ -4,6 +4,8 @@ kind: IngressRoute
 metadata:
   name: rancher-ingress
   namespace: cattle-system
+  annotations:
+    kubernetes.io/ingress.class: traefik-external
 spec:
   entryPoints:
     - web
@@ -14,5 +16,7 @@ spec:
       services:
         - name: rancher
           port: 80
+        - name: rancher
+          port: 443
   tls:
     secretName: techcasa-tls # change this to your secret!!!
