@@ -54,6 +54,8 @@ else
   exit 1
 fi
 
+echo "cat yaml file"
+cat $yaml_file
 # Backup the original YAML file
 if [ -f "$yaml_file" ]; then
     cp "$yaml_file" "$backup_file"
