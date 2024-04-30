@@ -9,7 +9,7 @@ inventory='../../inventory.json'
 temp_ips='temp_ips.txt'
 
 # YAML file to update
-yaml_file='$WORKING_DIR/helm/values.yaml'
+yaml_file=$WORKING_DIR/helm/values.yaml
 
 # Placeholder in the YAML file to replace
 placeholder='$endpoints'
