@@ -74,3 +74,5 @@ tlsStore:
   default:
     defaultCertificate:
       secretName: techcasa-tls
+
+
