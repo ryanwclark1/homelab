@@ -37,14 +37,11 @@ else
     -f "$WORKING_DIR/helm/values.yaml"
 fi
 
-kubectl apply -f "$WORKING_DIR/helm/ingress.yaml"
+# kubectl apply -f "$WORKING_DIR/helm/ingress.yaml"
 kubectl -n "$NAME_SPACE" rollout status deploy/longhorn
 kubectl -n "$NAME_SPACE" get deploy longhorn
 kubectl get svc -n "$NAME_SPACE"
 
-# Profit: Go to Rancher GUI
-echo -e " \033[32;5mHit the url… and create your account\033[0m"
-echo -e " \033[32;5mBe patient as it downloads and configures a number of pods in the background to support the UI (can be 5-10mins)\033[0m"
 
 
 # # Perform the find and replace
