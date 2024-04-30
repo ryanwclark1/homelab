@@ -3,10 +3,18 @@
 WORKING_DIR=$(dirname "$BASH_SOURCE")
 WORKING_DIR=$(cd "$WORKING_DIR"; pwd)
 
+# Path to the inventory JSON file
+inventory='../../inventory.json'
+
 NAME_SPACE="monitoring"
 
 REPO_OWNER="prometheus-community"
 REPO_NAME="kube-prometheus-stack"
+
+temp_ips='temp_ips.txt'
+yaml_file=$WORKING_DIR/helm/values.yaml
+backup_file="$yaml_file.backup"
+placeholder='$endpoints'
 
 # URL of the RSS feed
 API_URL="https://artifacthub.io/api/v1/packages/helm/$REPO_OWNER/$REPO_NAME/feed/rss"
@@ -46,6 +54,28 @@ else
   exit 1
 fi
 
+# Backup the original YAML file
+if [ -f "$yaml_file" ]; then
+    cp "$yaml_file" "$backup_file"
+    echo "Backup of values.yaml created."
+else
+    echo "values.yaml does not exist. Exiting."
+    exit 1
+fi
+
+# Extract IP addresses and format them
+mapfile -t all < <(jq -r '.nodes[].vms[].ip' "$inventory")
+for ip in "${all[@]}"; do
+    echo "- $ip"
+done > "$temp_ips"
+
+# Replace placeholder in the YAML file with the list of IPs
+sed -i "/$placeholder/r $temp_ips" "$yaml_file"
+sed -i "/$placeholder/d" "    $yaml_file"
+
+# Remove the temporary file
+rm "$temp_ips"
+
 echo -e " \033[32;5mGrafana admin credentials\033[0m"
 kubectl describe secret -n $NAME_SPACE grafana-admin-credentials
 echo -e "\n\n\033[32;5mGrafana user name\033[0m\n"
@@ -75,6 +105,8 @@ else
   --values $WORKING_DIR/helm/values.yaml \
   --version ${latest_version}
 fi
+
+mv "$backup_file" "$yaml_file"
 
 # Create ingress
 kubectl apply -f $WORKING_DIR/helm/ingress.yaml -n $NAME_SPACE
