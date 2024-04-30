@@ -16,7 +16,6 @@ yaml_file=$WORKING_DIR/helm/values.yaml
 backup_file="$yaml_file.backup"
 placeholder='\$endpoints'
 
-
 # URL of the RSS feed
 API_URL="https://artifacthub.io/api/v1/packages/helm/$REPO_OWNER/$REPO_NAME/feed/rss"
 
@@ -109,7 +108,6 @@ echo -e "\n"
 
 release_exists=$(helm list -n "$NAME_SPACE" | grep 'kube-prometheus-stack' | wc -l)
 
-cat $yaml_file
 if [ "$release_exists" -eq 0 ]; then
   echo "No active release found. Installing..."
   helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
