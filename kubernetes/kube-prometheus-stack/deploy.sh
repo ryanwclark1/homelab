@@ -15,6 +15,8 @@ temp_ips='temp_ips.txt'
 yaml_file=$WORKING_DIR/helm/values.yaml
 backup_file="$yaml_file.backup"
 placeholder="$endpoints"
+echo $placeholder
+
 
 # URL of the RSS feed
 API_URL="https://artifacthub.io/api/v1/packages/helm/$REPO_OWNER/$REPO_NAME/feed/rss"
