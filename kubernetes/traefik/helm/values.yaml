@@ -19,10 +19,12 @@ nodeSelector:
 
 ports:
   web:
-    redirectTo:
-      port: websecure
-      priority: 10
+    exposedPort: 80
+    # redirectTo:
+    #   port: websecure
+    #   priority: 10
   websecure:
+    exposedPort: 443
     tls:
       enabled: true
 
