@@ -16,7 +16,10 @@ spec:
       extraAnnotations:
         kubernetes.io/ingress.class: traefik-external
       tls:
+        enabled: true
         source: ingress
+        hosts:
+          - rancher.techcasa.io
     letsEncrypt:
       environment: staging
       ingress:
