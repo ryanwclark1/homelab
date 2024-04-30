@@ -1,0 +1,21 @@
+defaultSettings:
+  createDefaultDiskLabeledNodes: true
+  defaultDataPath: /var/lib/longhorn-example/
+  replicaSoftAntiAffinity: false
+  storageOverProvisioningPercentage: 600
+  storageMinimalAvailablePercentage: 15
+  upgradeChecker: false
+  defaultReplicaCount: 2
+  defaultDataLocality: disabled
+  defaultLonghornStaticStorageClass: longhorn-static-example
+  backupstorePollInterval: 500
+  systemManagedComponentsNodeSelector: "longhorn=true"
+  priorityClass: high-priority
+  autoSalvage: false
+  disableSchedulingOnCordonedNode: false
+  replicaZoneSoftAntiAffinity: false
+  replicaDiskSoftAntiAffinity: false
+  volumeAttachmentRecoveryPolicy: never
+  nodeDownPodDeletionPolicy: do-nothing
+  guaranteedInstanceManagerCpu: 15
+  orphanAutoDeletion: false
