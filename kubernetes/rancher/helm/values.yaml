@@ -8,7 +8,7 @@ spec:
   chart: rancher
   targetNamespace: cattle-system
   set:
-    hostname: rancher.techcasa.io
+    hostname: techcasa.io
     replicas: 3
     tls: true
     ingress:
