@@ -10,41 +10,41 @@ WORKING_DIR=$(dirname "$BASH_SOURCE")
 WORKING_DIR=$(cd "$WORKING_DIR"; pwd)
 
 NAME_SPACE="cattle-system"
-
 domain=$(jq -r '.domain' "$inventory")
 
+# Ensure the namespace exists before proceeding
 if kubectl get ns "$NAME_SPACE" > /dev/null 2>&1; then
-  echo -e "\033[32;5mRancher namespace exists, checking installation status...\033[0m"
+  echo -e "Namespace '$NAME_SPACE' namespace exists, checking installation status..."
 else
   echo "Namespace '$NAME_SPACE' does not exist, creating it..."
   kubectl create namespace "$NAME_SPACE"
 fi
 
+# Ensure the helm repo is added and updated
+helm repo add rancher-latest https://releases.rancher.com/server-charts/latest
+helm repo update
+
 # Check the installation status of Rancher
-if kubectl get deployment -n "$NAME_SPACE" | grep -q 'Rancher'; then
-  echo "No active release found. Installing..."
-  helm repo add rancher-latest https://releases.rancher.com/server-charts/latest
-  helm repo update
-  kubectl create namespace $NAME_SPACE
-  helm install rancher rancher-latest/rancher -n $NAME_SPACE \
+if ! kubectl get deployment -n "$NAME_SPACE" | grep -q 'rancher'; then
+  echo "No active Rancher release found. Installing..."
+  helm install rancher rancher-latest/rancher -n "$NAME_SPACE" \
     --set hostname=rancher.${domain} \
     --set replicas=3 \
-    --set bootstrapPassword=password123 \
-
+    --set bootstrapPassword=password123
 else
-  echo -e "Release found, upgrading..."
-  helm upgrade --install rancher rancher-latest/rancher -n $NAME_SPACE \
-    -f $WORKING_DIR/helm/values.yaml
+  echo "Rancher release found, upgrading..."
+  helm upgrade --install rancher rancher-latest/rancher -n "$NAME_SPACE" \
+    --values "$WORKING_DIR/helm/values.yaml"
 fi
 
-kubectl apply -f $WORKING_DIR/helm/ingress.yaml
-
-kubectl -n $NAME_SPACE rollout status deploy/rancher
-kubectl -n $NAME_SPACE get deploy rancher
+kubectl apply -f "$WORKING_DIR/helm/ingress.yaml"
+kubectl -n "$NAME_SPACE" rollout status deploy/rancher
+kubectl -n "$NAME_SPACE" get deploy rancher
+kubectl get svc -n "$NAME_SPACE"
 
 # Expose Rancher via Loadbalancer
 # kubectl expose deployment rancher --name=rancher-lb --port=443 --type=LoadBalancer -n cattle-system
-kubectl get svc -n $NAME_SPACE
+
 
 # Profit: Go to Rancher GUI
 echo -e " \033[32;5mHit the url… and create your account\033[0m"

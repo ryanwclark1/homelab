@@ -28,7 +28,7 @@ fi
 
 # Ensure the namespace exists before proceeding
 if kubectl get ns "$NAME_SPACE" > /dev/null 2>&1; then
-  echo -e "\033[32;5mCert-Manager namespace exists, checking installation status...\033[0m"
+  echo -e "Namespace '$NAME_SPACE' namespace exists, checking installation status..."
 else
   echo "Namespace '$NAME_SPACE' does not exist, creating it..."
   kubectl create namespace "$NAME_SPACE"
@@ -36,14 +36,14 @@ fi
 
 # Check the installation status of Cert-Manager
 if kubectl get deployment -n "$NAME_SPACE" | grep -q 'cert-manager'; then
-  echo -e "\033[32;5mCert-Manager already installed, upgrading...\033[0m"
+  echo -e "\033[32;5m'$NAME_SPACE' already installed, upgrading...\033[0m"
   kubectl apply -f "https://github.com/$REPO_OWNER/$REPO_NAME/releases/download/${latest_version}/cert-manager.crds.yaml"
   helm upgrade cert-manager jetstack/cert-manager \
   --namespace "$NAME_SPACE" \
   --values "$WORKING_DIR/helm/values.yaml" \
   --version "$latest_version"
 else
-  echo "Cert-Manager is not installed, installing..."
+  echo "'$NAME_SPACE' is not installed, installing..."
   kubectl apply -f "https://github.com/$REPO_OWNER/$REPO_NAME/releases/download/${latest_version}/cert-manager.crds.yaml"
   helm repo add jetstack https://charts.jetstack.io
   helm repo update
