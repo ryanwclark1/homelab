@@ -1,42 +1,55 @@
 #!/bin/bash
 
-# Set the LH_URL of the YAML file
-LH_URL="https://raw.githubusercontent.com/longhorn/longhorn/master/deploy/longhorn.yaml"
-# Set the file name to save the downloaded YAML
-LH_FILE_NAME="longhorn.yaml"
+#!/bin/bash
+inventory='../../inventory.json'
 
-# Download the file using curl
-curl -s -o "$LH_FILE_NAME" "$LH_URL"
-if [ $? -ne 0 ]; then
-  echo "Error downloading the file."
-  exit 1
+if [ ! -f "$inventory" ]; then
+    echo "Inventory file not found at $inventory"
+    exit 1
 fi
 
-# Check if the replacement string exists in the file
-grep -q "priority-class: longhorn-critical" "$LH_FILE_NAME"
-if [ $? -ne 0 ]; then
-  echo "Replacement string not found in the file."
-  exit 1
+WORKING_DIR=$(dirname "$BASH_SOURCE")
+WORKING_DIR=$(cd "$WORKING_DIR"; pwd)
+
+NAME_SPACE="longhorn-system"
+domain=$(jq -r '.domain' "$inventory")
+
+# Ensure the namespace exists before proceeding
+if kubectl get ns "$NAME_SPACE" > /dev/null 2>&1; then
+  echo -e "Namespace '$NAME_SPACE' namespace exists, checking installation status..."
+else
+  echo "Namespace '$NAME_SPACE' does not exist, creating it..."
+  kubectl create namespace "$NAME_SPACE"
 fi
 
-# Perform the find and replace
-sed -i 's/priority-class: longhorn-critical/system-managed-components-node-selector: longhorn=true/' "$LH_FILE_NAME"
-if [ $? -ne 0 ]; then
-  echo "Error replacing the text."
-  exit 1
+# Ensure the helm repo is added and updated
+helm repo add longhorn https://charts.longhorn.io
+helm repo update
+
+# Check the installation status of Rancher
+if ! kubectl get deployment -n "$NAME_SPACE" | grep -q 'longhorn'; then
+  echo "No active longhorn release found. Installing..."
+  helm install longhorn longhorn/longhorn -n "$NAME_SPACE" \
+    -f "$WORKING_DIR/helm/values.yaml"
+else
+  echo "Rancher release found, upgrading..."
+  helm upgrade --install longhorn longhorn/longhorn -n "$NAME_SPACE" \
+    -f "$WORKING_DIR/helm/values.yaml"
 fi
 
-# Apply the configuration using kubectl
-kubectl apply -f "$LH_FILE_NAME"
-if [ $? -ne 0 ]; then
-  echo "Error applying the configuration."
-  exit 1
-fi
+kubectl apply -f "$WORKING_DIR/helm/ingress.yaml"
+kubectl -n "$NAME_SPACE" rollout status deploy/longhorn
+kubectl -n "$NAME_SPACE" get deploy longhorn
+kubectl get svc -n "$NAME_SPACE"
 
-echo "Configuration applied successfully."
+# Profit: Go to Rancher GUI
+echo -e " \033[32;5mHit the url… and create your account\033[0m"
+echo -e " \033[32;5mBe patient as it downloads and configures a number of pods in the background to support the UI (can be 5-10mins)\033[0m"
 
-kubectl get pods \
-  --namespace longhorn-system \
 
-kubectl get nodes
-kubectl get svc -n longhorn-system
+# # Perform the find and replace
+# sed -i 's/priority-class: longhorn-critical/system-managed-components-node-selector: longhorn=true/' "$LH_FILE_NAME"
+# if [ $? -ne 0 ]; then
+#   echo "Error replacing the text."
+#   exit 1
+# fi
