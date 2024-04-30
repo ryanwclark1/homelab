@@ -56,8 +56,8 @@ providers:
     publishedService:
       enabled: false
 
-rbac:
-  namespaced: true
+# rbac:
+  # namespaced: true
   # enabled: true
 
 service:
