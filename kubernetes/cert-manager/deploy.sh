@@ -23,12 +23,19 @@ if echo "$response" | grep -q '"tag_name":'; then
 else
   echo "Failed to fetch the latest release version of $REPO_NAME."
   echo "$response"
+  exit 1
+fi
+
+# Ensure the namespace exists before proceeding
+if kubectl get ns "$NAME_SPACE" > /dev/null 2>&1; then
+  echo -e "\033[32;5mCert-Manager namespace exists, checking installation status...\033[0m"
+else
+  echo "Namespace '$NAME_SPACE' does not exist, creating it..."
+  kubectl create namespace "$NAME_SPACE"
 fi
 
 # Check if we already have it by querying namespace
-namespaceStatus=""
-namespaceStatus=$(kubectl get ns "$NAME_SPACE" -o json | jq .status.phase -r)
-if [ $namespaceStatus == "Active" ]; then
+if kubectl get deployment -n "$NAME_SPACE" | grep -q 'cert-manager'; then
   echo -e " \033[32;5mCert-Manager already installed, upgrading with new values.yaml...\033[0m"
   kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/${latest_version}/cert-manager.crds.yaml
   helm upgrade cert-manager jetstack/cert-manager \
