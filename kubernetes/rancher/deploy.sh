@@ -19,8 +19,7 @@ if [ "$release_exists" -eq 0 ]; then
   helm repo add rancher-latest https://releases.rancher.com/server-charts/latest
   helm repo update
   kubectl create namespace $NAME_SPACE
-  helm install rancher rancher-latest/rancher \
-    --namespace $NAME_SPACE \
+  helm install rancher rancher-latest/rancher -n $NAME_SPACE \
     --set hostname=rancher.${domain} \
     --set replicas=3 \
     --set bootstrapPassword=password123 \
@@ -31,11 +30,11 @@ if [ "$release_exists" -eq 0 ]; then
 
 else
   echo -e "Release found, upgrading..."
-  helm upgrade rancher rancher-latest/rancher \
-    --namespace $NAME_SPACE \
-    --set hostname=rancher.${domain} \
-    --set replicas=3 \
-    --set ingress.enabled=false
+  helm upgrade --install rancher rancher-latest/rancher -n $NAME_SPACE \
+    -f $WORKING_DIR/helm/values.yaml
+    # --set hostname=rancher.${domain} \
+    # --set replicas=3 \
+    # --set ingress.enabled=false
     # --set privateCA=true \
     # --set additionalTrustedCAs=true
 fi
