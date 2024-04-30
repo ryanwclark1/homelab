@@ -233,7 +233,7 @@ EOF
 
 # Add new master nodes (servers) & workers
 for newmaster in "${masters[@]}"; do
-# Get the name of the newmaster from the inventory file using the newmaster IP
+
 newmaster_name=$(jq -r --arg ip "$newmaster" '.nodes[].vms[] | select(.ip == $ip) | .name' "$inventory")
   k3sup join \
   --ip $newmaster \
