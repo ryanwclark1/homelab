@@ -30,7 +30,7 @@ if [ "$release_exists" -eq 0 ]; then
     # --set additionalTrustedCAs=true \
 
 else
-  echo -e " \033[32;5 Release found, upgrading...\033[0m"
+  echo -e "Release found, upgrading..."
   helm upgrade rancher rancher-latest/rancher \
     --namespace $NAME_SPACE \
     --set hostname=rancher.${domain} \
