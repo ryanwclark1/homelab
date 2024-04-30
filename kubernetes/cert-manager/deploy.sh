@@ -34,31 +34,31 @@ else
   kubectl create namespace "$NAME_SPACE"
 fi
 
-# Check if we already have it by querying namespace
+# Check the installation status of Cert-Manager
 if kubectl get deployment -n "$NAME_SPACE" | grep -q 'cert-manager'; then
-  echo -e " \033[32;5mCert-Manager already installed, upgrading with new values.yaml...\033[0m"
-  kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/${latest_version}/cert-manager.crds.yaml
+  echo -e "\033[32;5mCert-Manager already installed, upgrading...\033[0m"
+  kubectl apply -f "https://github.com/$REPO_OWNER/$REPO_NAME/releases/download/${latest_version}/cert-manager.crds.yaml"
   helm upgrade cert-manager jetstack/cert-manager \
-  --namespace cert-manager \
-  --values $WORKING_DIR/helm/values.yaml \
-  --version ${latest_version}
+  --namespace "$NAME_SPACE" \
+  --values "$WORKING_DIR/helm/values.yaml" \
+  --version "$latest_version"
 else
-  echo "Cert-Manager is not present, installing..."
-  kubectl create namespace $NAME_SPACE
-  kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/${latest_version}/cert-manager.crds.yaml
+  echo "Cert-Manager is not installed, installing..."
+  kubectl apply -f "https://github.com/$REPO_OWNER/$REPO_NAME/releases/download/${latest_version}/cert-manager.crds.yaml"
   helm repo add jetstack https://charts.jetstack.io
   helm repo update
   helm install cert-manager jetstack/cert-manager \
-  --namespace cert-manager \
-  --values $WORKING_DIR/helm/values.yaml \
-  --version ${latest_version}
+  --namespace "$NAME_SPACE" \
+  --values "$WORKING_DIR/helm/values.yaml" \
+  --version "$latest_version"
 fi
 
-export $(cat $WORKING_DIR/.env | xargs)
-envsubst < $WORKING_DIR/helm/issuers/secret-cf-token.yaml | kubectl apply -f -
-kubectl apply -f $WORKING_DIR/helm/issuers/secret-cf-token.yaml
-kubectl apply -f $WORKING_DIR/helm/issuers/letsencrypt-staging.yaml
-kubectl apply -f $WORKING_DIR/helm/staging/techcasa-staging.yaml
+# Environment setup and other Kubernetes resources
+export $(cat "$WORKING_DIR/.env" | xargs)
+envsubst < "$WORKING_DIR/helm/issuers/secret-cf-token.yaml" | kubectl apply -f -
+kubectl apply -f "$WORKING_DIR/helm/issuers/secret-cf-token.yaml"
+kubectl apply -f "$WORKING_DIR/helm/issuers/letsencrypt-staging.yaml"
+kubectl apply -f "$WORKING_DIR/helm/staging/techcasa-staging.yaml"
 
-kubectl get svc -n $NAME_SPACE
-kubectl get pods -n $NAME_SPACE
+kubectl get svc -n "$NAME_SPACE"
+kubectl get pods -n "$NAME_SPACE"
