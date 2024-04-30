@@ -70,9 +70,5 @@ service:
   loadBalancerSourceRanges: []
   externalIPs: []
 
-tlsStore:
-  default:
-    defaultCertificate:
-      secretName: techcasa-tls
 
 
