@@ -69,12 +69,20 @@ for ip in "${all[@]}"; do
     echo "- $ip"
 done > "$temp_ips"
 
+# Find the placeholder in the YAML file
+if grep -q "$placeholder" "$yaml_file"; then
+  echo "Placeholder found in values.yaml"
+else
+  echo "Placeholder not found in values.yaml. Exiting."
+  exit 1
+fi
+
 # Replace placeholder in the YAML file with the list of IPs
 sed -i "/$placeholder/r $temp_ips" "$yaml_file"
 sed -i "/$placeholder/d" "$yaml_file"
 
-# Remove the temporary file
-rm "$temp_ips"
+echo "Temp IPs:"
+cat $temp_ips
 
 echo -e " \033[32;5mGrafana admin credentials\033[0m"
 kubectl describe secret -n $NAME_SPACE grafana-admin-credentials
