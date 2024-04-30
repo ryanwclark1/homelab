@@ -23,7 +23,7 @@ spec:
     letsEncrypt:
       environment: staging
       ingress:
-        class: traefik
+        class: traefik-external
     rancherImagePullPolicy: IfNotPresent
     ingressRoute:
       rancher-ingress:
