@@ -13,8 +13,15 @@ NAME_SPACE="cattle-system"
 
 domain=$(jq -r '.domain' "$inventory")
 
-release_exists=$(helm list -n "$NAME_SPACE" | grep 'rancher' | wc -l)
-if [ "$release_exists" -eq 0 ]; then
+if kubectl get ns "$NAME_SPACE" > /dev/null 2>&1; then
+  echo -e "\033[32;5mRancher namespace exists, checking installation status...\033[0m"
+else
+  echo "Namespace '$NAME_SPACE' does not exist, creating it..."
+  kubectl create namespace "$NAME_SPACE"
+fi
+
+# Check the installation status of Rancher
+if kubectl get deployment -n "$NAME_SPACE" | grep -q 'Rancher'; then
   echo "No active release found. Installing..."
   helm repo add rancher-latest https://releases.rancher.com/server-charts/latest
   helm repo update
@@ -23,20 +30,11 @@ if [ "$release_exists" -eq 0 ]; then
     --set hostname=rancher.${domain} \
     --set replicas=3 \
     --set bootstrapPassword=password123 \
-    --set ingress.enabled=false
-    # --set ingress.tls.source=secret \
-    # --set privateCA=true \
-    # --set additionalTrustedCAs=true \
 
 else
   echo -e "Release found, upgrading..."
   helm upgrade --install rancher rancher-latest/rancher -n $NAME_SPACE \
     -f $WORKING_DIR/helm/values.yaml
-    # --set hostname=rancher.${domain} \
-    # --set replicas=3 \
-    # --set ingress.enabled=false
-    # --set privateCA=true \
-    # --set additionalTrustedCAs=true
 fi
 
 kubectl apply -f $WORKING_DIR/helm/ingress.yaml
@@ -45,7 +43,7 @@ kubectl -n $NAME_SPACE rollout status deploy/rancher
 kubectl -n $NAME_SPACE get deploy rancher
 
 # Expose Rancher via Loadbalancer
-kubectl expose deployment rancher --name=rancher-lb --port=443 --type=LoadBalancer -n cattle-system
+# kubectl expose deployment rancher --name=rancher-lb --port=443 --type=LoadBalancer -n cattle-system
 kubectl get svc -n $NAME_SPACE
 
 # Profit: Go to Rancher GUI
