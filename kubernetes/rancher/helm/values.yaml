@@ -1,0 +1,39 @@
+apiVersion: helm.cattle.io/v1
+kind: HelmChart
+metadata:
+  name: rancher
+  namespace: cattle-system
+spec:
+  repo: https://releases.rancher.com/server-charts/latest
+  chart: rancher
+  targetNamespace: cattle-system
+  set:
+    hostname: rancher.techcasa.io
+    replicas: 3
+    tls: true
+    ingress:
+      enabled: true
+      extraAnnotations:
+        kubernetes.io/ingress.class: traefik-external
+      tls:
+        source: ingress
+    letsEncrypt:
+      environment: staging
+      ingress:
+        class: traefik
+    rancherImagePullPolicy: IfNotPresent
+    ingressRoute:
+      rancher-ingress:
+        enabled: true
+        entryPoints:
+          - web
+          - websecure
+        routes:
+          - match: Host(`rancher.techcasa.io`)
+            kind: Rule
+            services:
+              - name: rancher
+                port: 80
+    service:
+      type: ""
+      annotations: {}
