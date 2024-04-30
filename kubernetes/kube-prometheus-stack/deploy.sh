@@ -73,7 +73,7 @@ done > "$temp_ips"
 
 # Replace placeholder in the YAML file with the list of IPs
 sed -i "/$placeholder/r $temp_ips" "$yaml_file"
-sed -i "/$placeholder/d" "    $yaml_file"
+sed -i "/$placeholder/d" "$yaml_file"
 
 # Remove the temporary file
 rm "$temp_ips"
