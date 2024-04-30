@@ -7,12 +7,25 @@ additionalArguments:
   - "--log.level=INFO"
 
 deployment:
+  replicas: null
+resources:
+  requests:
+    cpu: "100m"
+    memory: "50Mi"
+  limits:
+    cpu: "300m"
+    memory: "150Mi"
+autoscaling:
   enabled: true
-  replicas: 3 # match with number of workers
-  annotations: {}
-  podAnnotations: {}
-  additionalContainers: []
-  initContainers: []
+  maxReplicas: 2
+  metrics:
+  - type: Resource
+    resource:
+      name: cpu
+      target:
+        type: Utilization
+        averageUtilization: 80
+
 
 nodeSelector:
   worker: "true" # add these labels to your worker nodes before running
@@ -44,7 +57,8 @@ providers:
       enabled: false
 
 rbac:
-  enabled: true
+  namespaced: true
+  # enabled: true
 
 service:
   enabled: true
