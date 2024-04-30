@@ -84,6 +84,16 @@ ask_to_intialize() {
   done
 }
 
+test_cluster() {
+  echo "Test your cluster with:"
+  echo "export KUBECONFIG=$HOME/.kube/config"
+  export KUBECONFIG=$HOME/.kube/config
+  echo "kubectl config use-context k3s-ha"
+  kubectl config use-context k3s-ha
+  echo "kubectl get node -o wide"
+  kubectl get node -o wide
+}
+
 # Check if the export statement already exists
 check_export_statement() {
     grep -qF "export KUBECONFIG=/home/$CURRENT_USER/.kube/config" "$1"
@@ -130,13 +140,11 @@ chmod 644 $HOME/.ssh/$cert_name.pub
 
 ask_to_intialize
 
-# Install Kubectl if not already present
 echo -e " \033[32;5m**********************************************\033[0m"
 echo -e " \033[32;5m***         Installing K3sup            ******\033[0m"
 echo -e " \033[32;5m**********************************************\033[0m"
 source ../k3sup/deploy.sh
 
-# Install Kubectl if not already present
 echo -e " \033[32;5m**********************************************\033[0m"
 echo -e " \033[32;5m***        Installing Kubectl           ******\033[0m"
 echo -e " \033[32;5m**********************************************\033[0m"
@@ -203,16 +211,10 @@ k3sup install \
   --print-config
 
 echo -e " \033[32;5mFirst Node bootstrapped successfully!\033[0m"
+
 shell_config
 
-# Test the cluster
-echo "Test your cluster with:"
-echo "export KUBECONFIG=$HOME/.kube/config"
-export KUBECONFIG=$HOME/.kube/config
-echo "kubectl config use-context k3s-ha"
-kubectl config use-context k3s-ha
-echo "kubectl get node -o wide"
-kubectl get node -o wide
+test_cluster
 
 # Install Kube-VIP for HA
 # https://kube-vip.io/manifests/rbac.yaml
