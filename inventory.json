@@ -193,7 +193,7 @@
           "disk_size": "10G",
           "disk": "tank",
           "cores": 2,
-          "sockets": 1,
+          "sockets": 2,
           "memory": 4096,
           "role": "master"
         },
@@ -204,7 +204,7 @@
           "disk_size": "10G",
           "disk": "tank",
           "cores": 2,
-          "sockets": 1,
+          "sockets": 2,
           "memory": 4096,
           "role": "worker"
         },
@@ -215,7 +215,7 @@
           "disk_size": "10G",
           "disk": "tank",
           "cores": 2,
-          "sockets": 1,
+          "sockets": 2,
           "memory": 4096,
           "role": "worker"
         }
@@ -236,28 +236,6 @@
           "sockets": 1,
           "memory": 4096,
           "role": "master"
-        },
-        {
-          "name": "k3s-node15",
-          "ip": "10.10.101.235",
-          "id": 235,
-          "disk_size": "10G",
-          "disk": "tank",
-          "cores": 2,
-          "sockets": 1,
-          "memory": 4096,
-          "role": "worker"
-        },
-        {
-          "name": "k3s-node16",
-          "ip": "10.10.101.236",
-          "id": 236,
-          "disk_size": "10G",
-          "disk": "tank",
-          "cores": 2,
-          "sockets": 1,
-          "memory": 4096,
-          "role": "worker"
         }
       ]
     }
