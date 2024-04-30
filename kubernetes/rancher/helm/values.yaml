@@ -18,7 +18,7 @@ spec:
       tls:
         source: ingress
         hosts:
-          - techcasa.io
+          - 'techcasa.io'
     letsEncrypt:
       environment: staging
       ingress:
