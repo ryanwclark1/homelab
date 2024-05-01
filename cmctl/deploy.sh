@@ -18,10 +18,17 @@ if ! command -v go version &> /dev/null; then
   if ! grep -q '/usr/local/go/bin' ~/.bashrc; then
       echo "export PATH=\$PATH:/usr/local/go/bin" >> ~/.bashrc
   fi
+  echo -e " \033[32;5mGo installation complete\033[0m"
 else
   echo -e " \033[32;5mGo already installed\033[0m"
 fi
 
-OS=$(go env GOOS); ARCH=$(go env GOARCH); curl -fsSL -o cmctl https://github.com/cert-manager/cmctl/releases/latest/download/cmctl_${OS}_${ARCH}
-chmod +x cmctl
-sudo mv cmctl /usr/local/bin
+if ! command -v cmctl version &> /dev/null; then
+  cd ~
+  OS=$(go env GOOS); ARCH=$(go env GOARCH); curl -fsSL -o cmctl https://github.com/cert-manager/cmctl/releases/latest/download/cmctl_${OS}_${ARCH}
+  chmod +x cmctl
+  sudo mv cmctl /usr/local/bin
+  echo -e " \033[32;5mcmctl installation complete\033[0m"
+else
+  echo -e " \033[32;5mcmctl already installed\033[0m"
+fi
