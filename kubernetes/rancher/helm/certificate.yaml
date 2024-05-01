@@ -6,9 +6,9 @@ metadata:
   namespace: cattle-system
 spec:
   commonName: rancher.techcasa.io
+  secretName: rancher-cert
   dnsNames:
     - rancher.techcasa-io
   issuerRef:
-    name: letsencrypt-production
+    name: letsencrypt-staging
     kind: ClusterIssuer
-  secretName: tls-rancher-ingress

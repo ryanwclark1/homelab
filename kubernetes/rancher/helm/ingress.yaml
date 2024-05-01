@@ -3,12 +3,9 @@ apiVersion: traefik.io/v1alpha1
 kind: IngressRoute
 metadata:
   name: rancher-ingress
-  namespace: cattle-system
-  annotations:
-    kubernetes.io/ingress.class: traefik-external
+  namespace: rancher
 spec:
   entryPoints:
-    - web
     - websecure
   routes:
     - match: Host(`rancher.techcasa.io`) # change with your value
@@ -19,4 +16,4 @@ spec:
         - name: rancher
           port: 443
   tls:
-    secretName: techcasa-tls # change this to your secret!!!
+    secretName: rancher-cert # change this to your secret!!!
