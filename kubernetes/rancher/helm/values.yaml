@@ -11,13 +11,6 @@ spec:
     hostname: rancher.techcasa.io
     replicas: 3
     tls: true
-    ingress:
-      enabled: true
-      extraAnnotations:
-        kubernetes.io/ingress.class: traefik-external
-      tls:
-        enabled: true
-        source: rancher-ingress
     letsEncrypt:
       environment: staging
       ingress:
