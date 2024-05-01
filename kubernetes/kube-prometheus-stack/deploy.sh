@@ -64,8 +64,6 @@ replace_placeholder() {
   fi
 }
 
-
-
 create_namespace() {
   if kubectl get ns "$NAME_SPACE" > /dev/null 2>&1; then
     echo -e "Namespace '$NAME_SPACE' namespace exists, checking installation status..."
@@ -101,4 +99,5 @@ fi
 
 # Restore original YAML file and apply ingress
 mv "$backup_file" "$yaml_file"
+rm "$temp_ips"
 kubectl apply -f "$WORKING_DIR/helm/ingress.yaml" -n $NAME_SPACE
