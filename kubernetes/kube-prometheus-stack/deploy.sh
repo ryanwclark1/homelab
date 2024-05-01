@@ -68,16 +68,24 @@ create_secret
 backup_file
 
 # Extract and format IP addresses
-mapfile -t all_ips < <(jq -r '.nodes[].vms[].ip' "$inventory")
-printf "    - %s\n" "${all_ips[@]}" > "$temp_ips"
+# mapfile -t all_ips < <(jq -r '.nodes[].vms[].ip' "$inventory")
+# printf "    - %s\n" "${all_ips[@]}" > "$temp_ips"
 
-# Update YAML file with IPs
-if grep -q "$placeholder" "$yaml_file"; then
-    sed -i "/$placeholder/r $temp_ips" "$yaml_file"
-    sed -i "/$placeholder/d" "$yaml_file"
+# # Update YAML file with IPs
+# if grep -q "$placeholder" "$yaml_file"; then
+#     sed -i "/$placeholder/r $temp_ips" "$yaml_file"
+#     sed -i "/$placeholder/d" "$yaml_file"
+# else
+#     echo "Placeholder '$placeholder' not found in values.yaml. Exiting."
+#     exit 1
+# fi
+
+# Ensure the namespace exists before proceeding
+if kubectl get ns "$NAME_SPACE" > /dev/null 2>&1; then
+  echo -e "Namespace '$NAME_SPACE' namespace exists, checking installation status..."
 else
-    echo "Placeholder '$placeholder' not found in values.yaml. Exiting."
-    exit 1
+  echo "Namespace '$NAME_SPACE' does not exist, creating it..."
+  kubectl create namespace "$NAME_SPACE"
 fi
 
 # Helm operations
@@ -88,16 +96,16 @@ if [ $? -ne 0 ]; then
     helm repo update
     helm install kube-prometheus-stack prometheus-community/kube-prometheus-stack \
     --namespace $NAME_SPACE \
-    --values "$yaml_file" \
-    --version "${latest_version}"
+    -f "$WORKING_DIR/helm/values.yaml"
+    # --version "${latest_version}"
 else
     echo "Release found, upgrading..."
     helm upgrade --install kube-prometheus-stack prometheus-community/kube-prometheus-stack \
     --namespace $NAME_SPACE \
-    --values "$yaml_file" \
-    --version "${latest_version}"
+    -f "$WORKING_DIR/helm/values.yaml"
+    # --version "${latest_version}"
 fi
 
 # Restore original YAML file and apply ingress
-mv "$backup_file" "$yaml_file"
+# mv "$backup_file" "$yaml_file"
 kubectl apply -f "$WORKING_DIR/helm/ingress.yaml" -n $NAME_SPACE
