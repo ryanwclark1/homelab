@@ -63,8 +63,8 @@ kubelet:
 
 kubeControllerManager:
   enabled: true
-  endpoints: # ips of servers
-    - $endpoints
+#   endpoints: # ips of servers
+#     - $endpoints
 
 coreDns:
   enabled: true
@@ -74,22 +74,22 @@ kubeDns:
 
 kubeEtcd:
   enabled: true
-  endpoints: # ips of servers
-    - $endpoints
-  service:
-    enabled: true
-    port: 2381
-    targetPort: 2381
+#   endpoints: # ips of servers
+#     - $endpoints
+#   service:
+#     enabled: true
+#     port: 2381
+#     targetPort: 2381
 
 kubeScheduler:
   enabled: true
-  endpoints: # ips of servers
-    - $endpoints
+#   endpoints: # ips of servers
+#     - $endpoints
 
 kubeProxy:
   enabled: true
-  endpoints: # ips of servers
-    - $endpoints
+#   endpoints: # ips of servers
+#     - $endpoints
 
 kubeStateMetrics:
   enabled: true
@@ -159,6 +159,9 @@ prometheusOperator:
 prometheus:
   enabled: true
   prometheusSpec:
+    scrapeInterval: "30s"
+    scrapeTimeout: "10s"
+    evaluationInterval: "30s"
     replicas: 2
     replicaExternalLabelName: "replica"
     ruleSelectorNilUsesHelmValues: false
