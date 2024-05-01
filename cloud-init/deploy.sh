@@ -127,7 +127,6 @@ mapfile -t nodes < <(jq -c '.nodes[]' $inventory)
 for node in "${nodes[@]}"; do
   node_ip=$(echo "$node" | jq -r '.ip')
   node_name=$(echo "$node" | jq -r '.name')
-
   mapfile -t vms < <(echo "$node" | jq -c '.vms[]')
 
   for vm in "${vms[@]}"; do
@@ -140,13 +139,9 @@ for node in "${nodes[@]}"; do
     sockets=$(echo "$vm" | jq -r '.sockets')
     memory=$(echo "$vm" | jq -r '.memory')
     role=$(echo "$vm" | jq -r '.role')
-
     log_action "Cloning VM for $vm_name on $node_name ($node_ip) with ID $vm_id..."
-
     clone_vm
-
     log_action "Configuring VM on $node_ip..."
-
     ssh "$prox_user@$node_ip" "
       qm set $vm_id --ipconfig0 ip=$vm_ip/$CIDR,gw=$GATEWAY;
       qm set $vm_id --tags "$TAG,$role";
@@ -160,9 +155,7 @@ for node in "${nodes[@]}"; do
       rm \$temp_file;
       exit
     "
-
     log_action "VM $vm_name ($vm_id) deployed and configured at $vm_ip."
-
   done
 done
 

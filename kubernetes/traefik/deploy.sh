@@ -7,6 +7,7 @@ NAME_SPACE="traefik"
 
 release_exists=$(helm list -n "$NAME_SPACE" | grep 'traefik' | wc -l)
 
+echo -e " \033[32;5mInstalling Traefik\033[0m"
 if [ "$release_exists" -eq 0 ]; then
   echo "No active release found. Installing..."
   helm repo add traefik https://traefik.github.io/charts

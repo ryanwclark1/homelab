@@ -1,13 +1,52 @@
 #!/bin/bash
-
 inventory='../../inventory.json'
+
+if [ ! -f "$inventory" ]; then
+    echo "Inventory file not found at $inventory"
+    exit 1
+fi
+
+NAME_SPACE="metallb-system"
 lbrange=$(jq -r '.lbrange' "$inventory")
 
-kubectl apply -f https://raw.githubusercontent.com/metallb/metallb/v0.12.1/manifests/namespace.yaml
-kubectl apply -f https://raw.githubusercontent.com/metallb/metallb/v0.14.5/config/manifests/metallb-native.yaml
-# Download ipAddressPool and configure using lbrange above
-curl -sO https://raw.githubusercontent.com/ryanwclark1/homelab/main/kubernetes/metallb/ipAddressPool
-cat ipAddressPool | sed 's/$lbrange/'$lbrange'/g' > $HOME/ipAddressPool.yaml
-# May need to pause for a few seconds
-sleep 10
-kubectl apply -f $HOME/ipAddressPool.yaml
+if kubectl get ns "$NAME_SPACE" > /dev/null 2>&1; then
+  echo -e "Namespace '$NAME_SPACE' namespace exists, updating IP Address Pool and L2Advertisement..."
+else
+  echo -e "Applying MetalLB to '$NAME_SPACE' namespace..."
+  kubectl apply -f https://raw.githubusercontent.com/metallb/metallb/v0.14.5/config/manifests/metallb-native.yaml
+fi
+
+kubectl wait --namespace metallb-system \
+  --for=condition=ready pod \
+  --selector=component=controller \
+  --timeout=120s
+
+# https://metallb.universe.tf/configuration/
+# Deploy IPAddressPool
+cat << EOF | kubectl apply -f -
+  apiVersion: metallb.io/v1beta1
+  kind: IPAddressPool
+  metadata:
+    name: first-pool
+    namespace: metallb-system
+  spec:
+    addresses:
+    - $lbrange
+EOF
+
+kubectl wait --namespace metallb-system \
+  --for=condition=ready pod \
+  --selector=component=controller \
+  --timeout=120s
+
+# Deploy l2Advertisement
+cat << EOF | kubectl apply -f -
+  apiVersion: metallb.io/v1beta1
+  kind: L2Advertisement
+  metadata:
+    name: example
+    namespace: metallb-system
+  spec:
+    ipAddressPools:
+    - first-pool
+EOF

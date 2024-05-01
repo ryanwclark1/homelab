@@ -1,6 +1,5 @@
 #!/bin/bash
 
-#!/bin/bash
 inventory='../../inventory.json'
 
 if [ ! -f "$inventory" ]; then

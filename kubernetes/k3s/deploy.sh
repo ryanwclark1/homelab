@@ -38,6 +38,7 @@ CURRENT_USER=$(whoami)
 intialize_nodes() {
   #add ssh keys for all nodes
   for node in "${all[@]}"; do
+    (
     ssh-keyscan -H $node >> ~/.ssh/known_hosts
     ssh-copy-id $host_user@$node
     ssh $host_user@$node -i ~/.ssh/$cert_name sudo su <<EOF
@@ -47,8 +48,11 @@ intialize_nodes() {
     apt-get install -yq policycoreutils open-iscsi nfs-common cryptsetup dmsetup
     exit
 EOF
-  echo -e " \033[32;5mNode Intialized!\033[0m"
+    echo -e " \033[32;5mNode: $node Intialized!\033[0m"
+    ) &
   done
+  wait
+  echo -e " \033[32;5mAll nodes intialized!\033[0m"
 }
 
 
@@ -295,24 +299,12 @@ source ../helm/deploy.sh
 kubectl apply -f https://raw.githubusercontent.com/kube-vip/kube-vip-cloud-provider/main/manifest/kube-vip-cloud-controller.yaml
 
 # Install Metallb
-# source ../metallb/deploy.sh
+source ../metallb/deploy.sh
 
-# Test with Traefik
-# echo -e " \033[32;5mInstalling Traefik\033[0m"
-# source ../traefik/deploy.sh
-# echo -e " \033[32;5mWaiting for K3S to sync and LoadBalancer to come online\033[0m"
+# Install Traefik
+source ../traefik/deploy.sh
 
-
-# Deploy IP Pools and l2Advertisement
-# echo -e " \033[32;5mDeploying IP Pools and l2Advertisement\033[0m"
-# kubectl wait --namespace metallb-system \
-#   --for=condition=ready pod \
-#   --selector=component=controller \
-#   --timeout=120s
-# kubectl apply -f $HOME/ipAddressPool.yaml
-# kubectl apply -f https://raw.githubusercontent.com/ryanwclark1/homelab/main/kubernetes/k3s/l2Advertisement.yaml
-
-# source ../cert-manager/deploy.sh
+source ../cert-manager/deploy.sh
 
 # source ../longhorn/deploy.sh
 
