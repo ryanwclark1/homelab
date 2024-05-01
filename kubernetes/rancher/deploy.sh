@@ -35,7 +35,7 @@ else
     -f "$WORKING_DIR/helm/values.yaml"
 fi
 
-# kubectl apply -f "$WORKING_DIR/helm/ingress.yaml"
+kubectl apply -f "$WORKING_DIR/helm/ingress.yaml"
 # kubectl apply -f "$WORKING_DIR/helm/certificate.yaml"
 kubectl -n "$NAME_SPACE" rollout status deploy/rancher
 kubectl -n "$NAME_SPACE" get deploy rancher
