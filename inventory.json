@@ -19,11 +19,11 @@
           "name": "k3s-node01",
           "ip": "10.10.101.221",
           "id": 221,
-          "disk_size": "10G",
+          "disk_size": "12G",
           "disk": "tank",
           "cores": 2,
           "sockets": 1,
-          "memory": 4096,
+          "memory": 8192,
           "role": "master"
         }
       ]
@@ -37,33 +37,33 @@
           "name": "k3s-node02",
           "ip": "10.10.101.222",
           "id": 222,
-          "disk_size": "10G",
+          "disk_size": "12G",
           "disk": "tank",
           "cores": 2,
           "sockets": 1,
-          "memory": 4096,
+          "memory": 8192,
           "role": "master"
         },
         {
           "name": "k3s-node07",
           "ip": "10.10.101.227",
           "id": 227,
-          "disk_size": "10G",
+          "disk_size": "12G",
           "disk": "tank",
           "cores": 2,
           "sockets": 1,
-          "memory": 4096,
+          "memory": 8192,
           "role": "worker"
         },
         {
           "name": "k3s-node08",
           "ip": "10.10.101.228",
           "id": 228,
-          "disk_size": "10G",
+          "disk_size": "12G",
           "disk": "tank",
           "cores": 2,
           "sockets": 1,
-          "memory": 4096,
+          "memory": 8192,
           "role": "worker"
         },
         {
@@ -74,7 +74,7 @@
           "disk": "tank",
           "cores": 2,
           "sockets": 1,
-          "memory": 4096,
+          "memory": 8192,
           "role": "storage"
         }
       ]
@@ -88,33 +88,33 @@
           "name": "k3s-node03",
           "ip": "10.10.101.223",
           "id": 223,
-          "disk_size": "10G",
+          "disk_size": "12G",
           "disk": "tank",
           "cores": 2,
           "sockets": 1,
-          "memory": 4096,
+          "memory": 8192,
           "role": "master"
         },
         {
           "name": "k3s-node09",
           "ip": "10.10.101.229",
           "id": 229,
-          "disk_size": "10G",
+          "disk_size": "12G",
           "disk": "tank",
           "cores": 2,
           "sockets": 1,
-          "memory": 4096,
+          "memory": 8192,
           "role": "worker"
         },
         {
           "name": "k3s-node10",
           "ip": "10.10.101.230",
           "id": 230,
-          "disk_size": "10G",
+          "disk_size": "12G",
           "disk": "tank",
           "cores": 2,
           "sockets": 1,
-          "memory": 4096,
+          "memory": 8192,
           "role": "worker"
         },
         {
@@ -125,7 +125,7 @@
           "disk": "tank",
           "cores": 2,
           "sockets": 1,
-          "memory": 4096,
+          "memory": 8192,
           "role": "storage"
         }
       ]
@@ -139,33 +139,33 @@
           "name": "k3s-node04",
           "ip": "10.10.101.224",
           "id": 224,
-          "disk_size": "10G",
+          "disk_size": "12G",
           "disk": "tank",
           "cores": 2,
           "sockets": 1,
-          "memory": 4096,
+          "memory": 8192,
           "role": "master"
         },
         {
           "name": "k3s-node11",
           "ip": "10.10.101.231",
           "id": 231,
-          "disk_size": "10G",
+          "disk_size": "12G",
           "disk": "tank",
           "cores": 2,
           "sockets": 1,
-          "memory": 4096,
+          "memory": 8192,
           "role": "worker"
         },
         {
           "name": "k3s-node12",
           "ip": "10.10.101.232",
           "id": 232,
-          "disk_size": "10G",
+          "disk_size": "12G",
           "disk": "tank",
           "cores": 2,
           "sockets": 1,
-          "memory": 4096,
+          "memory": 8192,
           "role": "worker"
         },
         {
@@ -176,7 +176,7 @@
           "disk": "tank",
           "cores": 2,
           "sockets": 1,
-          "memory": 4096,
+          "memory": 8192,
           "role": "storage"
         }
       ]
@@ -190,33 +190,33 @@
           "name": "k3s-node05",
           "ip": "10.10.101.225",
           "id": 225,
-          "disk_size": "10G",
+          "disk_size": "12G",
           "disk": "tank",
           "cores": 2,
           "sockets": 2,
-          "memory": 4096,
+          "memory": 8192,
           "role": "master"
         },
         {
           "name": "k3s-node13",
           "ip": "10.10.101.233",
           "id": 233,
-          "disk_size": "10G",
+          "disk_size": "12G",
           "disk": "tank",
           "cores": 2,
           "sockets": 2,
-          "memory": 4096,
+          "memory": 8192,
           "role": "worker"
         },
         {
           "name": "k3s-node14",
           "ip": "10.10.101.234",
           "id": 234,
-          "disk_size": "10G",
+          "disk_size": "12G",
           "disk": "tank",
           "cores": 2,
           "sockets": 2,
-          "memory": 4096,
+          "memory": 8192,
           "role": "worker"
         }
       ]
@@ -230,11 +230,11 @@
           "name": "k3s-node06",
           "ip": "10.10.101.226",
           "id": 226,
-          "disk_size": "10G",
+          "disk_size": "12G",
           "disk": "tank",
           "cores": 2,
           "sockets": 1,
-          "memory": 4096,
+          "memory": 8192,
           "role": "master"
         }
       ]
