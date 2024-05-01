@@ -11,18 +11,6 @@ spec:
     hostname: rancher.techcasa.io
     replicas: 3
     rancherImagePullPolicy: IfNotPresent
-    ingressRoute:
-      rancher-ingress:
-        enabled: true
-        entryPoints:
-          - web
-          - websecure
-        routes:
-          - match: Host(`rancher.techcasa.io`)
-            kind: Rule
-            services:
-              - name: rancher
-                port: 80
     service:
       type: ""
       annotations: {}
