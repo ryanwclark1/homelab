@@ -58,8 +58,6 @@ ask_to_intialize() {
       # Prompt the user. The colon after the question suggests a default value of 'yes'
       echo -n "Do you want to run intialize the environment? [Y/n]: "
       read -r user_input
-
-      # Default to 'yes' if the input is empty
       if [[ -z "$user_input" ]]; then
         user_input="yes"
       fi
@@ -216,10 +214,8 @@ shell_config
 
 test_cluster
 
-# Install Kube-VIP for HA
-# https://kube-vip.io/manifests/rbac.yaml
+# Install Kube-VIP for HA https://kube-vip.io/manifests/rbac.yaml
 kubectl apply -f https://kube-vip.io/manifests/rbac.yaml
-
 curl -sO https://raw.githubusercontent.com/ryanwclark1/homelab/main/kubernetes/k3s/kube-vip
 cat kube-vip | sed 's/$interface/'$interface'/g; s/$vip/'$vip'/g' > $HOME/kube-vip.yaml
 
@@ -233,7 +229,6 @@ EOF
 
 # Add new master nodes (servers) & workers
 for newmaster in "${masters[@]}"; do
-
 newmaster_name=$(jq -r --arg ip "$newmaster" '.nodes[].vms[] | select(.ip == $ip) | .name' "$inventory")
   k3sup join \
   --ip $newmaster \
@@ -300,23 +295,22 @@ source ../helm/deploy.sh
 kubectl apply -f https://raw.githubusercontent.com/kube-vip/kube-vip-cloud-provider/main/manifest/kube-vip-cloud-controller.yaml
 
 # Install Metallb
-source ../metallb/deploy.sh
+# source ../metallb/deploy.sh
 
 # Test with Traefik
-echo -e " \033[32;5mInstalling Traefik\033[0m"
-source ../traefik/deploy.sh
-echo -e " \033[32;5mWaiting for K3S to sync and LoadBalancer to come online\033[0m"
+# echo -e " \033[32;5mInstalling Traefik\033[0m"
+# source ../traefik/deploy.sh
+# echo -e " \033[32;5mWaiting for K3S to sync and LoadBalancer to come online\033[0m"
 
-sleep 10
 
 # Deploy IP Pools and l2Advertisement
-echo -e " \033[32;5mDeploying IP Pools and l2Advertisement\033[0m"
-kubectl wait --namespace metallb-system \
-  --for=condition=ready pod \
-  --selector=component=controller \
-  --timeout=120s
-kubectl apply -f $HOME/ipAddressPool.yaml
-kubectl apply -f https://raw.githubusercontent.com/ryanwclark1/homelab/main/kubernetes/k3s/l2Advertisement.yaml
+# echo -e " \033[32;5mDeploying IP Pools and l2Advertisement\033[0m"
+# kubectl wait --namespace metallb-system \
+#   --for=condition=ready pod \
+#   --selector=component=controller \
+#   --timeout=120s
+# kubectl apply -f $HOME/ipAddressPool.yaml
+# kubectl apply -f https://raw.githubusercontent.com/ryanwclark1/homelab/main/kubernetes/k3s/l2Advertisement.yaml
 
 # source ../cert-manager/deploy.sh
 
