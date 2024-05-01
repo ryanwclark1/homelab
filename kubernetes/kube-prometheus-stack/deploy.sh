@@ -77,6 +77,7 @@ create_namespace() {
 create_namespace
 create_secret
 backup_file
+replace_placeholder
 
 helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
 helm repo update
