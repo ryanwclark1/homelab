@@ -36,7 +36,7 @@ alertmanager:
     enabled: false
 
 grafana:
-  enabled: false
+  enabled: true
   fullnameOverride: grafana
   forceDeployDatasources: false
   forceDeployDashboards: false
@@ -151,7 +151,7 @@ prometheusOperator:
   admissionWebhooks:
     enabled: true
     certManager:
-      enabled: false
+      enabled: true
   prometheusConfigReloader:
     resources:
       requests:
