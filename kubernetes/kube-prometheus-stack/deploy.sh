@@ -51,13 +51,15 @@ replace_placeholder() {
   all_ips=$(kubectl get nodes -o jsonpath="{.items[*].metadata.annotations.k3s\.io/internal-ip}")
   > "$temp_ips"
   for ip in $all_ips; do
-  echo "    - $ip" >> "$temp_ips"
+    echo "    - $ip" >> "$temp_ips"
   done
 
   # Update YAML file with IPs
   if grep -q "$placeholder" "$yaml_file"; then
     sed -i "/$placeholder/r $temp_ips" "$yaml_file"
     sed -i "/$placeholder/d" "$yaml_file"
+    cat "$temp_ips"
+    cat "$yaml_file"
   else
     echo "Placeholder '$placeholder' not found in values.yaml. Exiting."
     exit 1
