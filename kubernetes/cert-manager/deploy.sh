@@ -57,7 +57,7 @@ fi
 # Environment setup and other Kubernetes resources
 export $(cat "$WORKING_DIR/.env" | xargs)
 envsubst < "$WORKING_DIR/helm/issuers/secret-cf-token.yaml" | kubectl apply -f -
-kubectl apply -f "$WORKING_DIR/helm/issuers/secret-cf-token.yaml"
+# kubectl apply -f "$WORKING_DIR/helm/issuers/secret-cf-token.yaml"
 kubectl apply -f "$WORKING_DIR/helm/issuers/letsencrypt-staging.yaml"
 kubectl apply -f "$WORKING_DIR/helm/certificates/staging/techcasa-io-staging.yaml"
 
