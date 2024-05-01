@@ -21,4 +21,4 @@ spec:
               secure: true
               sameSite: none
   tls:
-    secretName: techcasa-tls
+    secretName: techcasa-io-staging-tls

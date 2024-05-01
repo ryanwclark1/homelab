@@ -11,4 +11,4 @@ spec:
     - match: Host(`rancher.techcasa.io`) # change with your value
       kind: Rule
   tls:
-    secretName: rancher-cert # change this to your secret!!!
+    secretName: techcasa-io-staging-tls # change this to your secret!!!

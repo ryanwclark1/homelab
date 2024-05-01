@@ -19,4 +19,4 @@ spec:
         - name: api@internal
           kind: TraefikService
   tls:
-    secretName: techcasa-tls # change this to your secret!!!
+    secretName: techcasa-io-staging-tls # change this to your secret!!!

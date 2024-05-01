@@ -3,9 +3,9 @@ apiVersion: cert-manager.io/v1
 kind: Certificate
 metadata:
   name: techcasa-io # change to your domain
-  namespace: traefik # Add to namespace where ingress is deployed
+  namespace: default # Add to namespace where ingress is deployed
 spec:
-  secretName: techcasa-tls # change to your secretname
+  secretName: techcasa-io-production-tls # change to your secretname
   commonName: "*.techcasa.io" # change to your domain
   dnsNames:
   - "techcasa.io" # change to your domain
@@ -13,4 +13,3 @@ spec:
   issuerRef:
     name: letsencrypt-production
     kind: ClusterIssuer
-    group: cert-manager.io
