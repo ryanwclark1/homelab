@@ -44,7 +44,6 @@ envsubst < $WORKING_DIR/manifests/issuers/clusterissuer-staging.yaml | kubectl a
 envsubst < $WORKING_DIR/manifests/certificates/techcasa-io-staging.yaml | kubectl apply -f -
 
 
-
 kubectl get svc -n "$NAME_SPACE"
 kubectl get pods -n "$NAME_SPACE"
 kubectl get clusterissuer letsencrypt-staging -o yaml
