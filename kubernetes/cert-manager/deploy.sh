@@ -41,9 +41,8 @@ kubectl apply -f "https://github.com/$REPO_OWNER/$REPO_NAME/releases/download/${
 export $(cat "$WORKING_DIR/.env" | xargs)
 envsubst < $WORKING_DIR/manifests/secrets/cloudflare-token-secret.yaml | kubectl apply -f -
 envsubst < $WORKING_DIR/manifests/issuers/clusterissuer-staging.yaml | kubectl apply -f -
-envsubst < $WORKING_DIR/manifests/issuers/clusterissuer-production.yaml | kubectl apply -f -
 envsubst < $WORKING_DIR/manifests/certificates/techcasa-io-staging.yaml | kubectl apply -f -
-envsubst < $WORKING_DIR/manifests/certificates/techcasa-io-production.yaml | kubectl apply -f -
+
 
 
 kubectl get svc -n "$NAME_SPACE"

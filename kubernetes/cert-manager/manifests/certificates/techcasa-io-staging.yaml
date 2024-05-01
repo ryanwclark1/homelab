@@ -1,0 +1,13 @@
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: techcasa-io-staging
+  namespace: cert-manager
+spec:
+  secretName: techcasa-io-staging-tls
+  issuerRef:
+    name: letsencrypt-staging
+    kind: ClusterIssuer
+  commonName: '*.techcasa.io'
+  dnsNames:
+  - '*.techcasa.io'
