@@ -10,11 +10,6 @@ spec:
   set:
     hostname: rancher.techcasa.io
     replicas: 3
-    tls: true
-    letsEncrypt:
-      environment: staging
-      ingress:
-        class: traefik-external
     rancherImagePullPolicy: IfNotPresent
     ingressRoute:
       rancher-ingress:
