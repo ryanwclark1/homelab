@@ -28,11 +28,14 @@ helm repo update
 if ! kubectl get deployment -n "$NAME_SPACE" | grep -q 'rancher'; then
   echo "No active Rancher release found. Installing..."
   helm install rancher rancher-latest/rancher -n "$NAME_SPACE" \
-    -f "$WORKING_DIR/helm/values.yaml"
+    helm upgrade --install rancher rancher-latest/rancher -n "$NAME_SPACE" \
+    --set hostname="rancher.$domain"
+    # -f "$WORKING_DIR/helm/values.yaml"
 else
   echo "Rancher release found, upgrading..."
   helm upgrade --install rancher rancher-latest/rancher -n "$NAME_SPACE" \
-    -f "$WORKING_DIR/helm/values.yaml"
+    --set hostname="rancher.$domain"
+    # -f "$WORKING_DIR/helm/values.yaml"
 fi
 
 kubectl apply -f "$WORKING_DIR/helm/ingress.yaml"
@@ -40,10 +43,6 @@ kubectl apply -f "$WORKING_DIR/helm/ingress.yaml"
 kubectl -n "$NAME_SPACE" rollout status deploy/rancher
 kubectl -n "$NAME_SPACE" get deploy rancher
 kubectl get svc -n "$NAME_SPACE"
-
-# Expose Rancher via Loadbalancer
-# kubectl expose deployment rancher --name=rancher-lb --port=443 --type=LoadBalancer -n cattle-system
-
 
 # Profit: Go to Rancher GUI
 echo -e " \033[32;5mHit the url… and create your account\033[0m"
