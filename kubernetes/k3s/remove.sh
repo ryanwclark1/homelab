@@ -6,7 +6,7 @@ CURRENT_USER=$(whoami)
 # Remove the export statement from the appropriate shell configuration file
 remove_export_statement() {
   local file="$1"
-  local pattern="export KUBECONFIG=/home/${CURRENT_USER}/.kube/config"
+  local pattern="$2"
   # Use printf to safely escape the path for use in a regular expression
   local escaped_pattern=$(printf '%s\n' "$pattern" | sed -e 's:[][\/.^$*]:\\&:g')
 
@@ -41,8 +41,9 @@ case "$SHELL_NAME" in
 esac
 
 # Remove the export statement from the configuration file
-remove_export_statement "$CONFIG_FILE"
-
+remove_export_statement "$CONFIG_FILE" "export KUBECONFIG=/home/${CURRENT_USER}/.kube/config"
+remove_export_statement "$CONFIG_FILE" "alias k=kubectl"
+remove_export_statement "$CONFIG_FILE" "complete -o default -F __start_kubectl k"
 
 # Function to safely remove files or directories
 safe_rm() {
@@ -81,14 +82,12 @@ safe_rm "/usr/local/bin/helm"
 
 # If it's a master node, kill k3s
 if [ -f "/etc/rancher/k3s.yaml" ]; then
-  k3s-killall
-  k3s-agent-uninstall.sh
+  echo "This is a master node. Removing k3s..."
 else
   echo "This is not a master node."
 fi
 
 echo "Clearing known hosts..."
 > ~/.ssh/known_hosts
-
 
 echo "Removal completed successfully."
