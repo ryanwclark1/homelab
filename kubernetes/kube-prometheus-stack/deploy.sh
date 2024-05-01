@@ -20,24 +20,6 @@ if [ ! -f "$inventory" ]; then
     exit 1
 fi
 
-# Fetch the latest version number
-get_artifacthub() {
-    response=$(curl -s "$API_URL")
-    if [ $? -eq 0 ] && echo "$response" | grep -q '<title>'; then
-        latest_version=$(echo "$response" | xmllint --xpath 'string(//rss/channel/item[1]/title)' -)
-        if [ -n "$latest_version" ]; then
-            echo "Latest release version of $REPO_NAME: $latest_version"
-        else
-            echo "Failed to extract version, please check the XML structure and XPath."
-            exit 1
-        fi
-    else
-        echo "Failed to fetch the RSS feed or no <title> tags found."
-        echo "$response"
-        exit 1
-    fi
-}
-
 # Create a Kubernetes secret
 create_secret() {
     if [ -f "$WORKING_DIR/.env" ]; then
@@ -63,9 +45,8 @@ backup_file() {
 }
 
 # Main operations
-get_artifacthub
 create_secret
-backup_file
+# backup_file
 
 # Extract and format IP addresses
 # mapfile -t all_ips < <(jq -r '.nodes[].vms[].ip' "$inventory")
@@ -88,12 +69,14 @@ else
   kubectl create namespace "$NAME_SPACE"
 fi
 
+
+helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
+helm repo update
+
 # Helm operations
 release_exists=$(helm list -n "$NAME_SPACE" | grep -q 'kube-prometheus-stack')
 if [ $? -ne 0 ]; then
     echo "No active release found. Installing..."
-    helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
-    helm repo update
     helm install kube-prometheus-stack prometheus-community/kube-prometheus-stack \
     --namespace $NAME_SPACE \
     -f "$WORKING_DIR/helm/values.yaml"

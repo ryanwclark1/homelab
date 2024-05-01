@@ -36,7 +36,7 @@ alertmanager:
     enabled: false
 
 grafana:
-  enabled: true
+  enabled: false
   fullnameOverride: grafana
   forceDeployDatasources: false
   forceDeployDashboards: false
@@ -148,6 +148,10 @@ prometheus-node-exporter:
 
 prometheusOperator:
   enabled: true
+  admissionWebhooks:
+    enabled: true
+    certManager:
+      enabled: false
   prometheusConfigReloader:
     resources:
       requests:
