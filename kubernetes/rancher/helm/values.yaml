@@ -17,7 +17,7 @@ spec:
         kubernetes.io/ingress.class: traefik-external
       tls:
         enabled: true
-        source: ingress
+        source: rancher-ingress
     letsEncrypt:
       environment: staging
       ingress:
