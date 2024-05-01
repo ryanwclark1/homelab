@@ -13,7 +13,7 @@ spec:
       services:
         - name: rancher
           port: 80
-        - name: rancher
+        - name: rancher-secure
           port: 443
   tls:
     secretName: rancher-cert # change this to your secret!!!
