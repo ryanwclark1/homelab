@@ -232,8 +232,8 @@ ssh -i ~/.ssh/$cert_name $host_user@$master1 sudo su <<- EOF
 EOF
 
 # Add new master nodes (servers) & workers
-for newmaster in "${masters[@]}"; do
-newmaster_name=$(jq -r --arg ip "$newmaster" '.nodes[].vms[] | select(.ip == $ip) | .name' "$inventory")
+for newmaster in "${masters[@]}"; do (
+  newmaster_name=$(jq -r --arg ip "$newmaster" '.nodes[].vms[] | select(.ip == $ip) | .name' "$inventory")
   k3sup join \
   --ip $newmaster \
   --user $host_user \
@@ -256,10 +256,13 @@ newmaster_name=$(jq -r --arg ip "$newmaster" '.nodes[].vms[] | select(.ip == $ip
     --node-taint node-role.kubernetes.io/master=true:NoSchedule" \
   --server-user $host_user
   echo -e " \033[32;5mMaster node joined successfully!\033[0m"
+  ) &
 done
+wait
+echo -e " \033[32;5mAll master nodes joined successfully!\033[0m"
 
 # add workers
-for newworker in "${workers[@]}"; do
+for newworker in "${workers[@]}"; do (
   newworker_name=$(jq -r --arg ip "$newworker" '.nodes[].vms[] | select(.ip == $ip) | .name' "$inventory")
   k3sup join \
   --ip $newworker \
@@ -273,10 +276,13 @@ for newworker in "${workers[@]}"; do
     --node-name=$newworker_name \
     --node-label worker=true"
   echo -e " \033[32;5mAgent node joined successfully!\033[0m"
+  ) &
 done
+wait
+echo -e " \033[32;5mAll worker nodes joined successfully!\033[0m"
 
 # add storage nodes
-for newstorage in "${storage[@]}"; do
+for newstorage in "${storage[@]}"; do (
   newstorage_name=$(jq -r --arg ip "$newstorage" '.nodes[].vms[] | select(.ip == $ip) | .name' "$inventory")
   k3sup join \
   --ip $newstorage \
@@ -290,7 +296,10 @@ for newstorage in "${storage[@]}"; do
     --node-name=$newstorage_name \
     --node-label longhorn=true"
   echo -e " \033[32;5mStorage node joined successfully!\033[0m"
+  ) &
 done
+wait
+echo -e " \033[32;5mAll storage nodes joined successfully!\033[0m"
 
 # Install Helm
 source ../helm/deploy.sh
