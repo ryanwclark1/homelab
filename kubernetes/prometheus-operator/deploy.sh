@@ -25,6 +25,8 @@ kubectl apply -f "$WORKING_DIR/rbac"
 
 kubectl apply -f "$WORKING_DIR/deployment"
 
-kubectl wait --for=condition=Ready pods -l  app.kubernetes.io/name=prometheus-operator -n "$NAME_SPACE"
+kubectl logs -l app.kubernetes.io/name=prometheus-operator -n "$NAME_SPACE" -f
+
+kubectl wait --for=condition=Ready pods -l app.kubernetes.io/name=prometheus-operator -n "$NAME_SPACE" -f
 
 kubectl get pods -n $WORKING_DIR
