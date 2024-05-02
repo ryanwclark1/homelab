@@ -9,13 +9,12 @@ metadata:
   name: alertmanager-main
   namespace: monitoring
 spec:
-  rules:
-  - entryPoints: websecure
-    routes:
-    - kind: Rule
-      match: Host(`alertmanager.techcasa.io`)
-      services:
-      - name: alertmanager-main
-        port: 9093
-    tls:
-      secretName: techcasa-io-staging-tls
+- entryPoints: websecure
+  routes:
+  - kind: Rule
+    match: Host(`alertmanager.techcasa.io`)
+    services:
+    - name: alertmanager-main
+      port: 9093
+  tls:
+    secretName: techcasa-io-staging-tls

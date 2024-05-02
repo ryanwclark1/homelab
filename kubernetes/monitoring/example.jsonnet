@@ -1,4 +1,4 @@
-local ingress(name, namespace, rules) = {
+local ingress(name, namespace, specs) = {
   apiVersion: 'traefik.io/v1alpha1',
   kind: 'IngressRoute',
   metadata: {
@@ -11,7 +11,7 @@ local ingress(name, namespace, rules) = {
       'traefik.ingress.kubernetes.io/router.tls.certresolver': 'letsencrypt',
     },
   },
-  spec: { rules: rules },
+  spec: specs,
 };
 
 local kp =
