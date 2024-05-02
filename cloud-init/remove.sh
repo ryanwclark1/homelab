@@ -37,7 +37,7 @@ check_inventory
 mapfile -t vm_data < <(jq -r '.nodes[] | .ip as $ip | .vms[] | "\($ip) \(.id)"' $INVENTORY)
 
 # Loop through VM data and delete VMs
-for entry in "${vm_data[@]}"; do
+for entry in "${vm_data[@]}"; do (
   # Split entry into IP and VM ID
   ip=$(echo $entry | cut -d' ' -f1)
   vm_id=$(echo $entry | cut -d' ' -f2)
@@ -45,6 +45,8 @@ for entry in "${vm_data[@]}"; do
   # Delete the VM and log the action
   delete_vm $vm_id $ip
   log_action "Deleted VM ID $vm_id on $target_ip"
+) &
 done
+wait
 
 echo "All specified VMs have been processed for deletion."
