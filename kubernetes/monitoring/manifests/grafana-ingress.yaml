@@ -9,7 +9,8 @@ metadata:
   name: grafana
   namespace: monitoring
 spec:
-  entryPoints: websecure
+  entryPoints:
+  - websecure
   routes:
   - kind: Rule
     match: Host(`grafana.techcasa.io`)

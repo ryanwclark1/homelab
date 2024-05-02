@@ -60,7 +60,7 @@ local kp =
       'alertmanager-main',
       $.values.common.namespace,
       {
-        entryPoints: 'websecure',
+        entryPoints: ['websecure'],
         routes: [{
           kind: 'Rule',
           match: 'Host(`alertmanager.techcasa.io`)',
@@ -78,7 +78,7 @@ local kp =
       'grafana',
       $.values.common.namespace,
       {
-        entryPoints: 'websecure',
+        entryPoints: ['websecure'],
         routes: [{
           kind: 'Rule',
           match: 'Host(`grafana.techcasa.io`)',
@@ -96,7 +96,7 @@ local kp =
       'prometheus-k8s',
       $.values.common.namespace,
       {
-        entryPoints: 'websecure',
+        entryPoints: ['websecure'],
         routes: [{
           kind: 'Rule',
           match: 'Host(`prometheus.techcasa.io`)',
