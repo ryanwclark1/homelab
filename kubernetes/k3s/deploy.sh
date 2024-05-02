@@ -311,9 +311,11 @@ kubectl apply -f https://raw.githubusercontent.com/kube-vip/kube-vip-cloud-provi
 source ../metallb/deploy.sh
 
 # Install Traefik
-# source ../traefik/deploy.sh
+source ../traefik/deploy.sh
 
-# source ../cert-manager/deploy.sh
+source ../cert-manager/deploy.sh
+
+source ../monitoring/deploy.sh
 
 # source ../longhorn/deploy.sh
 

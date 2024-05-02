@@ -1,0 +1,19 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  annotations:
+    traefik.ingress.kubernetes.io/router.entrypoints: websecure
+  name: prometheus-k8s
+  namespace: monitoring
+spec:
+  rules:
+  - host: prometheus.techcasa.io
+    http:
+      paths:
+      - backend:
+          service:
+            name: prometheus-k8s
+            port:
+              name: web
+        path: /
+        pathType: Prefix

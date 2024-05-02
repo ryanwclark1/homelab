@@ -10,6 +10,7 @@ metadata:
   name: main
   namespace: monitoring
 spec:
+  externalUrl: http://alertmanager.techcasa.io
   image: quay.io/prometheus/alertmanager:v0.27.0
   nodeSelector:
     kubernetes.io/os: linux

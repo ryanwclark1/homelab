@@ -1,3 +1,16 @@
+local ingress(name, namespace, rules) = {
+  apiVersion: 'networking.k8s.io/v1',
+  kind: 'Ingress',
+  metadata: {
+    name: name,
+    namespace: namespace,
+    annotations: {
+      'traefik.ingress.kubernetes.io/router.entrypoints': 'websecure',
+    },
+  },
+  spec: { rules: rules },
+};
+
 local kp =
   (import 'kube-prometheus/main.libsonnet') +
   // Uncomment the following imports to enable its patches
@@ -8,58 +21,121 @@ local kp =
   // (import 'kube-prometheus/addons/custom-metrics.libsonnet') +
   // (import 'kube-prometheus/addons/external-metrics.libsonnet') +
   // (import 'kube-prometheus/addons/pyrra.libsonnet') +
-  {
-    values+:: {
-      common+: {
-        namespace: 'monitoring',
-      },
+{
+  values+:: {
+    common+: {
+      namespace: 'monitoring',
     },
-    prometheus+:: {
-      prometheus+: {
-        spec+: {
-          externalUrl: 'http://prometheus.techcasa.io',
-        },
-      },
-    },
-    ingress+:: {
-      'prometheus-k8s': {
-        apiVersion: 'networking.k8s.io/v1',
-        kind: 'Ingress',
-        metadata: {
-          name: $.prometheus.prometheus.metadata.name,
-          namespace: $.prometheus.prometheus.metadata.namespace,
-          annotations: {
-            'kubernetes.io/ingress.class': 'traefik',
-            'traefik.ingress.kubernetes.io/redirect-entry-point': 'https',
+    grafana+:: {
+      config+: {
+        sections+: {
+          server+: {
+            root_url: 'http://grafana.techcasa.io/',
           },
         },
-        spec: {
-          rules: [
-            {
-              host: 'prometheus.techcasa.io',
-              http: {
-                paths: [
-                  {
-                    path: '/',
-                    pathType: 'Prefix',
-                    backend: {
-                      service: {
-                        name: $.prometheus.prometheus.metadata.name,
-                        port: {
-                          number: 9090,
-                        },
-                      },
-                    },
-                  },
-                ],
-              },
-            },
-          ],
-        },
       },
     },
-  };
+  },
+  // Configure External URL's per application
+  alertmanager+:: {
+    alertmanager+: {
+      spec+: {
+        externalUrl: 'http://alertmanager.techcasa.io',
+      },
+    },
+  },
+  prometheus+:: {
+    prometheus+: {
+      spec+: {
+        externalUrl: 'http://prometheus.techcasa.io',
+      },
+    },
+  },
+  // Create ingress objects per application
+  ingress+:: {
+    'alertmanager-main': ingress(
+      'alertmanager-main',
+      $.values.common.namespace,
+      [{
+        host: 'alertmanager.techcasa.io',
+        http: {
+          paths: [{
+            path: '/',
+            pathType: 'Prefix',
+            backend: {
+              service: {
+                name: 'alertmanager-main',
+                port: {
+                  name: 'web',
+                },
+              },
+            },
+          }],
+        },
+      }]
+    ),
+    grafana: ingress(
+      'grafana',
+      $.values.common.namespace,
+      [{
+        host: 'grafana.techcasa.io',
+        http: {
+          paths: [{
+            path: '/',
+            pathType: 'Prefix',
+            backend: {
+              service: {
+                name: 'grafana',
+                port: {
+                  name: 'http',
+                },
+              },
+            },
+          }],
+        },
+      }],
+    ),
+    'prometheus-k8s': ingress(
+      'prometheus-k8s',
+      $.values.common.namespace,
+      [{
+        host: 'prometheus.techcasa.io',
+        http: {
+          paths: [{
+            path: '/',
+            pathType: 'Prefix',
+            backend: {
+              service: {
+                name: 'prometheus-k8s',
+                port: {
+                  name: 'web',
+                },
+              },
+            },
+          }],
+        },
+      }],
+    ),
+  },
+};
+// + {
+//   // Create basic auth secret - replace 'auth' file with your own
+//   ingress+:: {
+//     'basic-auth-secret': {
+//       apiVersion: 'v1',
+//       kind: 'Secret',
+//       metadata: {
+//         name: 'basic-auth',
+//         namespace: $.values.common.namespace,
+//       },
+//       data: { auth: std.base64(importstr 'auth') },
+//       type: 'Opaque',
+//     },
+//   },
+// };
 
+
+{ [name + '-ingress']: kp.ingress[name] for name in std.objectFields(kp.ingress) }
 { 'setup/0namespace-namespace': kp.kubePrometheus.namespace } +
 {
   ['setup/prometheus-operator-' + name]: kp.prometheusOperator[name]

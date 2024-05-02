@@ -1,0 +1,19 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  annotations:
+    traefik.ingress.kubernetes.io/router.entrypoints: websecure
+  name: alertmanager-main
+  namespace: monitoring
+spec:
+  rules:
+  - host: alertmanager.techcasa.io
+    http:
+      paths:
+      - backend:
+          service:
+            name: alertmanager-main
+            port:
+              name: web
+        path: /
+        pathType: Prefix
