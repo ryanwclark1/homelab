@@ -4,7 +4,7 @@ WORKING_DIR=$(dirname "$BASH_SOURCE")
 WORKING_DIR=$(cd "$WORKING_DIR"; pwd)
 
 NAME_SPACE="cert-manager"
-CERT_NAME_SPACE="default"
+CERT_NAME_SPACE="traefik"
 
 REPO_OWNER="cert-manager"
 REPO_NAME="cert-manager"
