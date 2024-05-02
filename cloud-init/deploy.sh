@@ -3,10 +3,8 @@
 # Define the path to your inventory JSON file
 inventory='../inventory.json'
 
-if [ ! -f "$inventory" ]; then
-    echo "Inventory file not found at $inventory"
-    exit 1
-fi
+
+
 
 BASE_VM=5001
 
@@ -21,6 +19,9 @@ TAG="k3s"
 CIDR=23
 GATEWAY="10.10.100.1"
 
+# Load template node from inventory
+template_node=$(jq -r '.template_node' $inventory)
+template_ip=$(jq -r '.nodes[] | select(.name == "'$template_node'") | .ip' $inventory)
 
 # Function to check if inventory file exists
 ensure_inventory_exists() {
@@ -109,17 +110,10 @@ ask_to_start_vm() {
   done
 }
 
+ensure_inventory_exists
 ask_to_intialize
 # Initialize by checking inventory and jq
 source ../base/ensure_jq_installed.sh
-ensure_inventory_exists
-
-
-# Load template node from inventory
-template_node=$(jq -r '.template_node' $inventory)
-template_ip=$(jq -r '.nodes[] | select(.name == "'$template_node'") | .ip' $inventory)
-
-
 
 # Loop through VM data and deploy VMs
 mapfile -t nodes < <(jq -c '.nodes[]' $inventory)
