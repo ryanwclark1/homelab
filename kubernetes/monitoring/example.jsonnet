@@ -14,6 +14,50 @@ local kp =
         namespace: 'monitoring',
       },
     },
+    prometheus+:: {
+      prometheus+: {
+        spec+: {
+          externalUrl: 'http://prometheus.techcasa.io',
+        },
+      },
+    },
+    ingress+:: {
+      'prometheus-k8s': {
+        apiVersion: 'networking.k8s.io/v1',
+        kind: 'Ingress',
+        metadata: {
+          name: $.prometheus.prometheus.metadata.name,
+          namespace: $.prometheus.prometheus.metadata.namespace,
+          annotations: {
+            'kubernetes.io/ingress.class': 'traefik',
+            'traefik.ingress.kubernetes.io/redirect-entry-point': 'https',
+          },
+        },
+        spec: {
+          rules: [
+            {
+              host: 'prometheus.techcasa.io',
+              http: {
+                paths: [
+                  {
+                    path: '/',
+                    pathType: 'Prefix',
+                    backend: {
+                      service: {
+                        name: $.prometheus.prometheus.metadata.name,
+                        port: {
+                          number: 9090,
+                        },
+                      },
+                    },
+                  },
+                ],
+              },
+            },
+          ],
+        },
+      },
+    },
   };
 
 { 'setup/0namespace-namespace': kp.kubePrometheus.namespace } +
