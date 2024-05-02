@@ -3,8 +3,6 @@
 WORKING_DIR=$(dirname "$BASH_SOURCE")
 WORKING_DIR=$(cd "$WORKING_DIR"; pwd)
 
-# NAME_SPACE="cert-manager"
-
 REPO_OWNER="prometheus-operator"
 REPO_NAME="prometheus-operator"
 
@@ -34,9 +32,9 @@ if [ "$answer" == "y" ]; then
     prometheus_operator_version=$latest_version
 fi
 
-
 cd ~
 git clone https://github.com/prometheus-operator/prometheus-operator.git
 cd ~/prometheus-operator
 git checkout tags/$prometheus_operator_version
-cp -a ~/prometheus-operator/example/prometheus-operator-crd/ $WORKING_DIR/crds
+cp -a ~/prometheus-operator/example/prometheus-operator-crd/* $WORKING_DIR/crds/
+echo "Files copied successfully."
