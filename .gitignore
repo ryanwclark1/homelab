@@ -3,3 +3,4 @@ hdd_passthrough.txt
 homelab.code-workspace
 .env
 test/
+kubernetes/monitoring/vendor/
