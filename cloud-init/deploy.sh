@@ -3,23 +3,16 @@
 # Define the path to your inventory JSON file
 inventory='../inventory.json'
 
-
-
-
 BASE_VM=5001
-
-# Define the user for the SSH connections
-prox_user=$(jq -r '.prox_user' "$inventory")
-
 # SSH Key File
 SSH_KEY="$HOME/.ssh/id_rsa"
 SSH_KEY_TEXT=$(cat $SSH_KEY.pub)
-
 TAG="k3s"
 CIDR=23
 GATEWAY="10.10.100.1"
 
-# Load template node from inventory
+# Define the user for the SSH connections
+prox_user=$(jq -r '.prox_user' "$inventory")
 template_node=$(jq -r '.template_node' $inventory)
 template_ip=$(jq -r '.nodes[] | select(.name == "'$template_node'") | .ip' $inventory)
 
@@ -45,7 +38,7 @@ clone_vm() {
     --target $node_name \
     --storage init
     exit
-  "
+  " > /dev/null
 }
 
 ask_to_intialize() {
@@ -118,12 +111,12 @@ source ../base/ensure_jq_installed.sh
 # Loop through VM data and deploy VMs
 mapfile -t nodes < <(jq -c '.nodes[]' $inventory)
 
-for node in "${nodes[@]}"; do
+for node in "${nodes[@]}"; do (
   node_ip=$(echo "$node" | jq -r '.ip')
   node_name=$(echo "$node" | jq -r '.name')
   mapfile -t vms < <(echo "$node" | jq -c '.vms[]')
 
-  for vm in "${vms[@]}"; do (
+  for vm in "${vms[@]}"; do
     vm_id=$(echo "$vm" | jq -r '.id')
     vm_name=$(echo "$vm" | jq -r '.name')
     vm_ip=$(echo "$vm" | jq -r '.ip')
@@ -150,11 +143,11 @@ for node in "${nodes[@]}"; do
       exit
     "
     log_action "VM $vm_name ($vm_id) deployed and configured at $vm_ip."
-  ) &
   done
-  wait
-
+) &
 done
+wait
+
 echo "All VMs deployed and configured."
 
 ask_to_start_vm
