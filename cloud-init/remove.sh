@@ -49,6 +49,7 @@ for entry in "${vm_data[@]}"; do (
 done
 wait
 
+# TODO: Add user input to confirm
 source ../kubernetes/k3s/remove.sh
 
 echo "All specified VMs have been processed for deletion."
