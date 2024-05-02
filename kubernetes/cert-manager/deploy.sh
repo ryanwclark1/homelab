@@ -4,7 +4,6 @@ WORKING_DIR=$(dirname "$BASH_SOURCE")
 WORKING_DIR=$(cd "$WORKING_DIR"; pwd)
 
 NAME_SPACE="cert-manager"
-CERT_NAME_SPACE="default"
 
 REPO_OWNER="cert-manager"
 REPO_NAME="cert-manager"
@@ -23,7 +22,7 @@ else
   exit 1
 fi
 
-kubectl apply -f "https://github.com/$REPO_OWNER/$REPO_NAME/releases/download/${latest_version}/cert-manager.yaml"
+kubectl apply -f --validate=false "https://github.com/$REPO_OWNER/$REPO_NAME/releases/download/${latest_version}/cert-manager.yaml"
 
 export $(cat "$WORKING_DIR/.env" | xargs)
 envsubst < $WORKING_DIR/manifests/secrets/cloudflare-token-secret.yaml | kubectl apply -f -
