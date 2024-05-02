@@ -27,13 +27,13 @@ else
   exit 1
 fi
 
-# Ensure the namespace exists before proceeding
-if kubectl get ns "$NAME_SPACE" > /dev/null 2>&1; then
-  echo -e "Namespace '$NAME_SPACE' namespace exists, checking installation status..."
-else
-  echo "Namespace '$NAME_SPACE' does not exist, creating it..."
-  kubectl create namespace "$NAME_SPACE"
-fi
+# # Ensure the namespace exists before proceeding
+# if kubectl get ns "$NAME_SPACE" > /dev/null 2>&1; then
+#   echo -e "Namespace '$NAME_SPACE' namespace exists, checking installation status..."
+# else
+#   echo "Namespace '$NAME_SPACE' does not exist, creating it..."
+#   kubectl create namespace "$NAME_SPACE"
+# fi
 
 kubectl apply -f "https://github.com/$REPO_OWNER/$REPO_NAME/releases/download/${latest_version}/cert-manager.crds.yaml"
 
