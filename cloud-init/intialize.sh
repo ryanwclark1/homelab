@@ -32,10 +32,12 @@ fi
 
 
 # Copy SSH public key to each host
-for host in "${hosts[@]}"; do
+for host in "${hosts[@]}"; do (
   echo "Copying SSH public key to $host..."
   ssh-keyscan -H $host >> ~/.ssh/known_hosts
   ssh-copy-id -i "${SSH_KEY}" "$prox_user@$host"
+) &
 done
+wait
 
 echo "SSH setup complete."
