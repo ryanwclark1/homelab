@@ -124,7 +124,7 @@ template_ip=$(jq -r '.nodes[] | select(.name == "'$template_node'") | .ip' $inve
 # Loop through VM data and deploy VMs
 mapfile -t nodes < <(jq -c '.nodes[]' $inventory)
 
-for node in "${nodes[@]}";
+for node in "${nodes[@]}"; do
   node_ip=$(echo "$node" | jq -r '.ip')
   node_name=$(echo "$node" | jq -r '.name')
   mapfile -t vms < <(echo "$node" | jq -c '.vms[]')
