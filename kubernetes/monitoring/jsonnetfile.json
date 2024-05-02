@@ -9,6 +9,15 @@
         }
       },
       "version": "main"
+    },
+    {
+      "source": {
+        "git": {
+          "remote": "https://github.com/ryanwclark1/homelab.git",
+          "subdir": "jsonnet/traefik-libsonnet/3.0/"
+        }
+      },
+      "version": "main"
     }
   ],
   "legacyImports": true
