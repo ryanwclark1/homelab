@@ -11,71 +11,90 @@ rules:
 - apiGroups:
     - "monitoring.coreos.com"
   resources:
-    - alertmanagers
-    - alertmanagers/finalizers
-    - alertmanagers/status
-    - alertmanagerconfigs
-    - prometheuses
-    - prometheuses/finalizers
-    - prometheuses/status
-    - thanosrulers
-    - thanosrulers/finalizers
-    - servicemonitors
-    - podmonitors
-    - probes
-    - prometheusrules
-  verbs: ["*"]
-- apiGroups:
-    - apps
-  resources:
-    - statefulsets
+  - alertmanagers
+  - alertmanagers/finalizers
+  - alertmanagers/status
+  - alertmanagerconfigs
+  - prometheuses
+  - prometheuses/finalizers
+  - prometheuses/status
+  - prometheusagents
+  - prometheusagents/finalizers
+  - prometheusagents/status
+  - thanosrulers
+  - thanosrulers/finalizers
+  - thanosrulers/status
+  - scrapeconfigs
+  - servicemonitors
+  - podmonitors
+  - probes
+  - prometheusrules
   verbs:
-    - "*"
+  - '*'
 - apiGroups:
-    - ""
+  - apps
   resources:
-    - configmaps
-    - secrets
+  - statefulsets
   verbs:
-    - "*"
+  - '*'
 - apiGroups:
-    - ""
+  - ""
   resources:
-    - pods
+  - configmaps
+  - secrets
   verbs:
-    - list
-    - delete
+  - '*'
 - apiGroups:
-    - ""
+  - ""
   resources:
-    - services
-    - services/finalizers
-    - endpoints
+  - pods
   verbs:
-    - get
-    - create
-    - update
-    - delete
+  - list
+  - delete
 - apiGroups:
-    - ""
+  - ""
   resources:
-    - nodes
+  - services
+  - services/finalizers
+  - endpoints
   verbs:
-    - list
-    - watch
+  - get
+  - create
+  - update
+  - delete
 - apiGroups:
-    - ""
+  - ""
   resources:
-    - namespaces
+  - nodes
   verbs:
-    - get
-    - list
-    - watch
+  - list
+  - watch
 - apiGroups:
-    - networking.k8s.io
+  - ""
   resources:
-    - ingresses
+  - namespaces
   verbs:
-    - get
-    - list
-    - watch
+  - get
+  - list
+  - watch
+- apiGroups:
+  - ""
+  resources:
+  - events
+  verbs:
+  - patch
+  - create
+- apiGroups:
+  - networking.k8s.io
+  resources:
+  - ingresses
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - storage.k8s.io
+  resources:
+  - storageclasses
+  verbs:
+  - get
