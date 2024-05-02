@@ -7,7 +7,6 @@ metadata:
     app.kubernetes.io/name: prometheus-operator
     app.kubernetes.io/version: 0.73.2
   name: prometheus-operator
-  namespace: monitoring
 spec:
   replicas: 1
   selector:
@@ -25,30 +24,35 @@ spec:
     spec:
       automountServiceAccountToken: true
       containers:
-        - args:
-            - --kubelet-service=kube-system/kubelet
-            - --prometheus-config-reloader=quay.io/prometheus-operator/prometheus-config-reloader:v0.73.2
-          image: quay.io/prometheus-operator/prometheus-operator:v0.73.2
-          name: prometheus-operator
-          ports:
-            - containerPort: 8080
-              name: http
-          resources:
-            limits:
-              cpu: 200m
-              memory: 200Mi
-            requests:
-              cpu: 100m
-              memory: 100Mi
-          securityContext:
-            allowPrivilegeEscalation: false
-            capabilities:
-              drop:
-                - ALL
-            readOnlyRootFilesystem: true
+      - args:
+        - --kubelet-service=kube-system/kubelet
+        - --prometheus-config-reloader=quay.io/prometheus-operator/prometheus-config-reloader:v0.73.2
+        env:
+        - name: GOGC
+          value: "30"
+        image: quay.io/prometheus-operator/prometheus-operator:v0.73.2
+        name: prometheus-operator
+        ports:
+        - containerPort: 8080
+          name: http
+        resources:
+          limits:
+            cpu: 200m
+            memory: 200Mi
+          requests:
+            cpu: 100m
+            memory: 100Mi
+        securityContext:
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop:
+            - ALL
+          readOnlyRootFilesystem: true
       nodeSelector:
         kubernetes.io/os: linux
       securityContext:
         runAsNonRoot: true
         runAsUser: 65534
+        seccompProfile:
+          type: RuntimeDefault
       serviceAccountName: prometheus-operator
