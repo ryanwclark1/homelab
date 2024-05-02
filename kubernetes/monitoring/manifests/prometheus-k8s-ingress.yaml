@@ -10,12 +10,12 @@ metadata:
   namespace: monitoring
 spec:
   entryPoints:
+  - web
   - websecure
   routes:
   - kind: Rule
     match: Host(`prometheus.techcasa.io`)
     services:
     - name: prometheus-k8s
-      port: 9090
-  tls:
-    secretName: techcasa-io-staging-tls
+      namespace: monitoring
+      port: 8080

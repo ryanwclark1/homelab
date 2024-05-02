@@ -60,54 +60,57 @@ local kp =
       'alertmanager-main',
       $.values.common.namespace,
       {
-        entryPoints: ['websecure'],
+        entryPoints: [
+          'web',
+          'websecure'
+        ],
         routes: [{
           kind: 'Rule',
           match: 'Host(`alertmanager.techcasa.io`)',
           services: [{
             name: 'alertmanager-main',
             port: 9093,
+            namespace: $.values.common.namespace,
           }],
         }],
-        tls: {
-          secretName: 'techcasa-io-staging-tls',
-        },
       },
     ),
     grafana: ingress(
       'grafana',
       $.values.common.namespace,
       {
-        entryPoints: ['websecure'],
+        entryPoints: [
+          'web',
+          'websecure'
+        ],
         routes: [{
           kind: 'Rule',
           match: 'Host(`grafana.techcasa.io`)',
           services: [{
             name: 'grafana',
             port: 3000,
+            namespace: $.values.common.namespace,
           }],
         }],
-        tls: {
-          secretName: 'techcasa-io-staging-tls',
-        },
       },
     ),
     'prometheus-k8s': ingress(
       'prometheus-k8s',
       $.values.common.namespace,
       {
-        entryPoints: ['websecure'],
+        entryPoints: [
+          'web',
+          'websecure'
+        ],
         routes: [{
           kind: 'Rule',
           match: 'Host(`prometheus.techcasa.io`)',
           services: [{
             name: 'prometheus-k8s',
-            port: 9090,
+            port: 8080,
+            namespace: $.values.common.namespace,
           }],
         }],
-        tls: {
-          secretName: 'techcasa-io-staging-tls',
-        },
       },
     ),
   },

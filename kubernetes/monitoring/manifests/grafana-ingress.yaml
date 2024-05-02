@@ -10,12 +10,12 @@ metadata:
   namespace: monitoring
 spec:
   entryPoints:
+  - web
   - websecure
   routes:
   - kind: Rule
     match: Host(`grafana.techcasa.io`)
     services:
     - name: grafana
+      namespace: monitoring
       port: 3000
-  tls:
-    secretName: techcasa-io-staging-tls

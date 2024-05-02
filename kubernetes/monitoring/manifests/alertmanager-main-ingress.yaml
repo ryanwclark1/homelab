@@ -10,12 +10,12 @@ metadata:
   namespace: monitoring
 spec:
   entryPoints:
+  - web
   - websecure
   routes:
   - kind: Rule
     match: Host(`alertmanager.techcasa.io`)
     services:
     - name: alertmanager-main
+      namespace: monitoring
       port: 9093
-  tls:
-    secretName: techcasa-io-staging-tls
