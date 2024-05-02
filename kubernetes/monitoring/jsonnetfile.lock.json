@@ -88,8 +88,8 @@
           "subdir": "grafana-builder"
         }
       },
-      "version": "249e94b853952d0155d3ac4ce17c5fdbd90f779c",
-      "sum": "5ku1Hd8UPnjmn8nWyaTFzMpT3Pa+VylBnmposMSVEuU="
+      "version": "02db06f540086fa3f67d487bd01e1b314853fb8f",
+      "sum": "B49EzIY2WZsFxNMJcgRxE/gcZ9ltnS8pkOOV6Q5qioc="
     },
     {
       "source": {
@@ -214,6 +214,16 @@
       "version": "551856d42dff02ec38c5b0ea6a2d99c4cb127e82",
       "sum": "bY/Pcrrbynguq8/HaI88cQ3B2hLv/xc+76QILY7IL+g=",
       "name": "pyrra"
+    },
+    {
+      "source": {
+        "git": {
+          "remote": "https://github.com/ryanwclark1/homelab.git",
+          "subdir": "jsonnet/traefik-libsonnet/3.0/"
+        }
+      },
+      "version": "28a5e5b7b2006f67c04b60a8f2ab99b0e8245c09",
+      "sum": "zb7czmNypW6BfUsYHS6n/R7bx2T0+86BuU1OHyZjtHA="
     },
     {
       "source": {

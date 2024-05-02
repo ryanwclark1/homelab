@@ -1,19 +1,21 @@
-apiVersion: networking.k8s.io/v1
-kind: Ingress
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
 metadata:
   annotations:
+    kubernetes.io/ingress.class: traefik-external
     traefik.ingress.kubernetes.io/router.entrypoints: websecure
+    traefik.ingress.kubernetes.io/router.tls: "true"
+    traefik.ingress.kubernetes.io/router.tls.certresolver: letsencrypt
   name: prometheus-k8s
   namespace: monitoring
 spec:
   rules:
-  - host: prometheus.techcasa.io
-    http:
-      paths:
-      - backend:
-          service:
-            name: prometheus-k8s
-            port:
-              name: web
-        path: /
-        pathType: Prefix
+  - entryPoints: websecure
+    routes:
+    - kind: Rule
+      match: Host(`prometheus.techcasa.io`)
+      services:
+      - name: prometheus-k8s
+        port: 9090
+    tls:
+      secretName: techcasa-io-staging-tls

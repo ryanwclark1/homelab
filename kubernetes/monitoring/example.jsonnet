@@ -1,11 +1,14 @@
 local ingress(name, namespace, rules) = {
-  apiVersion: 'networking.k8s.io/v1',
-  kind: 'Ingress',
+  apiVersion: 'traefik.io/v1alpha1',
+  kind: 'IngressRoute',
   metadata: {
     name: name,
     namespace: namespace,
     annotations: {
+      'kubernetes.io/ingress.class': 'traefik-external',
       'traefik.ingress.kubernetes.io/router.entrypoints': 'websecure',
+      'traefik.ingress.kubernetes.io/router.tls': 'true',
+      'traefik.ingress.kubernetes.io/router.tls.certresolver': 'letsencrypt',
     },
   },
   spec: { rules: rules },
@@ -57,20 +60,17 @@ local kp =
       'alertmanager-main',
       $.values.common.namespace,
       [{
-        host: 'alertmanager.techcasa.io',
-        http: {
-          paths: [{
-            path: '/',
-            pathType: 'Prefix',
-            backend: {
-              service: {
-                name: 'alertmanager-main',
-                port: {
-                  name: 'web',
-                },
-              },
-            },
+        entryPoints: 'websecure',
+        routes: [{
+          kind: 'Rule',
+          match: 'Host(`alertmanager.techcasa.io`)',
+          services: [{
+            name: 'alertmanager-main',
+            port: 9093,
           }],
+        }],
+        tls: {
+          secretName: 'techcasa-io-staging-tls',
         },
       }]
     ),
@@ -78,20 +78,17 @@ local kp =
       'grafana',
       $.values.common.namespace,
       [{
-        host: 'grafana.techcasa.io',
-        http: {
-          paths: [{
-            path: '/',
-            pathType: 'Prefix',
-            backend: {
-              service: {
-                name: 'grafana',
-                port: {
-                  name: 'http',
-                },
-              },
-            },
+        entryPoints: 'websecure',
+        routes: [{
+          kind: 'Rule',
+          match: 'Host(`grafana.techcasa.io`)',
+          services: [{
+            name: 'grafana',
+            port: 3000,
           }],
+        }],
+        tls: {
+          secretName: 'techcasa-io-staging-tls',
         },
       }],
     ),
@@ -99,20 +96,17 @@ local kp =
       'prometheus-k8s',
       $.values.common.namespace,
       [{
-        host: 'prometheus.techcasa.io',
-        http: {
-          paths: [{
-            path: '/',
-            pathType: 'Prefix',
-            backend: {
-              service: {
-                name: 'prometheus-k8s',
-                port: {
-                  name: 'web',
-                },
-              },
-            },
+        entryPoints: 'websecure',
+        routes: [{
+          kind: 'Rule',
+          match: 'Host(`prometheus.techcasa.io`)',
+          services: [{
+            name: 'prometheus-k8s',
+            port: 9090,
           }],
+        }],
+        tls: {
+          secretName: 'techcasa-io-staging-tls',
         },
       }],
     ),
