@@ -9,7 +9,7 @@ metadata:
   name: alertmanager-main
   namespace: monitoring
 spec:
-- entryPoints: websecure
+  entryPoints: websecure
   routes:
   - kind: Rule
     match: Host(`alertmanager.techcasa.io`)

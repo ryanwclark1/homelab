@@ -9,7 +9,7 @@ metadata:
   name: prometheus-k8s
   namespace: monitoring
 spec:
-- entryPoints: websecure
+  entryPoints: websecure
   routes:
   - kind: Rule
     match: Host(`prometheus.techcasa.io`)

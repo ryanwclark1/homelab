@@ -59,7 +59,7 @@ local kp =
     'alertmanager-main': ingress(
       'alertmanager-main',
       $.values.common.namespace,
-      [{
+      {
         entryPoints: 'websecure',
         routes: [{
           kind: 'Rule',
@@ -72,12 +72,12 @@ local kp =
         tls: {
           secretName: 'techcasa-io-staging-tls',
         },
-      }]
+      },
     ),
     grafana: ingress(
       'grafana',
       $.values.common.namespace,
-      [{
+      {
         entryPoints: 'websecure',
         routes: [{
           kind: 'Rule',
@@ -90,12 +90,12 @@ local kp =
         tls: {
           secretName: 'techcasa-io-staging-tls',
         },
-      }],
+      },
     ),
     'prometheus-k8s': ingress(
       'prometheus-k8s',
       $.values.common.namespace,
-      [{
+      {
         entryPoints: 'websecure',
         routes: [{
           kind: 'Rule',
@@ -108,7 +108,7 @@ local kp =
         tls: {
           secretName: 'techcasa-io-staging-tls',
         },
-      }],
+      },
     ),
   },
 };
