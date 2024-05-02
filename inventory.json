@@ -21,7 +21,7 @@
           "id": 221,
           "disk_size": "12G",
           "disk": "tank",
-          "cores": 2,
+          "cores": 4,
           "sockets": 1,
           "memory": 8192,
           "role": "master"
@@ -39,7 +39,7 @@
           "id": 222,
           "disk_size": "12G",
           "disk": "tank",
-          "cores": 2,
+          "cores": 4,
           "sockets": 1,
           "memory": 8192,
           "role": "master"
@@ -50,7 +50,7 @@
           "id": 227,
           "disk_size": "12G",
           "disk": "tank",
-          "cores": 2,
+          "cores": 4,
           "sockets": 1,
           "memory": 8192,
           "role": "worker"
@@ -61,7 +61,7 @@
           "id": 228,
           "disk_size": "12G",
           "disk": "tank",
-          "cores": 2,
+          "cores": 4,
           "sockets": 1,
           "memory": 8192,
           "role": "worker"
@@ -72,7 +72,7 @@
           "id": 237,
           "disk_size": "200G",
           "disk": "tank",
-          "cores": 2,
+          "cores": 4,
           "sockets": 1,
           "memory": 8192,
           "role": "storage"
@@ -90,7 +90,7 @@
           "id": 223,
           "disk_size": "12G",
           "disk": "tank",
-          "cores": 2,
+          "cores": 4,
           "sockets": 1,
           "memory": 8192,
           "role": "master"
@@ -101,7 +101,7 @@
           "id": 229,
           "disk_size": "12G",
           "disk": "tank",
-          "cores": 2,
+          "cores": 4,
           "sockets": 1,
           "memory": 8192,
           "role": "worker"
@@ -112,7 +112,7 @@
           "id": 230,
           "disk_size": "12G",
           "disk": "tank",
-          "cores": 2,
+          "cores": 4,
           "sockets": 1,
           "memory": 8192,
           "role": "worker"
@@ -123,7 +123,7 @@
           "id": 238,
           "disk_size": "200G",
           "disk": "tank",
-          "cores": 2,
+          "cores": 4,
           "sockets": 1,
           "memory": 8192,
           "role": "storage"
@@ -141,7 +141,7 @@
           "id": 224,
           "disk_size": "12G",
           "disk": "tank",
-          "cores": 2,
+          "cores": 4,
           "sockets": 1,
           "memory": 8192,
           "role": "master"
@@ -152,7 +152,7 @@
           "id": 231,
           "disk_size": "12G",
           "disk": "tank",
-          "cores": 2,
+          "cores": 4,
           "sockets": 1,
           "memory": 8192,
           "role": "worker"
@@ -163,7 +163,7 @@
           "id": 232,
           "disk_size": "12G",
           "disk": "tank",
-          "cores": 2,
+          "cores": 4,
           "sockets": 1,
           "memory": 8192,
           "role": "worker"
@@ -174,7 +174,7 @@
           "id": 239,
           "disk_size": "200G",
           "disk": "tank",
-          "cores": 2,
+          "cores": 4,
           "sockets": 1,
           "memory": 8192,
           "role": "storage"
@@ -192,7 +192,7 @@
           "id": 225,
           "disk_size": "12G",
           "disk": "tank",
-          "cores": 2,
+          "cores": 4,
           "sockets": 2,
           "memory": 8192,
           "role": "master"
@@ -203,7 +203,7 @@
           "id": 233,
           "disk_size": "12G",
           "disk": "tank",
-          "cores": 2,
+          "cores": 4,
           "sockets": 2,
           "memory": 8192,
           "role": "worker"
@@ -214,7 +214,7 @@
           "id": 234,
           "disk_size": "12G",
           "disk": "tank",
-          "cores": 2,
+          "cores": 4,
           "sockets": 2,
           "memory": 8192,
           "role": "worker"
@@ -232,7 +232,7 @@
           "id": 226,
           "disk_size": "12G",
           "disk": "tank",
-          "cores": 2,
+          "cores": 4,
           "sockets": 1,
           "memory": 8192,
           "role": "master"

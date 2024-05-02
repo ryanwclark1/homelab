@@ -1,0 +1,202 @@
+annotations: {}
+csi:
+  attacherReplicaCount: null
+  kubeletRootDir: null
+  provisionerReplicaCount: null
+  resizerReplicaCount: null
+  snapshotterReplicaCount: null
+defaultSettings:
+  allowCollectingLonghornUsageMetrics: null
+  allowRecurringJobWhileVolumeDetached: true
+  allowVolumeCreationWithDegradedAvailability: null
+  autoCleanupSystemGeneratedSnapshot: null
+  autoDeletePodWhenVolumeDetachedUnexpectedly: null
+  autoSalvage: null
+  backingImageCleanupWaitInterval: null
+  backingImageRecoveryWaitInterval: null
+  backupCompressionMethod: lz4
+  backupConcurrentLimit: 2
+  backupTarget: null
+  backupTargetCredentialSecret: null
+  backupstorePollInterval: 300
+  concurrentAutomaticEngineUpgradePerNodeLimit: null
+  concurrentReplicaRebuildPerNodeLimit: null
+  concurrentVolumeBackupRestorePerNodeLimit: null
+  createDefaultDiskLabeledNodes: true
+  defaultDataLocality: disabled
+  defaultDataPath: /var/lib/longhorn/
+  defaultLonghornStaticStorageClass: longhorn-static
+  defaultReplicaCount: 3
+  deletingConfirmationFlag: null
+  disableRevisionCounter: null
+  disableSchedulingOnCordonedNode: null
+  disableSnapshotPurge: null
+  engineReplicaTimeout: 8
+  failedBackupTTL: 1440
+  fastReplicaRebuildEnabled: null
+  guaranteedInstanceManagerCPU: 12
+  kubernetesClusterAutoscalerEnabled: null
+  logLevel: Debug
+  nodeDownPodDeletionPolicy: do-nothing
+  nodeDrainPolicy: null
+  offlineReplicaRebuilding: null
+  orphanAutoDeletion: true
+  priorityClass: null
+  recurringFailedJobsHistoryLimit: 1
+  recurringSuccessfulJobsHistoryLimit: 1
+  removeSnapshotsDuringFilesystemTrim: null
+  replicaAutoBalance: disabled
+  replicaFileSyncHttpClientTimeout: 30
+  replicaReplenishmentWaitInterval: 600
+  replicaSoftAntiAffinity: null
+  replicaZoneSoftAntiAffinity: null
+  restoreConcurrentLimit: 2
+  restoreVolumeRecurringJobs: null
+  snapshotDataIntegrity: null
+  snapshotDataIntegrityCronjob: 0 0 */7 * *
+  snapshotDataIntegrityImmediateCheckAfterSnapshotCreation: null
+  storageMinimalAvailablePercentage: 25
+  storageNetwork: null
+  storageOverProvisioningPercentage: 90
+  storageReservedPercentageForDefaultDisk: 30
+  supportBundleFailedHistoryLimit: 1
+  systemManagedComponentsNodeSelector: null
+  systemManagedPodsImagePullPolicy: null
+  taintToleration: null
+  upgradeChecker: null
+  v2DataEngine: null
+enablePSP: false
+global:
+  cattle:
+    windowsCluster:
+      defaultSetting:
+        systemManagedComponentsNodeSelector: kubernetes.io/os:linux
+        taintToleration: cattle.io/os=linux:NoSchedule
+      enabled: false
+      nodeSelector:
+        kubernetes.io/os: linux
+      tolerations:
+        - effect: NoSchedule
+          key: cattle.io/os
+          operator: Equal
+          value: linux
+helmPreUpgradeCheckerJob:
+  enabled: true
+image:
+  csi:
+    attacher:
+      repository: rancher/mirrored-longhornio-csi-attacher
+      tag: v4.4.2
+    livenessProbe:
+      repository: rancher/mirrored-longhornio-livenessprobe
+      tag: v2.12.0
+    nodeDriverRegistrar:
+      repository: rancher/mirrored-longhornio-csi-node-driver-registrar
+      tag: v2.9.2
+    provisioner:
+      repository: rancher/mirrored-longhornio-csi-provisioner
+      tag: v3.6.2
+    resizer:
+      repository: rancher/mirrored-longhornio-csi-resizer
+      tag: v1.9.2
+    snapshotter:
+      repository: rancher/mirrored-longhornio-csi-snapshotter
+      tag: v6.3.2
+  longhorn:
+    backingImageManager:
+      repository: rancher/mirrored-longhornio-backing-image-manager
+      tag: v1.5.4
+    engine:
+      repository: rancher/mirrored-longhornio-longhorn-engine
+      tag: v1.5.4
+    instanceManager:
+      repository: rancher/mirrored-longhornio-longhorn-instance-manager
+      tag: v1.5.4
+    manager:
+      repository: rancher/mirrored-longhornio-longhorn-manager
+      tag: v1.5.4
+    shareManager:
+      repository: rancher/mirrored-longhornio-longhorn-share-manager
+      tag: v1.5.4
+    supportBundleKit:
+      repository: rancher/mirrored-longhornio-support-bundle-kit
+      tag: v0.0.33
+    ui:
+      repository: rancher/mirrored-longhornio-longhorn-ui
+      tag: v1.5.4
+  pullPolicy: IfNotPresent
+  defaultImage: true
+ingress:
+  annotations: null
+  enabled: false
+  host: sslip.io
+  ingressClassName: null
+  path: /
+  secrets: null
+  secureBackends: false
+  tls: false
+  tlsSecret: longhorn.local-tls
+longhornDriver:
+  nodeSelector: {}
+  priorityClass: null
+  tolerations: []
+longhornManager:
+  log:
+    format: plain
+  nodeSelector: {}
+  priorityClass: null
+  serviceAnnotations: {}
+  tolerations: []
+longhornUI:
+  nodeSelector: {}
+  priorityClass: null
+  replicas: 2
+  tolerations: []
+metrics:
+  serviceMonitor:
+    enabled: false
+namespaceOverride: ''
+networkPolicies:
+  enabled: false
+  type: k3s
+persistence:
+  backingImage:
+    dataSourceParameters: null
+    dataSourceType: null
+    enable: false
+    expectedChecksum: null
+    name: null
+  defaultClass: true
+  defaultClassReplicaCount: 3
+  defaultDataLocality: disabled
+  defaultFsType: ext4
+  defaultMkfsParams: ''
+  defaultNodeSelector:
+    enable: true
+    selector: storage=true
+  migratable: false
+  nfsOptions: ''
+  reclaimPolicy: Delete
+  recurringJobSelector:
+    enable: false
+    jobList: []
+  removeSnapshotsDuringFilesystemTrim: ignored
+privateRegistry:
+  createSecret: null
+  registryPasswd: null
+  registrySecret: null
+  registryUrl: null
+  registryUser: null
+service:
+  manager:
+    loadBalancerIP: ''
+    loadBalancerSourceRanges: ''
+    nodePort: ''
+    type: ClusterIP
+  ui:
+    nodePort: null
+    type: ClusterIP
+serviceAccount:
+  annotations: {}
+longhorn:
+  default_setting: true
