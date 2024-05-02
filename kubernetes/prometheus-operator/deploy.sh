@@ -2,6 +2,7 @@
 
 WORKING_DIR=$(dirname "$BASH_SOURCE")
 WORKING_DIR=$(cd "$WORKING_DIR"; pwd)
+NAME_SPACE="monitoring"
 
 create_namespace() {
   if kubectl get ns "$NAME_SPACE" > /dev/null 2>&1; then
@@ -24,6 +25,6 @@ kubectl apply -f "$WORKING_DIR/rbac"
 
 kubectl apply -f "$WORKING_DIR/deployment"
 
-kubectl wait --for=condition=Ready pods -l  app.kubernetes.io/name=prometheus-operator -n $NAME_SPACE
+kubectl wait --for=condition=Ready pods -l  app.kubernetes.io/name=prometheus-operator -n "$NAME_SPACE"
 
 kubectl get pods -n $WORKING_DIR
