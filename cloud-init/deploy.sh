@@ -124,7 +124,7 @@ template_ip=$(jq -r '.nodes[] | select(.name == "'$template_node'") | .ip' $inve
 # Loop through VM data and deploy VMs
 mapfile -t nodes < <(jq -c '.nodes[]' $inventory)
 
-for node in "${nodes[@]}"; do (
+for node in "${nodes[@]}";
   node_ip=$(echo "$node" | jq -r '.ip')
   node_name=$(echo "$node" | jq -r '.name')
   mapfile -t vms < <(echo "$node" | jq -c '.vms[]')
@@ -159,9 +159,8 @@ for node in "${nodes[@]}"; do (
   ) &
   done
   wait
-) &
+
 done
-wait
 echo "All VMs deployed and configured."
 
 ask_to_start_vm
