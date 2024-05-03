@@ -21,17 +21,29 @@ spec:
 ---
 apiVersion: v1
 kind: Secret
+type: kubernetes.io/tls
 metadata:
   name: techcasa-io-staging-tls
   namespace: traefik
   annotations:
     reflector.v1.k8s.emberstack.com/reflects: "cert-manager/techcasa-io-staging-tls"
+    cert-manager.io/alt-names: *.techcasa.io
+    cert-manager.io/certificate-name: techcasa-io-staging
+    cert-manager.io/common-name: *.techcasa.io
+    cert-manager.io/issuer-kind: ClusterIssuer
+    cert-manager.io/issuer-name: letsencrypt-staging
 
 ---
 apiVersion: v1
 kind: Secret
+type: kubernetes.io/tls
 metadata:
   name: techcasa-io-staging-tls
   namespace: monitoring
   annotations:
     reflector.v1.k8s.emberstack.com/reflects: "cert-manager/techcasa-io-staging-tls"
+    cert-manager.io/alt-names: *.techcasa.io
+    cert-manager.io/certificate-name: techcasa-io-staging
+    cert-manager.io/common-name: *.techcasa.io
+    cert-manager.io/issuer-kind: ClusterIssuer
+    cert-manager.io/issuer-name: letsencrypt-staging
