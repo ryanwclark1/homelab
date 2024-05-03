@@ -16,7 +16,7 @@ spec:
       reflector.v1.k8s.emberstack.com/reflection-allowed: "true"
       # reflector.v1.k8s.emberstack.com/reflection-auto-enabled: "true"
       # reflector.v1.k8s.emberstack.com/reflection-auto-namespaces: "traefik"
-      reflector.v1.k8s.emberstack.com/reflection-allowed-namespaces: "traefik"
+      reflector.v1.k8s.emberstack.com/reflection-allowed-namespaces: "traefik,monitoring"
 
 ---
 apiVersion: v1
@@ -24,5 +24,14 @@ kind: Secret
 metadata:
   name: techcasa-io-staging-tls
   namespace: traefik
+  annotations:
+    reflector.v1.k8s.emberstack.com/reflects: "cert-manager/techcasa-io-staging-tls"
+
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: techcasa-io-staging-tls
+  namespace: monitoring
   annotations:
     reflector.v1.k8s.emberstack.com/reflects: "cert-manager/techcasa-io-staging-tls"
