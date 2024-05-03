@@ -15,7 +15,6 @@ hosts=($(jq -r '.nodes[].ip' $inventory))
 
 SSH_KEY="$HOME/.ssh/$cert_name"
 
-
 # Ensure jq is installed
 source ./ensure_jq_installed.sh
 
@@ -35,7 +34,7 @@ fi
 for host in "${hosts[@]}"; do (
   echo "Copying SSH public key to $host..."
   ssh-keyscan -H $host >> ~/.ssh/known_hosts
-  ssh-copy-id -i "${SSH_KEY}" "$prox_user@$host" > /dev/null
+  ssh-copy-id -i "${SSH_KEY}" "$prox_user@$host"
 ) &
 done
 wait
