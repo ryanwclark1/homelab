@@ -113,6 +113,7 @@ deploy_vm () {
   if [ -n "$storage_disk_size" ] && [ "$storage_disk_size" != "null" ]; then
     echo $storage_disk_size;
     storage_disk_size=\$(echo $storage_disk_size | sed 's/[^0-9]*//g');
+    echo $storage_disk_size;
     qm set $vm_id --scsi1 $disk:$storage_disk_size,ssd=1;
   fi
   temp_file=\$(mktemp -t tmp_key.XXX);
