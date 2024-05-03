@@ -103,6 +103,27 @@ ask_to_start_vm() {
   done
 }
 
+deploy_vm () {
+  ssh "$prox_user@$node_ip" bash <<EOF
+  qm set $vm_id --ipconfig0 ip=$vm_ip/$CIDR,gw=$GATEWAY;
+  qm set $vm_id --tags "$TAG,$role";
+  qm set $vm_id --cores "$cores" --sockets "$sockets" --memory "$memory";
+  qm disk move $vm_id scsi0 $disk --delete 1;
+  qm disk resize $vm_id scsi0 $disk_size;
+  if [ -n "$storage_disk_size" ] && [ "$storage_disk_size" != "null" ]; then
+    echo $storage_disk_size;
+    storage_disk_size=\$(echo $storage_disk_size | sed 's/[^0-9]*//g');
+    qm set $vm_id --scsi1 $disk:$storage_disk_size,ssd=1;
+  fi
+  temp_file=\$(mktemp -t tmp_key.XXX);
+  echo $SSH_KEY_TEXT > \$temp_file;
+  cat ~/.ssh/id_rsa.pub >> \$temp_file;
+  qm set $vm_id --sshkey \$temp_file;
+  rm \$temp_file;
+  exit
+EOF
+}
+
 ensure_inventory_exists
 ask_to_intialize
 # Initialize by checking inventory and jq
@@ -131,24 +152,7 @@ for node in "${nodes[@]}"; do
     log_action "Cloning VM for $vm_name on $node_name ($node_ip) with ID $vm_id..."
     clone_vm
     log_action "Configuring VM on $node_ip..."
-    ssh "$prox_user@$node_ip" bash <<EOF
-      qm set $vm_id --ipconfig0 ip=$vm_ip/$CIDR,gw=$GATEWAY;
-      qm set $vm_id --tags "$TAG,$role";
-      qm set $vm_id --cores "$cores" --sockets "$sockets" --memory "$memory";
-      qm disk move $vm_id scsi0 $disk --delete 1;
-      qm disk resize $vm_id scsi0 $disk_size;
-      if [ -n "$storage_disk_size" ] && [ "$storage_disk_size" != "null" ]; then
-        echo $storage_disk_size;
-        storage_disk_size=\$(echo $storage_disk_size | sed 's/[^0-9]*//g');
-        qm set $vm_id --scsi1 $disk:$storage_disk_size,ssd=1;
-      fi
-      temp_file=\$(mktemp -t tmp_key.XXX);
-      echo $SSH_KEY_TEXT > \$temp_file;
-      cat ~/.ssh/id_rsa.pub >> \$temp_file;
-      qm set $vm_id --sshkey \$temp_file;
-      rm \$temp_file;
-      exit
-EOF
+    deploy_vm
     log_action "VM $vm_name ($vm_id) deployed and configured at $vm_ip."
   done
 done
