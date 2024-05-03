@@ -107,12 +107,6 @@ deploy_vm () {
   qm set $vm_id --cores "$cores" --sockets "$sockets" --memory "$memory";
   qm disk move $vm_id scsi0 $disk --delete 1;
   qm disk resize $vm_id scsi0 $disk_size;
-  if [ -n "$storage_disk_size" ] && [ "$storage_disk_size" != "null" ]; then
-    echo $storage_disk_size;
-    storage_disk_size=\$(echo $storage_disk_size | tr -d '[:alpha:]');
-    echo $storage_disk_size;
-    qm set $vm_id --scsi1 $disk:$storage_disk_size,ssd=1;
-  fi
   temp_file=\$(mktemp -t tmp_key.XXX);
   echo $SSH_KEY_TEXT > \$temp_file;
   cat ~/.ssh/id_rsa.pub >> \$temp_file;
@@ -151,6 +145,13 @@ for node in "${nodes[@]}"; do
     clone_vm
     log_action "Configuring VM on $node_ip..."
     deploy_vm
+    if [ -n "$storage_disk_size" ] && [ "$storage_disk_size" != "null" ]; then
+      storage_disk_size=$(echo $storage_disk_size | tr -d '[:alpha:]');
+      ssh "$prox_user@$node_ip" bash <<EOF
+        qm set $vm_id --scsi1 $disk:$storage_disk_size,ssd=1;
+        exit
+EOF
+  fi
     log_action "VM $vm_name ($vm_id) deployed and configured at $vm_ip."
   done
 done

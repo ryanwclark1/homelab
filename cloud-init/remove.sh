@@ -27,7 +27,7 @@ delete_vm() {
   local vm_id=$1
   local target_ip=$2
   log_action "Deleting VM ID $vm_id on $target_ip"
-  ssh "$USER@$target_ip" "qm stop $vm_id; qm destroy $vm_id"
+  ssh "$USER@$target_ip" "qm stop $vm_id; qm destroy $vm_id" > /dev/null
 }
 
 # Ensure the inventory file exists

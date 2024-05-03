@@ -294,7 +294,8 @@ for newstorage in "${storage[@]}"; do (
   --k3s-extra-args " \
     --node-ip=$newstorage \
     --node-name=$newstorage_name \
-    --node-label longhorn=true"
+    --node-label longhorn=true \
+    --node-label node.longhorn.io/create-default-disk=true"
   echo -e " \033[32;5mStorage node joined successfully!\033[0m"
   ) &
 done
