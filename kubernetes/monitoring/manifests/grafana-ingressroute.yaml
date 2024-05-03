@@ -9,7 +9,7 @@ spec:
   - websecure
   routes:
   - kind: Rule
-    match: Host(`grafana.techcasa.io`) && Path(`/login`)
+    match: Host(`grafana.techcasa.io`)
     services:
     - name: grafana
       namespace: monitoring

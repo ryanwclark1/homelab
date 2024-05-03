@@ -1,4 +1,4 @@
-local ingress(name, namespace, specs) = {
+local ingressroute(name, namespace, specs) = {
   apiVersion: 'traefik.io/v1alpha1',
   kind: 'IngressRoute',
   metadata: {
@@ -55,8 +55,8 @@ local kp =
     },
   },
   // Create ingress objects per application
-  ingress+:: {
-    'alertmanager-main': ingress(
+  ingressroute+:: {
+    'alertmanager-main': ingressroute(
       'alertmanager-main',
       $.values.common.namespace,
       {
@@ -75,7 +75,7 @@ local kp =
         }],
       },
     ),
-    grafana: ingress(
+    grafana: ingressroute(
       'grafana',
       $.values.common.namespace,
       {
@@ -85,7 +85,7 @@ local kp =
         ],
         routes: [{
           kind: 'Rule',
-          match: 'Host(`grafana.techcasa.io`) && Path(`/login`)',
+          match: 'Host(`grafana.techcasa.io`)',
           services: [{
             name: 'grafana',
             port: 3000,
@@ -94,7 +94,7 @@ local kp =
         }],
       },
     ),
-    'prometheus-k8s': ingress(
+    'prometheus-k8s': ingressroute(
       'prometheus-k8s',
       $.values.common.namespace,
       {
@@ -107,7 +107,7 @@ local kp =
           match: 'Host(`prometheus.techcasa.io`)',
           services: [{
             name: 'prometheus-k8s',
-            port: 8080,
+            port: 9090,
             namespace: $.values.common.namespace,
           }],
         }],
@@ -132,7 +132,7 @@ local kp =
 // };
 
 
-{ [name + '-ingress']: kp.ingress[name] for name in std.objectFields(kp.ingress) }
+{ [name + '-ingressroute']: kp.ingressroute[name] for name in std.objectFields(kp.ingressroute) }
 { 'setup/0namespace-namespace': kp.kubePrometheus.namespace } +
 {
   ['setup/prometheus-operator-' + name]: kp.prometheusOperator[name]
