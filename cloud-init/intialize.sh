@@ -15,8 +15,6 @@ hosts=($(jq -r '.nodes[].ip' $inventory))
 
 SSH_KEY="$HOME/.ssh/$cert_name"
 
-# Ensure jq is installed
-source ./ensure_jq_installed.sh
 
 # Generate SSH key if it doesn't exist
 if [ ! -f "$SSH_KEY" ]; then
