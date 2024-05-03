@@ -140,7 +140,7 @@ for node in "${nodes[@]}"; do
       if [ -n "$storage_disk_size" ] && [ "$storage_disk_size" != "null" ]; then
         echo $storage_disk_size;
         storage_disk_size=\$(echo $storage_disk_size | sed 's/[^0-9]*//g');
-        qm set $vm_id --scsi1 $disk:$storage_disk_size --ssd 1;
+        qm set $vm_id --scsi1 $disk:$storage_disk_size,ssd=1;
       fi
       temp_file=\$(mktemp -t tmp_key.XXX);
       echo $SSH_KEY_TEXT > \$temp_file;
