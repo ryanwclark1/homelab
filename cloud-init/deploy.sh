@@ -109,7 +109,7 @@ deploy_vm () {
   qm disk resize $vm_id scsi0 $disk_size;
   if [ -n "$storage_disk_size" ] && [ "$storage_disk_size" != "null" ]; then
     echo $storage_disk_size;
-    storage_disk_size=\$(echo $storage_disk_size | tr -d '[:alpha:]);
+    storage_disk_size=\$(echo $storage_disk_size | tr -d '[:alpha:]');
     echo $storage_disk_size;
     qm set $vm_id --scsi1 $disk:$storage_disk_size,ssd=1;
   fi

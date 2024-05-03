@@ -35,7 +35,7 @@ fi
 for host in "${hosts[@]}"; do (
   echo "Copying SSH public key to $host..."
   ssh-keyscan -H $host >> ~/.ssh/known_hosts
-  ssh-copy-id -i "${SSH_KEY}" "$prox_user@$host"
+  ssh-copy-id -i "${SSH_KEY}" "$prox_user@$host" > /dev/null
 ) &
 done
 wait
