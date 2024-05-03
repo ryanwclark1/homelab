@@ -38,7 +38,7 @@ clone_vm() {
     --target $node_name \
     --storage init
     exit
-  " > /dev/null
+  "
 }
 
 ask_to_intialize() {
@@ -57,7 +57,7 @@ ask_to_intialize() {
 
       case "$user_input" in
         y|yes)
-          source ./intialize.sh > /dev/null
+          source ./intialize.sh
           echo "Environment intialized."
           break
           ;;
@@ -142,9 +142,28 @@ for node in "${nodes[@]}"; do
     role=$(echo "$vm" | jq -r '.role')
     storage_disk_size=$(echo "$vm" | jq -r '.storage_disk_size')
     log_action "Cloning VM for $vm_name on $node_name ($node_ip) with ID $vm_id..."
-    clone_vm
+    ssh "$prox_user@$template_ip" <<EOF
+      qm clone $BASE_VM $vm_id \
+      --name $vm_name \
+      --full true \
+      --target $node_name \
+      --storage init
+      exit
+EOF
     log_action "Configuring VM on $node_ip..."
-    deploy_vm
+    ssh "$prox_user@$node_ip" bash <<EOF
+      qm set $vm_id --ipconfig0 ip=$vm_ip/$CIDR,gw=$GATEWAY;
+      qm set $vm_id --tags "$TAG,$role";
+      qm set $vm_id --cores "$cores" --sockets "$sockets" --memory "$memory";
+      qm disk move $vm_id scsi0 $disk --delete 1;
+      qm disk resize $vm_id scsi0 $disk_size;
+      temp_file=\$(mktemp -t tmp_key.XXX);
+      echo $SSH_KEY_TEXT > \$temp_file;
+      cat ~/.ssh/id_rsa.pub >> \$temp_file;
+      qm set $vm_id --sshkey \$temp_file;
+      rm \$temp_file;
+      exit
+EOF
     if [ -n "$storage_disk_size" ] && [ "$storage_disk_size" != "null" ]; then
       storage_disk_size=$(echo $storage_disk_size | tr -d '[:alpha:]');
       ssh "$prox_user@$node_ip" bash <<EOF
