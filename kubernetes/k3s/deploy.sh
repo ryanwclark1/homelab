@@ -204,7 +204,7 @@ k3sup install \
     --kube-controller-manager-arg bind-address=0.0.0.0 \
     --kube-proxy-arg bind-address=0.0.0.0 \
     --kube-scheduler-arg bind-address=0.0.0.0 \
-    --node-taint node-role.kubernetes.io/master=true:NoSchedule" \
+    --node-taint node-role.kubernetes.io/control-plane:NoSchedule" \
   --merge \
   --sudo \
   --local-path $HOME/.kube/config \
@@ -253,7 +253,7 @@ for newmaster in "${masters[@]}"; do (
     --kube-controller-manager-arg bind-address=0.0.0.0 \
     --kube-proxy-arg bind-address=0.0.0.0 \
     --kube-scheduler-arg bind-address=0.0.0.0 \
-    --node-taint node-role.kubernetes.io/master=true:NoSchedule" \
+    --node-taint node-role.kubernetes.io/control-plane:NoSchedule" \
   --server-user $host_user
   echo -e " \033[32;5mMaster node joined successfully!\033[0m"
   ) &
