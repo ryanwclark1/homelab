@@ -57,11 +57,12 @@ ask_to_intialize() {
 
       case "$user_input" in
         y|yes)
-          source ./intialize.sh
+          source ./intialize.sh > /dev/null
+          echo "Environment intialized."
           break
           ;;
         n|no)
-          echo "Function will not run."
+          echo "Environment will not be intialized"
           break
           ;;
         *)
@@ -77,15 +78,11 @@ ask_to_start_vm() {
       # Prompt the user. The colon after the question suggests a default value of 'yes'
       echo -n "Do you want to start the VMs? [Y/n]: "
       read -r user_input
-
       # Default to 'yes' if the input is empty
       if [[ -z "$user_input" ]]; then
         user_input="yes"
       fi
-
-      # Convert to lowercase to simplify the comparison
       user_input=$(echo "$user_input" | tr '[:upper:]' '[:lower:]')
-
       case "$user_input" in
         y|yes)
           source ./start.sh
@@ -112,7 +109,7 @@ deploy_vm () {
   qm disk resize $vm_id scsi0 $disk_size;
   if [ -n "$storage_disk_size" ] && [ "$storage_disk_size" != "null" ]; then
     echo $storage_disk_size;
-    storage_disk_size=\$(echo $storage_disk_size | sed 's/[^0-9]*//g');
+    storage_disk_size=\$(echo $storage_disk_size | tr -d '[:alpha:]);
     echo $storage_disk_size;
     qm set $vm_id --scsi1 $disk:$storage_disk_size,ssd=1;
   fi
