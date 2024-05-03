@@ -4,12 +4,12 @@ local ingress(name, namespace, specs) = {
   metadata: {
     name: name,
     namespace: namespace,
-    annotations: {
-      'kubernetes.io/ingress.class': 'traefik-external',
-      'traefik.ingress.kubernetes.io/router.entrypoints': 'websecure',
-      'traefik.ingress.kubernetes.io/router.tls': 'true',
-      'traefik.ingress.kubernetes.io/router.tls.certresolver': 'letsencrypt',
-    },
+    // annotations: {
+    //   'kubernetes.io/ingress.class': 'traefik-external',
+    //   'traefik.ingress.kubernetes.io/router.entrypoints': 'websecure',
+    //   'traefik.ingress.kubernetes.io/router.tls': 'true',
+    //   'traefik.ingress.kubernetes.io/router.tls.certresolver': 'letsencrypt',
+    // },
   },
   spec: specs,
 };
@@ -85,7 +85,7 @@ local kp =
         ],
         routes: [{
           kind: 'Rule',
-          match: 'Host(`grafana.techcasa.io`)',
+          match: 'Host(`grafana.techcasa.io`) && Path(`/login`)',
           services: [{
             name: 'grafana',
             port: 3000,
