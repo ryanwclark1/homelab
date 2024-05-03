@@ -17,7 +17,7 @@ SSH_KEY="$HOME/.ssh/$cert_name"
 
 
 # Ensure jq is installed
-source ../base/ensure_jq_installed.sh
+source ../ensure_jq_installed.sh
 
 # Generate SSH key if it doesn't exist
 if [ ! -f "$SSH_KEY" ]; then

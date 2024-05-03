@@ -106,7 +106,7 @@ ask_to_start_vm() {
 ensure_inventory_exists
 ask_to_intialize
 # Initialize by checking inventory and jq
-source ../base/ensure_jq_installed.sh
+source ../ensure_jq_installed.sh
 
 # Loop through VM data and deploy VMs
 mapfile -t nodes < <(jq -c '.nodes[]' $inventory)
