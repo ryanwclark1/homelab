@@ -1,0 +1,27 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+  labels:
+    app.kubernetes.io/instance: flux-system
+    app.kubernetes.io/part-of: flux
+  name: flux
+  namespace: flux-system
+spec:
+  ingressClassName: traefik
+  rules:
+    - host: flux.techcasa.io
+      http:
+        paths:
+          - backend:
+              service:
+                name: notification-controller
+                port:
+                  name: http
+            path: /
+            pathType: Prefix
+  tls:
+    - hosts:
+        - flux.techcasa.io
+      secretName: flux-tls

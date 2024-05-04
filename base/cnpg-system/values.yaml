@@ -1,0 +1,18 @@
+# Config reference: https://github.com/cloudnative-pg/charts/tree/main
+
+additionalArgs:
+- "--metrics-bind-address=0.0.0.0:8080"
+
+resources:
+  requests:
+    cpu: 7m
+    memory: 58Mi
+  limits:
+    cpu: 28m
+    memory: 120Mi
+
+nodeSelector: {}
+
+config:
+  data:
+    INHERITED_LABELS: "app.kubernetes.io/*"

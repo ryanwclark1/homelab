@@ -1,0 +1,10 @@
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: GitRepository
+metadata:
+  name: homelab
+  namespace: flux-apps
+spec:
+  interval: 60s
+  ref:
+    branch: master
+  url: https://github.com/ryanwclark1/homelab

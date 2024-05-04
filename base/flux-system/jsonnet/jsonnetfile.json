@@ -1,0 +1,23 @@
+{
+  "version": 1,
+  "dependencies": [
+    {
+      "source": {
+        "git": {
+          "remote": "https://github.com/ryanwclark1/jsonnet-libs",
+          "subdir": "utils"
+        }
+      },
+      "version": "main"
+    },
+      {
+        "source": {
+          "local": {
+            "directory": "../../../lib/jsonnet/utils"
+          }
+        },
+        "version": ""
+      }
+  ],
+  "legacyImports": false
+}

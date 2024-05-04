@@ -1,0 +1,38 @@
+# Config reference: https://github.com/longhorn/longhorn/tree/master/chart
+
+persistence:
+  defaultClass: false
+
+defaultSettings:
+  defaultDataPath: "/var/lib/rancher/longhorn"
+  snapshotDataIntegrity: "fast-check"
+  backupTarget: "nfs://10.10.100.210:/mnt/tank/longhorn-backup"
+
+longhornUI:
+  replicas: 1
+
+longhornManager:
+  priorityClass: "system-node-critical"
+
+longhornDriver:
+  priorityClass: "system-node-critical"
+
+longhornConversionWebhook:
+  replicas: 1
+
+longhornAdmissionWebhook:
+  replicas: 1
+
+longhornRecoveryBackend:
+  replicas: 1
+
+ingress:
+  enabled: true
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+    traefik.ingress.kubernetes.io/router.middlewares: auth-traefik-forward-auth@kubernetescrd
+    traefik.ingress.kubernetes.io/service.sticky.cookie: "true"
+  ingressClassName: traefik
+  tls: true
+  tlsSecret: "longhorn-ui-tls"
+  host: "longhorn.techcasa.io"

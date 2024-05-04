@@ -1,9 +1,3 @@
-Name: k3s-workbench
-Mode: Full Clone
-Target Storage: tank
-IP Config/IPv/4: 10.10.100.220/23
-IP Config/Gateway: 10.10.100.1
+# Base
 
-apt install git
-git clone https://github.com/ryanwclark1/homelab.git
-export TERM=xterm-256color
+Directory contains base system applications running on a cluster. This can be considered a "core" of a platform and needs to be provisioned first (before applications from `apps` directory)

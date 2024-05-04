@@ -1,0 +1,22 @@
+# Config reference: https://github.com/deliveryhero/helm-charts/blob/master/stable/node-problem-detector/values.yaml
+
+metrics:
+  enabled: true
+  serviceMonitor:
+    enabled: true
+    additionalRelabelings:
+    - action: replace
+      sourceLabels:
+      - __meta_kubernetes_pod_node_name
+      targetLabel: node
+
+  prometheusRule:
+    enabled: true
+
+resources:
+  limits:
+    cpu: 20m
+    memory: 60Mi
+  requests:
+    cpu: 3m
+    memory: 18Mi

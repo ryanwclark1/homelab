@@ -39,7 +39,7 @@ qm clone 5001 231 \
   --target james \
   --storage tank
 
-qm set 231 --ipconfig0 ip=10.10.100.231/23,gw=10.10.100.1
+qm set 231 --ipconfig0 ip=10.10.101.231/23,gw=10.10.100.1
 qm disk resize 231 scsi0 +5G
 ```
 
@@ -49,5 +49,5 @@ qm clone 5002 231 \
   --target james \
   --storage tank
 
-qm set 231 --ipconfig0 ip=10.10.100.231/23,gw=10.10.100.1
+qm set 231 --ipconfig0 ip=10.10.101.231/23,gw=10.10.100.1
 qm disk resize 231 scsi0 +5G
