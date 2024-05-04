@@ -54,17 +54,16 @@ EOF
     ssh $host_user@$node -i ~/.ssh/$cert_name sudo su <<EOF
       BLK_ID=/dev/sdb
       MOUNT_POINT=/var/lib/longhorn
-
-      # sudo apt install parted
       echo 'label: gpt' | sudo sfdisk /dev/sdb
       echo ',,L' | sudo sfdisk /dev/sdb
       sudo mkfs.ext4 -F /dev/sdb1
       PART_UUID=$(sudo blkid | grep $BLK_ID | rev | cut -d ' ' -f -1 | tr -d '"' | rev)
       sudo mkdir -p $MOUNT_POINT
       echo "$PART_UUID $MOUNT_POINT ext4 defaults 0 2" | sudo tee -a /etc/fstab
+      sudo systemctl daemon-reload
       exit
 EOF
-
+    fi
     echo -e " \033[32;5mNode: $node Intialized!\033[0m"
   done
 
@@ -248,7 +247,7 @@ ssh -i ~/.ssh/$cert_name $host_user@$master1 sudo su <<- EOF
 EOF
 
 # Add new master nodes (servers) & workers
-for newmaster in "${masters[@]}"; do (
+for newmaster in "${masters[@]}"; do
   newmaster_name=$(jq -r --arg ip "$newmaster" '.nodes[].vms[] | select(.ip == $ip) | .name' "$inventory")
   k3sup join \
   --ip $newmaster \
@@ -272,13 +271,11 @@ for newmaster in "${masters[@]}"; do (
     --node-taint node-role.kubernetes.io/control-plane:NoSchedule" \
   --server-user $host_user
   echo -e " \033[32;5mMaster node joined successfully!\033[0m"
-  ) &
 done
-wait
 echo -e " \033[32;5mAll master nodes joined successfully!\033[0m"
 
 # add workers
-for newworker in "${workers[@]}"; do (
+for newworker in "${workers[@]}"; do
   newworker_name=$(jq -r --arg ip "$newworker" '.nodes[].vms[] | select(.ip == $ip) | .name' "$inventory")
   k3sup join \
   --ip $newworker \
@@ -292,13 +289,11 @@ for newworker in "${workers[@]}"; do (
     --node-name=$newworker_name \
     --node-label worker=true"
   echo -e " \033[32;5mAgent node joined successfully!\033[0m"
-  ) &
 done
-wait
 echo -e " \033[32;5mAll worker nodes joined successfully!\033[0m"
 
 # add storage nodes
-for newstorage in "${storage[@]}"; do (
+for newstorage in "${storage[@]}"; do
   newstorage_name=$(jq -r --arg ip "$newstorage" '.nodes[].vms[] | select(.ip == $ip) | .name' "$inventory")
   k3sup join \
   --ip $newstorage \
@@ -313,9 +308,7 @@ for newstorage in "${storage[@]}"; do (
     --node-label longhorn=true \
     --node-label node.longhorn.io/create-default-disk=true"
   echo -e " \033[32;5mStorage node joined successfully!\033[0m"
-  ) &
 done
-wait
 echo -e " \033[32;5mAll storage nodes joined successfully!\033[0m"
 
 # Install Helm
