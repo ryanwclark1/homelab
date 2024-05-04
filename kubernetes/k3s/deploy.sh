@@ -38,7 +38,6 @@ CURRENT_USER=$(whoami)
 intialize_nodes() {
   #add ssh keys for all nodes
   for node in "${all[@]}"; do
-    (
     ssh-keyscan -H $node >> ~/.ssh/known_hosts
     ssh-copy-id $host_user@$node
     ssh $host_user@$node -i ~/.ssh/$cert_name sudo su <<EOF
@@ -67,9 +66,8 @@ EOF
 EOF
 
     echo -e " \033[32;5mNode: $node Intialized!\033[0m"
-    ) &
   done
-  wait
+
   echo -e " \033[32;5mAll nodes intialized!\033[0m"
 }
 
