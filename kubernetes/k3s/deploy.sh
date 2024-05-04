@@ -48,6 +48,24 @@ intialize_nodes() {
     apt-get install -yq policycoreutils open-iscsi nfs-common cryptsetup dmsetup
     exit
 EOF
+    unset storage_disk_size
+    storage_disk_size=$(jq -r --arg ip "$node" '.nodes[].vms[] | select(.ip == $ip) | .storage_disk_size' "$inventory")
+    echo "Storage disk size: $storage_disk_size"
+    if [ -n "$storage_disk_size" ] && [ "$storage_disk_size" != "null" ]; then
+    ssh $host_user@$node -i ~/.ssh/$cert_name sudo su <<EOF
+      BLK_ID=/dev/sdb
+      MOUNT_POINT=/var/lib/longhorn
+
+      # sudo apt install parted
+      echo 'label: gpt' | sudo sfdisk /dev/sdb
+      echo ',,L' | sudo sfdisk /dev/sdb
+      sudo mkfs.ext4 -F /dev/sdb1
+      PART_UUID=$(sudo blkid | grep $BLK_ID | rev | cut -d ' ' -f -1 | tr -d '"' | rev)
+      sudo mkdir -p $MOUNT_POINT
+      echo "$PART_UUID $MOUNT_POINT ext4 defaults 0 2" | sudo tee -a /etc/fstab
+      exit
+EOF
+
     echo -e " \033[32;5mNode: $node Intialized!\033[0m"
     ) &
   done
