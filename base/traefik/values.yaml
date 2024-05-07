@@ -13,7 +13,7 @@ ingressRoute:
 providers:
   kubernetesCRD:
     enabled: true
-    allowCrossNamespace: true  # Required by current oauth2-proxy setup
+    # allowCrossNamespace: true  # Required by current oauth2-proxy setup
   kubernetesIngress:
     ingressClass: traefik
     publishedService:
@@ -30,14 +30,8 @@ resources:
     cpu: "300m"
     memory: "150Mi"
 
-# affinity:
-#   podAntiAffinity:
-#     requiredDuringSchedulingIgnoredDuringExecution:
-#       - labelSelector:
-#           matchLabels:
-#             app.kubernetes.io/name: '{{ template "traefik.name" . }}'
-#             app.kubernetes.io/instance: '{{ .Release.Name }}-{{ .Release.Namespace }}'
-#         topologyKey: kubernetes.io/hostname
+nodeSelector:
+  worker: "true" # add these labels to your worker nodes before running
 
 service:
   annotations:
