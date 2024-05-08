@@ -24,14 +24,60 @@ fi
 
 kubectl apply -f --validate=false "https://github.com/$REPO_OWNER/$REPO_NAME/releases/download/${latest_version}/cert-manager.yaml"
 
-export $(cat "$WORKING_DIR/.env" | xargs)
-envsubst < $WORKING_DIR/manifests/secrets/cloudflare-token-secret.yaml | kubectl apply -f -
-envsubst < $WORKING_DIR/manifests/issuers/clusterissuer-staging.yaml | kubectl apply -f -
+# Check if a deployment environment was provided as an argument
+ENVIRONMENT="$1"
+if [ -z "$ENVIRONMENT" ]; then
+  read -p "Enter the deployment environment (staging or production): " ENVIRONMENT
+fi
 
-kubectl apply -f $WORKING_DIR/manifests/certificates/techcasa-io-staging.yaml
+case "$ENVIRONMENT" in
+  staging)
+    export $(cat "$WORKING_DIR/.env.staging" | xargs)
+    ;;
+  production)
+    export $(cat "$WORKING_DIR/.env.production" | xargs)
+    ;;
+  *)
+    echo "Invalid environment specified. Exiting."
+    exit 1
+    ;;
+esac
+
+envsubst < $WORKING_DIR/manifests/secrets/cloudflare-token-secret.yaml | kubectl apply -f -
+envsubst < $WORKING_DIR/manifests/issuers/clusterissuer-${ENVIRONMENT}.yaml | kubectl apply -f -
+
+kubectl apply -f $WORKING_DIR/manifests/certificates/${ENVIRONMENT}/techcasa-io-${ENVIRONMENT}.yaml
 
 kubectl get svc -n "$NAME_SPACE"
 kubectl get pods -n "$NAME_SPACE"
-kubectl get clusterissuer letsencrypt-staging -o yaml
+kubectl get clusterissuer letsencrypt-${ENVIRONMENT} -o yaml
+# Uncomment the following lines to inspect challenges and orders for debugging:
 # kubectl get challenges -n "$NAME_SPACE"
 # kubectl describe order $(kubectl get challenges -n "$NAME_SPACE" -o jsonpath="{.items[0].metadata.ownerReferences[0].name}") -n "$NAME_SPACE"
+
+# Testing the deployment status
+echo "Checking status of deployed resources:"
+echo "Challenges:"
+kubectl get challenges -n "$NAME_SPACE"
+echo "Orders:"
+kubectl get orders -n "$NAME_SPACE"
+echo "Certificates:"
+kubectl get certificates -n "$NAME_SPACE"
+
+# Additional details on the first found order
+ORDER_NAME=$(kubectl get orders -n "$NAME_SPACE" -o jsonpath="{.items[0].metadata.name}")
+if [ -n "$ORDER_NAME" ]; then
+  echo "Describing order: $ORDER_NAME"
+  kubectl describe order "$ORDER_NAME" -n "$NAME_SPACE"
+else
+  echo "No orders found in namespace $NAME_SPACE."
+fi
+
+# Details on the associated challenge, if any
+CHALLENGE_NAME=$(kubectl get challenges -n "$NAME_SPACE" -o jsonpath="{.items[0].metadata.name}")
+if [ -n "$CHALLENGE_NAME" ]; then
+  echo "Describing challenge: $CHALLENGE_NAME"
+  kubectl describe challenge "$CHALLENGE_NAME" -n "$NAME_SPACE"
+else
+  echo "No challenges found in namespace $NAME_SPACE."
+fi
