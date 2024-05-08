@@ -22,7 +22,8 @@ else
   exit 1
 fi
 
-kubectl apply -f --validate=false "https://github.com/$REPO_OWNER/$REPO_NAME/releases/download/${latest_version}/cert-manager.yaml"
+curl -sL "https://github.com/$REPO_OWNER/$REPO_NAME/releases/download/${latest_version}/cert-manager.yaml" | kubectl apply -f -
+
 
 # Check if a deployment environment was provided as an argument
 ENVIRONMENT="$1"
