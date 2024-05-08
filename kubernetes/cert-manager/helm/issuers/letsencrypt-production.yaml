@@ -18,4 +18,4 @@ spec:
               key: cloudflare-token
         selector:
           dnsZones:
-            - "techcasa.io" # change to your zone on CloudFlare
+            - 'techcasa.io' # change to your zone on CloudFlare
