@@ -212,6 +212,7 @@ k3sup install \
   --k3s-extra-args " \
     --disable traefik \
     --disable servicelb \
+    --disable metrics-server \
     --flannel-iface=$interface \
     --node-name=$master1_name \
     --node-label master=true \
