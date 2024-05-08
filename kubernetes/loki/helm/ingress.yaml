@@ -3,7 +3,7 @@ kind: IngressRoute
 metadata:
   name: loki-grafana-ingress
   annotations:
-    kubernetes.io/ingress.class: traefik-internal # change with your value
+    kubernetes.io/ingress.class: traefik-external # change with your value
 spec:
   entryPoints:
     - websecure
