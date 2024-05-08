@@ -15,6 +15,4 @@ spec:
           apiTokenSecretRef:
             name: cloudflare-token-secret
             key: api-token
-    # - http01:
-    #     ingress:
-    #       class: traefik-external
+
