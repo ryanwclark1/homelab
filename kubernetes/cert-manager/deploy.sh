@@ -31,12 +31,13 @@ if [ -z "$ENVIRONMENT" ]; then
   read -p "Enter the deployment environment (staging or production): " ENVIRONMENT
 fi
 
+# The .env file can be .env.staging or .env.production
 case "$ENVIRONMENT" in
   staging)
-    export $(cat "$WORKING_DIR/.env.staging" | xargs)
+    export $(cat "$WORKING_DIR/.env" | xargs)
     ;;
   production)
-    export $(cat "$WORKING_DIR/.env.production" | xargs)
+    export $(cat "$WORKING_DIR/.env" | xargs)
     ;;
   *)
     echo "Invalid environment specified. Exiting."
