@@ -8,6 +8,6 @@ spec:
   issuerRef:
     name: letsencrypt-production
     kind: ClusterIssuer
-  commonName: '*.techcasa.io'
+  commonName: "*.techcasa.io"
   dnsNames:
-  - '*.techcasa.io'
+  - "*.techcasa.io"
