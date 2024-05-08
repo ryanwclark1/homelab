@@ -22,6 +22,8 @@ else
   exit 1
 fi
 
+
+
 curl -sL "https://github.com/$REPO_OWNER/$REPO_NAME/releases/download/${latest_version}/cert-manager.yaml" | kubectl apply -f -
 
 
@@ -47,15 +49,16 @@ esac
 
 envsubst < $WORKING_DIR/manifests/secrets/cloudflare-token-secret.yaml | kubectl apply -f -
 envsubst < $WORKING_DIR/manifests/issuers/clusterissuer-${ENVIRONMENT}.yaml | kubectl apply -f -
-
 kubectl apply -f $WORKING_DIR/manifests/certificates/techcasa-io-${ENVIRONMENT}.yaml
+kubectl apply -f $WORKING_DIR/manifests/prometheusrule.yaml
+kubectl apply -f $WORKING_DIR/manifests/servicemonitor.yaml
+
+echo "Waiting for cert-manager webhook to become ready..."
+kubectl wait --namespace "$NAME_SPACE" --for=condition=available deployment cert-manager-webhook --timeout=300s
 
 kubectl get svc -n "$NAME_SPACE"
 kubectl get pods -n "$NAME_SPACE"
 kubectl get clusterissuer letsencrypt-${ENVIRONMENT} -o yaml
-
-echo "Waiting for cert-manager webhook to become ready..."
-kubectl wait --namespace "$NAME_SPACE" --for=condition=available deployment cert-manager-webhook --timeout=300s
 
 # Testing the deployment status
 echo "Checking status of deployed resources:"
