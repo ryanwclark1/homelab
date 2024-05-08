@@ -36,7 +36,7 @@ local all = {
     kind: 'Ingress',
     metadata: $._metadata {
       annotations: {
-        'cert-manager.io/cluster-issuer': 'letsencrypt-prod',
+        'cert-manager.io/cluster-issuer': 'letsencrypt-production',
       },
     },
     spec: {

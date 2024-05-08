@@ -125,7 +125,7 @@ function(params) {
       namespace: h._config.namespace,
       labels: h._config.commonLabels,  // + { probe: "enabled" }
       annotations: {
-        'cert-manager.io/cluster-issuer': 'letsencrypt-prod',  // TODO: customize
+        'cert-manager.io/cluster-issuer': 'letsencrypt-production',  // TODO: customize
       },
     },
     spec: {

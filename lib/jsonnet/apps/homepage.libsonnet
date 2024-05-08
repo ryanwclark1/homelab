@@ -25,7 +25,7 @@ local defaults = {
     domain: '',
     className: 'nginx',
     annotations: {
-      'cert-manager.io/cluster-issuer': 'letsencrypt-prod',
+      'cert-manager.io/cluster-issuer': 'letsencrypt-production',
     },
   },
   configData: error 'must provide configData',
