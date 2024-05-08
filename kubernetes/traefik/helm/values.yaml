@@ -7,7 +7,7 @@ additionalArguments:
   - "--log.level=INFO"
 
 deployment:
-  replicas: null
+  replicas: 2
 
 resources:
   requests:
