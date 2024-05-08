@@ -10,4 +10,4 @@ spec:
     kind: ClusterIssuer
   commonName: '*.techcasa.io'
   dnsNames:
-    - '*.techcasa.io'
+  - '*.techcasa.io'

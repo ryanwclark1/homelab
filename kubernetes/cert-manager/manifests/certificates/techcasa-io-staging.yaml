@@ -10,7 +10,7 @@ spec:
     kind: ClusterIssuer
   commonName: '*.techcasa.io'
   dnsNames:
-    - '*.techcasa.io'
+  - '*.techcasa.io'
   secretTemplate:
     annotations:
       reflector.v1.k8s.emberstack.com/reflection-allowed: "true"
