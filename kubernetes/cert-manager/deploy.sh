@@ -52,9 +52,6 @@ kubectl apply -f $WORKING_DIR/manifests/certificates/techcasa-io-${ENVIRONMENT}.
 kubectl get svc -n "$NAME_SPACE"
 kubectl get pods -n "$NAME_SPACE"
 kubectl get clusterissuer letsencrypt-${ENVIRONMENT} -o yaml
-# Uncomment the following lines to inspect challenges and orders for debugging:
-# kubectl get challenges -n "$NAME_SPACE"
-# kubectl describe order $(kubectl get challenges -n "$NAME_SPACE" -o jsonpath="{.items[0].metadata.ownerReferences[0].name}") -n "$NAME_SPACE"
 
 # Testing the deployment status
 echo "Checking status of deployed resources:"
