@@ -4,12 +4,12 @@ local ingressroute(name, namespace, specs) = {
   metadata: {
     name: name,
     namespace: namespace,
-    // annotations: {
-    //   'kubernetes.io/ingress.class': 'traefik-external',
+    annotations: {
+      'kubernetes.io/ingress.class': 'traefik-external',
     //   'traefik.ingress.kubernetes.io/router.entrypoints': 'websecure',
     //   'traefik.ingress.kubernetes.io/router.tls': 'true',
     //   'traefik.ingress.kubernetes.io/router.tls.certresolver': 'letsencrypt',
-    // },
+    },
   },
   spec: specs,
 };
@@ -22,7 +22,7 @@ local kp =
   // (import 'kube-prometheus/addons/node-ports.libsonnet') +
   // (import 'kube-prometheus/addons/static-etcd.libsonnet') +
   // (import 'kube-prometheus/addons/custom-metrics.libsonnet') +
-  // (import 'kube-prometheus/addons/external-metrics.libsonnet') +
+  (import 'kube-prometheus/addons/external-metrics.libsonnet') +
   // (import 'kube-prometheus/addons/pyrra.libsonnet') +
 {
   values+:: {
