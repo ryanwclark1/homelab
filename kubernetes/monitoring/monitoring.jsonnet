@@ -56,7 +56,7 @@ local kp =
   },
   // Create ingress objects per application
   ingressroute+:: {
-    'alertmanager-main': ingressroute(
+    alertmanagermain: ingressroute(
       'alertmanager-main',
       $.values.common.namespace,
       {
@@ -94,7 +94,7 @@ local kp =
         }],
       },
     ),
-    'prometheus-k8s': ingressroute(
+    prometheusk8s: ingressroute(
       'prometheus-k8s',
       $.values.common.namespace,
       {
