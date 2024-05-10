@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 
+go install -a github.com/jsonnet-bundler/jsonnet-bundler/cmd/jb@latest
 jb init
 jb install github.com/prometheus-operator/kube-prometheus/jsonnet/kube-prometheus@main
 wget https://raw.githubusercontent.com/prometheus-operator/kube-prometheus/main/example.jsonnet -O example.jsonnet
