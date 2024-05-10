@@ -73,6 +73,9 @@ local kp =
             namespace: $.values.common.namespace,
           }],
         }],
+        tls: {
+          secretName: 'techcasa-io-staging-tls',
+        },
       },
     ),
     grafana: ingressroute(
@@ -92,6 +95,9 @@ local kp =
             namespace: $.values.common.namespace,
           }],
         }],
+        tls: {
+          secretName: 'techcasa-io-staging-tls',
+        },
       },
     ),
     prometheusk8s: ingressroute(
