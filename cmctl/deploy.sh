@@ -17,6 +17,8 @@ if ! command -v go version &> /dev/null; then
   export PATH=$PATH:/usr/local/go/bin
   if ! grep -q '/usr/local/go/bin' ~/.bashrc; then
       echo "export PATH=\$PATH:/usr/local/go/bin" >> ~/.bashrc
+      # TODO: Check if this works
+      echo "export PATH=\$PATH:\$HOME/go/bin" >> ~/.bashrc
   fi
   go version
   source ~/.bashrc
