@@ -22,7 +22,7 @@ spec:
         severity: critical
     - alert: CertManagerCertExpirySoon
       annotations:
-        dashboard_url: https://grafana.ankhmorpork.thaum.xyz/d/u6M5igpWk/cert-manager
+        dashboard_url: https://grafana.techcasa.io/d/u6M5igpWk/cert-manager
         description: The domain that this cert covers will be unavailable after {{ $value
           | humanizeDuration }}. Clients using endpoints that this cert protects will
           start to fail in {{ $value | humanizeDuration }}.
@@ -38,7 +38,7 @@ spec:
         severity: warning
     - alert: CertManagerCertNotReady
       annotations:
-        dashboard_url: https://grafana.ankhmorpork.thaum.xyz/d/u6M5igpWk/cert-manager
+        dashboard_url: https://grafana.techcasa.io/d/u6M5igpWk/cert-manager
         description: This certificate has not been ready to serve traffic for at least
           10m. If the cert is being renewed or there is another valid cert, the ingress
           controller _may_ be able to serve that instead.
@@ -53,7 +53,7 @@ spec:
         severity: critical
     - alert: CertManagerCertExpiryMetricMissing
       annotations:
-        dashboard_url: https://grafana.ankhmorpork.thaum.xyz/d/u6M5igpWk/cert-manager
+        dashboard_url: https://grafana.techcasa.io/d/u6M5igpWk/cert-manager
         description: We are blind as to whether or not we can alert on certificates
           expiring. It could also be the case that there have not had any Certificate
           CRDs created.
@@ -65,7 +65,7 @@ spec:
         severity: info
     - alert: CertManagerHittingRateLimits
       annotations:
-        dashboard_url: https://grafana.ankhmorpork.thaum.xyz/d/u6M5igpWk/cert-manager
+        dashboard_url: https://grafana.techcasa.io/d/u6M5igpWk/cert-manager
         description: Depending on the rate limit, cert-manager may be unable to generate
           certificates for up to a week.
         runbook_url: https://gitlab.com/uneeq-oss/cert-manager-mixin/-/blob/master/RUNBOOK.md#CertManagerHittingRateLimits
