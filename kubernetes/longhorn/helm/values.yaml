@@ -1,21 +1,55 @@
 defaultSettings:
-  createDefaultDiskLabeledNodes: true
-  defaultDataPath: /var/lib/longhorn-example/
-  replicaSoftAntiAffinity: false
-  storageOverProvisioningPercentage: 600
-  storageMinimalAvailablePercentage: 15
-  upgradeChecker: false
-  defaultReplicaCount: 2
-  defaultDataLocality: disabled
-  defaultLonghornStaticStorageClass: longhorn-static-example
-  backupstorePollInterval: 500
-  systemManagedComponentsNodeSelector: "longhorn=true"
-  priorityClass: high-priority
+  allowCollectingLonghornUsageMetrics: null
+  allowRecurringJobWhileVolumeDetached: true
+  allowVolumeCreationWithDegradedAvailability: null
+  autoCleanupSystemGeneratedSnapshot: null
+  autoDeletePodWhenVolumeDetachedUnexpectedly: null
   autoSalvage: false
+  backingImageCleanupWaitInterval: null
+  backingImageRecoveryWaitInterval: null
+  backupCompressionMethod: lz4
+  backupConcurrentLimit: 2
+  backupTarget: null
+  backupTargetCredentialSecret: null
+  backupstorePollInterval: 300
+  concurrentAutomaticEngineUpgradePerNodeLimit: null
+  concurrentReplicaRebuildPerNodeLimit: null
+  concurrentVolumeBackupRestorePerNodeLimit: null
+  createDefaultDiskLabeledNodes: true
+  defaultDataLocality: disabled
+  defaultDataPath: /var/lib/longhorn/
+  defaultLonghornStaticStorageClass: longhorn-static
+  defaultReplicaCount: 3
+  deletingConfirmationFlag: null
+  disableRevisionCounter: null
   disableSchedulingOnCordonedNode: false
-  replicaZoneSoftAntiAffinity: false
-  replicaDiskSoftAntiAffinity: false
-  volumeAttachmentRecoveryPolicy: never
+  disableSnapshotPurge: null
+  engineReplicaTimeout: 8
+  failedBackupTTL: 1440
+  fastReplicaRebuildEnabled: null
+  guaranteedInstanceManagerCPU: 12
+  kubernetesClusterAutoscalerEnabled: null
+  logLevel: Debug
   nodeDownPodDeletionPolicy: do-nothing
-  guaranteedInstanceManagerCpu: 15
+  nodeDrainPolicy: null
+  offlineReplicaRebuilding: null
   orphanAutoDeletion: false
+  priorityClass: high-priority
+  recurringFailedJobsHistoryLimit: 1
+  recurringSuccessfulJobsHistoryLimit: 1
+  removeSnapshotsDuringFilesystemTrim: null
+  replicaAutoBalance: disabled
+  replicaDiskSoftAntiAffinity: false
+  replicaSoftAntiAffinity: false
+  replicaZoneSoftAntiAffinity: false
+  restoreConcurrentLimit: 2
+  restoreVolumeRecurringJobs: null
+  snapshotDataIntegrity: null
+  snapshotDataIntegrityCronjob: 0 0 */7 * *
+  snapshotDataIntegrityImmediateCheckAfterSnapshotCreation: null
+  storageMinimalAvailablePercentage: 15
+  storageNetwork: null
+  storageOverProvisioningPercentage: 600
+  systemManagedComponentsNodeSelector: "longhorn=true"
+  upgradeChecker: false
+  volumeAttachmentRecoveryPolicy: never
