@@ -83,7 +83,6 @@ local kp =
       $.values.common.namespace,
       {
         entryPoints: [
-          'web',
           'websecure'
         ],
         routes: [{
