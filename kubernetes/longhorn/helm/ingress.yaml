@@ -17,4 +17,4 @@ spec:
       namespace: longhorn-system
       port: 8000
   tls:
-    secretName: techcasa-io-staging-tls
+    secretName: longhorn-webhook-ca
