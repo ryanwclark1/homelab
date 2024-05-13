@@ -47,21 +47,22 @@ intialize_nodes() {
     apt-get install -yq policycoreutils open-iscsi nfs-common cryptsetup dmsetup
     exit
 EOF
-    unset storage_disk_size
-    storage_disk_size=$(jq -r --arg ip "$node" '.nodes[].vms[] | select(.ip == $ip) | .storage_disk_size' "$inventory")
-    echo "Storage disk size: $storage_disk_size"
-    if [ -n "$storage_disk_size" ] && [ "$storage_disk_size" != "null" ]; then
-    ssh $host_user@$node -i ~/.ssh/$cert_name sudo su <<EOF
-      BLK_ID=/dev/sdb
-      MOUNT_POINT=/var/lib/longhorn
-      echo 'label: gpt' | sudo sfdisk $BLK_ID
-      echo ',,L' | sudo sfdisk $BLK_ID
-      sudo mkfs.ext4 -F {$BLK_ID}1
-      PART_UUID=$(sudo blkid | grep $BLK_ID | rev | cut -d ' ' -f -1 | tr -d '"' | rev)
-      sudo mkdir -p $MOUNT_POINT
-      echo "$PART_UUID $MOUNT_POINT ext4 defaults 0 2" | sudo tee -a /etc/fstab
-      sudo systemctl daemon-reload
-      exit
+
+    # Check if the current node is in the storage array
+    if [[ " ${storage[*]} " == *" $node "* ]]; then
+        unset storage_disk_size
+        storage_disk_size=$(jq -r --arg ip "$node" '.nodes[].vms[] | select(.ip == $ip) | .storage_disk_size' "$inventory")
+        echo "Storage disk size: $storage_disk_size"
+        BLK_ID=/dev/sdb
+        MOUNT_POINT=/var/lib/longhorn
+        ssh $host_user@$node -i ~/.ssh/$cert_name sudo su <<EOF
+        echo 'label: gpt' | sudo sfdisk $BLK_ID
+        echo ',,L' | sudo sfdisk $BLK_ID
+        sudo mkfs.ext4 -F ${BLK_ID}1
+        PART_UUID=$(sudo blkid | grep $BLK_ID | rev | cut -d ' ' -f -1 | tr -d '"' | rev)
+        sudo mkdir -p $MOUNT_POINT
+        echo "$PART_UUID $MOUNT_POINT ext4 defaults 0 2" | sudo tee -a /etc/fstab
+        sudo systemctl daemon-reload
 EOF
     fi
     echo -e " \033[32;5mNode: $node Intialized!\033[0m"
