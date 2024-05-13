@@ -50,6 +50,6 @@ defaultSettings:
   storageMinimalAvailablePercentage: 15
   storageNetwork: null
   storageOverProvisioningPercentage: 600
-  systemManagedComponentsNodeSelector: "longhorn=true"
+  systemManagedComponentsNodeSelector: "longhorn: true"
   upgradeChecker: false
   volumeAttachmentRecoveryPolicy: never
