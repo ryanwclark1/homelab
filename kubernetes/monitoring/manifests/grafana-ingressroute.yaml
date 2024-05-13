@@ -1,11 +1,12 @@
 apiVersion: traefik.io/v1alpha1
 kind: IngressRoute
 metadata:
+  annotations:
+    kubernetes.io/ingress.class: traefik-external
   name: grafana
   namespace: monitoring
 spec:
   entryPoints:
-  - web
   - websecure
   routes:
   - kind: Rule
@@ -14,3 +15,5 @@ spec:
     - name: grafana
       namespace: monitoring
       port: 3000
+  tls:
+    secretName: techcasa-io-staging-tls
