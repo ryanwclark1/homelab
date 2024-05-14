@@ -54,8 +54,9 @@ EOF
         storage_disk_size=$(jq -r --arg ip "$node" '.nodes[].vms[] | select(.ip == $ip) | .storage_disk_size' "$inventory")
         echo "Storage disk size: $storage_disk_size"
 
-        ssh $host_user@$node -i ~/.ssh/$cert_name <<EOF
+        ssh $host_user@$node -i ~/.ssh/$cert_name storage_disk_size=$storage_disk_size <<EOF
           sudo su
+          echo "Storage disk size remote: $storage_disk_size"
           # Find the disk that matches the storage_disk_size
           BLK_ID=\$(lsblk --json | jq -r --arg size "$storage_disk_size" '.blockdevices[] | select(.size == $size and .type == "disk") | .name')
           BLK_ID="/dev/\$BLK_ID"
