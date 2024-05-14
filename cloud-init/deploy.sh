@@ -5,6 +5,7 @@ inventory='../inventory.json'
 
 BASE_VM=5001
 # SSH Key File
+cert_name="id_rsa"
 SSH_KEY="$HOME/.ssh/id_rsa"
 SSH_KEY_TEXT=$(cat $SSH_KEY.pub)
 TAG="k3s"
@@ -101,7 +102,7 @@ ask_to_start_vm() {
 }
 
 deploy_vm () {
-  ssh "$prox_user@$node_ip" bash <<EOF
+  ssh "$prox_user@$node_ip" -i ~/.ssh/$cert_name bash <<EOF
   qm set $vm_id --ipconfig0 ip=$vm_ip/$CIDR,gw=$GATEWAY;
   qm set $vm_id --tags "$TAG,$role";
   qm set $vm_id --cores "$cores" --sockets "$sockets" --memory "$memory";
