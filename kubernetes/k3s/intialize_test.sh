@@ -54,10 +54,12 @@ EOF
         storage_disk_size=$(jq -r --arg ip "$node" '.nodes[].vms[] | select(.ip == $ip) | .storage_disk_size' "$inventory")
         echo "Storage disk size: $storage_disk_size"
 
-        ssh $host_user@$node -i ~/.ssh/$cert_name "storage_disk_size=$storage_disk_size sudo su" <<EOF
+        ssh $host_user@$node -i ~/.ssh/$cert_name sudo su <<EOF
           # Find the disk that matches the storage_disk_size
+          echo \$storage_disk_size
           BLK_ID=\$(lsblk --json | jq -r --arg size "\$storage_disk_size" '.blockdevices[] | select(.size == \$size and .type == "disk") | .name')
           BLK_ID=\"/dev/\$BLK_ID\"
+          echo \$BLK_ID
           MOUNT_POINT=/var/lib/longhorn
           echo 'label: gpt' | sudo sfdisk \$BLK_ID
           echo ',,L' | sudo sfdisk \$BLK_ID
