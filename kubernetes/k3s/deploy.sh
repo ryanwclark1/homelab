@@ -79,7 +79,7 @@ EOF
 
 
 
-ask_to_intialize() {
+ask_to_initialize() {
   while true; do
       # Prompt the user. The colon after the question suggests a default value of 'yes'
       echo -n "Do you want to run intialize the environment? [Y/n]: "
@@ -93,7 +93,7 @@ ask_to_intialize() {
 
       case "$user_input" in
         y|yes)
-          intialize_nodes
+          initialize_nodes
           break
           ;;
         n|no)
@@ -162,7 +162,7 @@ sudo timedatectl set-ntp on
 chmod 600 $HOME/.ssh/$cert_name
 chmod 644 $HOME/.ssh/$cert_name.pub
 
-ask_to_intialize
+ask_to_initialize
 
 echo -e " \033[32;5m**********************************************\033[0m"
 echo -e " \033[32;5m***         Installing K3sup            ******\033[0m"
