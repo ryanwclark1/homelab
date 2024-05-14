@@ -58,7 +58,7 @@ initialize_nodes() {
           sudo su
           echo "Storage disk size remote: $storage_disk_size"
           # Find the disk that matches the storage_disk_size
-          BLK_ID=\$(lsblk --json | jq -r --arg size "$storage_disk_size" '.blockdevices[] | select(.size == $size and .type == "disk") | .name')
+          BLK_ID=\$(lsblk --json | jq -r --arg size "$storage_disk_size" '.blockdevices[] | select(.size == $storage_disk_size and .type == "disk") | .name')
           BLK_ID="/dev/\$BLK_ID"
           MOUNT_POINT=/var/lib/longhorn
           echo 'label: gpt' | sudo sfdisk \$BLK_ID
