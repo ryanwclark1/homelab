@@ -54,7 +54,7 @@ EOF
         storage_disk_size=$(jq -r --arg ip "$node" '.nodes[].vms[] | select(.ip == $ip) | .storage_disk_size' "$inventory")
         echo "Storage disk size: $storage_disk_size"
 
-        ssh $host_user@$node -i ~/.ssh/$cert_name "storage_disk_size=$storage_disk_size sudo su <<'EOF'
+        ssh $host_user@$node -i ~/.ssh/$cert_name "storage_disk_size=$storage_disk_size sudo su" <<EOF
           # Find the disk that matches the storage_disk_size
           BLK_ID=\$(lsblk --json | jq -r --arg size "\$storage_disk_size" '.blockdevices[] | select(.size == \$size and .type == "disk") | .name')
           BLK_ID=\"/dev/\$BLK_ID\"
@@ -68,7 +68,7 @@ EOF
           echo \"\$PART_UUID \$MOUNT_POINT ext4 defaults 0 2\" | sudo tee -a /etc/fstab
           sudo systemctl daemon-reload
           sudo reboot
-EOF"
+EOF
     fi
     echo -e " \033[32;5mNode: $node Initialized!\033[0m"
   done
