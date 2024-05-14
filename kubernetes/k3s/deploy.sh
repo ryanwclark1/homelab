@@ -35,8 +35,8 @@ CURRENT_USER=$(whoami)
 #            DO NOT EDIT BELOW              #
 #############################################
 
-intialize_nodes() {
-  #add ssh keys for all nodes
+initialize_nodes() {
+  # Add ssh keys for all nodes
   for node in "${all[@]}"; do
     ssh-keyscan -H $node >> ~/.ssh/known_hosts
     ssh-copy-id $host_user@$node
@@ -44,7 +44,7 @@ intialize_nodes() {
     NEEDRESTART_MODE=a
     export DEBIAN_FRONTEND=noninteractive
     apt-get update -q
-    apt-get install -yq policycoreutils open-iscsi nfs-common cryptsetup dmsetup
+    apt-get install -yq policycoreutils open-iscsi nfs-common cryptsetup dmsetup jq
     exit
 EOF
 
@@ -53,22 +53,27 @@ EOF
         unset storage_disk_size
         storage_disk_size=$(jq -r --arg ip "$node" '.nodes[].vms[] | select(.ip == $ip) | .storage_disk_size' "$inventory")
         echo "Storage disk size: $storage_disk_size"
-        BLK_ID=/dev/sdb
-        MOUNT_POINT=/var/lib/longhorn
-        ssh $host_user@$node -i ~/.ssh/$cert_name sudo su <<EOF
-        echo 'label: gpt' | sudo sfdisk $BLK_ID
-        echo ',,L' | sudo sfdisk $BLK_ID
-        sudo mkfs.ext4 -F ${BLK_ID}1
-        PART_UUID=$(sudo blkid | grep $BLK_ID | rev | cut -d ' ' -f -1 | tr -d '"' | rev)
-        sudo mkdir -p $MOUNT_POINT
-        echo "$PART_UUID $MOUNT_POINT ext4 defaults 0 2" | sudo tee -a /etc/fstab
-        sudo systemctl daemon-reload
-EOF
+
+        ssh $host_user@$node -i ~/.ssh/$cert_name "storage_disk_size=$storage_disk_size sudo su <<'EOF'
+          # Find the disk that matches the storage_disk_size
+          BLK_ID=\$(lsblk --json | jq -r --arg size "\$storage_disk_size" '.blockdevices[] | select(.size == \$size and .type == "disk") | .name')
+          BLK_ID=\"/dev/\$BLK_ID\"
+          MOUNT_POINT=/var/lib/longhorn
+          echo 'label: gpt' | sudo sfdisk \$BLK_ID
+          echo ',,L' | sudo sfdisk \$BLK_ID
+          sudo mkfs.ext4 -F \${BLK_ID}1
+          PART_UUID=\$(sudo blkid | grep \$BLK_ID | rev | cut -d ' ' -f -1 | tr -d '\"' | rev)
+          echo \$PART_UUID
+          sudo mkdir -p \$MOUNT_POINT
+          echo \"\$PART_UUID \$MOUNT_POINT ext4 defaults 0 2\" | sudo tee -a /etc/fstab
+          sudo systemctl daemon-reload
+          sudo reboot
+EOF"
     fi
-    echo -e " \033[32;5mNode: $node Intialized!\033[0m"
+    echo -e " \033[32;5mNode: $node Initialized!\033[0m"
   done
 
-  echo -e " \033[32;5mAll nodes intialized!\033[0m"
+  echo -e " \033[32;5mAll nodes initialized!\033[0m"
 }
 
 
