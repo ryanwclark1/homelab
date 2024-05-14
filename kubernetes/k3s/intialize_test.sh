@@ -109,4 +109,4 @@ ask_to_intialize() {
 }
 
 # ask_to_intialize
-intialize_nodes
+initialize_nodes
