@@ -31,7 +31,7 @@ log_action() {
 
 # Clone and configure VMs
 clone_vm() {
-  ssh "$prox_user@$template_ip" "
+  ssh "$prox_user@$template_ip -i ~/.ssh/$cert_name" "
     qm clone $BASE_VM $vm_id \
     --name $vm_name \
     --full true \
@@ -142,7 +142,7 @@ for node in "${nodes[@]}"; do
     role=$(echo "$vm" | jq -r '.role')
     storage_disk_size=$(echo "$vm" | jq -r '.storage_disk_size')
     log_action "Cloning VM for $vm_name on $node_name ($node_ip) with ID $vm_id..."
-    ssh "$prox_user@$template_ip" <<EOF
+    ssh "$prox_user@$template_ip" -i ~/.ssh/$cert_name <<EOF
       qm clone $BASE_VM $vm_id \
       --name $vm_name \
       --full true \
@@ -151,7 +151,7 @@ for node in "${nodes[@]}"; do
       exit
 EOF
     log_action "Configuring VM on $node_ip..."
-    ssh "$prox_user@$node_ip" bash <<EOF
+    ssh "$prox_user@$node_ip" -i ~/.ssh/$cert_name bash <<EOF
       qm set $vm_id --ipconfig0 ip=$vm_ip/$CIDR,gw=$GATEWAY;
       qm set $vm_id --tags "$TAG,$role";
       qm set $vm_id --cores "$cores" --sockets "$sockets" --memory "$memory";
@@ -166,7 +166,7 @@ EOF
 EOF
     if [ -n "$storage_disk_size" ] && [ "$storage_disk_size" != "null" ]; then
       storage_disk_size=$(echo $storage_disk_size | tr -d '[:alpha:]');
-      ssh "$prox_user@$node_ip" bash <<EOF
+      ssh "$prox_user@$node_ip" -i ~/.ssh/$cert_name bash <<EOF
         qm set $vm_id --scsi1 $disk:$storage_disk_size,ssd=1;
         exit
 EOF
