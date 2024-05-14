@@ -38,15 +38,15 @@ CURRENT_USER=$(whoami)
 initialize_nodes() {
   # Add ssh keys for all nodes
   for node in "${all[@]}"; do
-    ssh-keyscan -H $node >> ~/.ssh/known_hosts
-    ssh-copy-id $host_user@$node
-    ssh $host_user@$node -i ~/.ssh/$cert_name sudo su <<EOF
-    NEEDRESTART_MODE=a
-    export DEBIAN_FRONTEND=noninteractive
-    apt-get update -q
-    apt-get install -yq policycoreutils open-iscsi nfs-common cryptsetup dmsetup jq
-    exit
-EOF
+#     ssh-keyscan -H $node >> ~/.ssh/known_hosts
+#     ssh-copy-id $host_user@$node
+#     ssh $host_user@$node -i ~/.ssh/$cert_name sudo su <<EOF
+#     NEEDRESTART_MODE=a
+#     export DEBIAN_FRONTEND=noninteractive
+#     apt-get update -q
+#     apt-get install -yq policycoreutils open-iscsi nfs-common cryptsetup dmsetup jq
+#     exit
+# EOF
 
     # Check if the current node is in the storage array
     if [[ " ${storage[*]} " == *" $node "* ]]; then
