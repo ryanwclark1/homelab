@@ -54,20 +54,19 @@ EOF
         storage_disk_size=$(jq -r --arg ip "$node" '.nodes[].vms[] | select(.ip == $ip) | .storage_disk_size' "$inventory")
         echo "Storage disk size: $storage_disk_size"
 
-        ssh $host_user@$node -i ~/.ssh/$cert_name sudo su <<EOF
+        ssh $host_user@$node -i ~/.ssh/$cert_name <<EOF
+          sudo su
           # Find the disk that matches the storage_disk_size
-          echo \$storage_disk_size
-          BLK_ID=\$(lsblk --json | jq -r --arg size "\$storage_disk_size" '.blockdevices[] | select(.size == \$size and .type == "disk") | .name')
-          BLK_ID=\"/dev/\$BLK_ID\"
-          echo \$BLK_ID
+          BLK_ID=\$(lsblk --json | jq -r --arg size "$storage_disk_size" '.blockdevices[] | select(.size == $size and .type == "disk") | .name')
+          BLK_ID="/dev/\$BLK_ID"
           MOUNT_POINT=/var/lib/longhorn
           echo 'label: gpt' | sudo sfdisk \$BLK_ID
           echo ',,L' | sudo sfdisk \$BLK_ID
           sudo mkfs.ext4 -F \${BLK_ID}1
-          PART_UUID=\$(sudo blkid | grep \$BLK_ID | rev | cut -d ' ' -f -1 | tr -d '\"' | rev)
+          PART_UUID=\$(sudo blkid | grep \$BLK_ID | rev | cut -d ' ' -f -1 | tr -d '"' | rev)
           echo \$PART_UUID
           sudo mkdir -p \$MOUNT_POINT
-          echo \"\$PART_UUID \$MOUNT_POINT ext4 defaults 0 2\" | sudo tee -a /etc/fstab
+          echo "\$PART_UUID \$MOUNT_POINT ext4 defaults 0 2" | sudo tee -a /etc/fstab
           sudo systemctl daemon-reload
           sudo reboot
 EOF
