@@ -67,8 +67,8 @@ EOF
           echo \$PART_UUID
           sudo mkdir -p \$MOUNT_POINT
           echo "\$PART_UUID \$MOUNT_POINT ext4 defaults 0 2" | sudo tee -a /etc/fstab
-          sudo systemctl daemon-reload
-          sudo reboot
+          # sudo systemctl daemon-reload
+          # sudo reboot
 EOF
     fi
     echo -e " \033[32;5mNode: $node Initialized!\033[0m"
