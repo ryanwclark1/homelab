@@ -42,10 +42,10 @@ clone_vm() {
   "
 }
 
-ask_to_intialize() {
+ask_to_initialize() {
   while true; do
       # Prompt the user. The colon after the question suggests a default value of 'yes'
-      echo -n "Do you want to run intialize the environment? [Y/n]: "
+      echo -n "Do you want to run initialize the environment? [Y/n]: "
       read -r user_input
 
       # Default to 'yes' if the input is empty
@@ -58,17 +58,17 @@ ask_to_intialize() {
 
       case "$user_input" in
         y|yes)
-          source ./intialize.sh
-          echo "Environment intialized."
+          source ./initialize.sh
+          echo "Environment initialized."
           break
           ;;
         n|no)
-          echo "Environment will not be intialized"
+          echo "Environment will not be initialized"
           break
           ;;
         *)
           echo "Invalid input, please type 'Y' for yes or 'n' for no."
-          ask_to_intialize
+          ask_to_initialize
           ;;
       esac
   done
@@ -118,7 +118,7 @@ EOF
 }
 
 ensure_inventory_exists
-ask_to_intialize
+ask_to_initialize
 # Initialize by checking inventory and jq
 source ./ensure_jq_installed.sh
 
