@@ -54,22 +54,29 @@ EOF
         storage_disk_size=$(jq -r --arg ip "$node" '.nodes[].vms[] | select(.ip == $ip) | .storage_disk_size' "$inventory")
         echo "Storage disk size: $storage_disk_size"
 
-        ssh $host_user@$node -i ~/.ssh/$cert_name <<EOF
-          sudo su
+        ssh $host_user@$node -i ~/.ssh/$cert_name "storage_disk_size=$storage_disk_size sudo su <<'EOF'
           # Find the disk that matches the storage_disk_size
-          BLK_ID=\$(lsblk --json | jq -r --arg size "$storage_disk_size" '.blockdevices[] | select(.size == $storage_disk_size and .type == "disk") | .name')
-          BLK_ID="/dev/\$BLK_ID"
-          MOUNT_POINT=/var/lib/longhorn
-          echo 'label: gpt' | sudo sfdisk \$BLK_ID
-          echo ',,L' | sudo sfdisk \$BLK_ID
-          sudo mkfs.ext4 -F \${BLK_ID}1
-          PART_UUID=\$(sudo blkid | grep \$BLK_ID | rev | cut -d ' ' -f -1 | tr -d '"' | rev)
-          echo \$PART_UUID
-          sudo mkdir -p \$MOUNT_POINT
-          echo "\$PART_UUID \$MOUNT_POINT ext4 defaults 0 2" | sudo tee -a /etc/fstab
-          # sudo systemctl daemon-reload
-          # sudo reboot
-EOF
+          BLK_ID=\$(lsblk --json | jq -r --arg size \"\$storage_disk_size\" '.blockdevices[] | select(.size == \$size and .type == \"disk\") | .name')
+          BLK_ID=\"/dev/\$BLK_ID\"
+          if [ -n \"\$BLK_ID\" ]; then
+            MOUNT_POINT=/var/lib/longhorn
+            echo 'label: gpt' | sudo sfdisk \$BLK_ID
+            echo ',,L' | sudo sfdisk \$BLK_ID
+            sudo mkfs.ext4 -F \${BLK_ID}1
+            PART_UUID=\$(sudo blkid | grep \$BLK_ID | rev | cut -d ' ' -f -1 | tr -d '\"' | rev)
+            if [ -n \"\$PART_UUID\" ]; then
+              echo \$PART_UUID
+              sudo mkdir -p \$MOUNT_POINT
+              echo \"\$PART_UUID \$MOUNT_POINT ext4 defaults 0 2\" | sudo tee -a /etc/fstab
+              # sudo systemctl daemon-reload
+              # sudo reboot
+            else
+              echo 'PART_UUID is null, not updating /etc/fstab'
+            fi
+          else
+            echo 'BLK_ID is null, not proceeding with disk setup'
+          fi
+EOF"
     fi
     echo -e " \033[32;5mNode: $node Initialized!\033[0m"
   done
