@@ -38,26 +38,26 @@ storage_disk_size=200G
 #            DO NOT EDIT BELOW              #
 #############################################
 
-ssh $host_user@$node -i ~/.ssh/$cert_name "storage_disk_size=$storage_disk_size sudo su -c \"
+ssh $host_user@$node -i ~/.ssh/$cert_name "storage_disk_size=$storage_disk_size sudo su -c '
   # Find the disk that matches the storage_disk_size
-  BLK_ID=\$(lsblk --json | jq -r --arg size '\$storage_disk_size' '.blockdevices[] | select(.size == \$size and .type == \\\"disk\\\") | .name')
-  BLK_ID='/dev/\$BLK_ID'
-  if [ -n '\$BLK_ID' ]; then
+  BLK_ID=\$(lsblk --json | jq -r --arg size \"\$storage_disk_size\" \".blockdevices[] | select(.size == \$size and .type == \\\"disk\\\") | .name\")
+  BLK_ID=\"/dev/\$BLK_ID\"
+  if [ -n \"\$BLK_ID\" ]; then
     MOUNT_POINT=/var/lib/longhorn
-    echo 'label: gpt' | sudo sfdisk \$BLK_ID
-    echo ',,L' | sudo sfdisk \$BLK_ID
+    echo \"label: gpt\" | sudo sfdisk \$BLK_ID
+    echo \",,L\" | sudo sfdisk \$BLK_ID
     sudo mkfs.ext4 -F \${BLK_ID}1
-    PART_UUID=\$(sudo blkid | grep \$BLK_ID | rev | cut -d ' ' -f -1 | tr -d '\"' | rev)
-    if [ -n '\$PART_UUID' ]; then
+    PART_UUID=\$(sudo blkid | grep \$BLK_ID | rev | cut -d \" \" -f -1 | tr -d '\"' | rev)
+    if [ -n \"\$PART_UUID\" ]; then
       echo \$PART_UUID
       sudo mkdir -p \$MOUNT_POINT
-      echo '\$PART_UUID \$MOUNT_POINT ext4 defaults 0 2' | sudo tee -a /etc/fstab
+      echo \"\$PART_UUID \$MOUNT_POINT ext4 defaults 0 2\" | sudo tee -a /etc/fstab
       # sudo systemctl daemon-reload
       # sudo reboot
     else
-      echo 'PART_UUID is null, not updating /etc/fstab'
+      echo \"PART_UUID is null, not updating /etc/fstab\"
     fi
   else
-    echo 'BLK_ID is null, not proceeding with disk setup'
+    echo \"BLK_ID is null, not proceeding with disk setup\"
   fi
-\""
+'"
