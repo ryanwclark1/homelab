@@ -10,6 +10,7 @@ then
     exit 1
   }
   sudo install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl
+  rm kubectl kubectl.sha256
   kubectl version --client --output=yaml
   echo -e "\033[32;5mKubectl installed successfully!\033[0m"
 else
