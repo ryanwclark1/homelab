@@ -31,83 +31,33 @@ SSH_KEY="$HOME/.ssh/$cert_name"
 SHELL_NAME=$(basename "$SHELL")
 CURRENT_USER=$(whoami)
 
+node=10.10.101.237
+storage_disk_size=200G
+
 #############################################
 #            DO NOT EDIT BELOW              #
 #############################################
 
-initialize_nodes() {
-  # Add ssh keys for all nodes
-  for node in "${all[@]}"; do
-    ssh-keyscan -H $node >> ~/.ssh/known_hosts
-    ssh-copy-id $host_user@$node
-    ssh $host_user@$node -i ~/.ssh/$cert_name sudo su <<EOF
-    NEEDRESTART_MODE=a
-    export DEBIAN_FRONTEND=noninteractive
-    apt-get update -q
-    apt-get install -yq policycoreutils open-iscsi nfs-common cryptsetup dmsetup jq
-    exit
-EOF
-
-    # Check if the current node is in the storage array
-    if [[ " ${storage[*]} " == *" $node "* ]]; then
-        unset storage_disk_size
-        storage_disk_size=$(jq -r --arg ip "$node" '.nodes[].vms[] | select(.ip == $ip) | .storage_disk_size' "$inventory")
-        echo "Storage disk size: $storage_disk_size"
-
-        ssh $host_user@$node -i ~/.ssh/$cert_name <<EOF
-          sudo su
-          echo "Storage disk size remote: $storage_disk_size"
-          # Find the disk that matches the storage_disk_size
-          BLK_ID=\$(lsblk --json | jq -r --arg size "$storage_disk_size" '.blockdevices[] | select(.size == $storage_disk_size and .type == "disk") | .name')
-          BLK_ID="/dev/\$BLK_ID"
-          MOUNT_POINT=/var/lib/longhorn
-          echo 'label: gpt' | sudo sfdisk \$BLK_ID
-          echo ',,L' | sudo sfdisk \$BLK_ID
-          sudo mkfs.ext4 -F \${BLK_ID}1
-          PART_UUID=\$(sudo blkid | grep \$BLK_ID | rev | cut -d ' ' -f -1 | tr -d '"' | rev)
-          echo \$PART_UUID
-          sudo mkdir -p \$MOUNT_POINT
-          echo "\$PART_UUID \$MOUNT_POINT ext4 defaults 0 2" | sudo tee -a /etc/fstab
-          sudo systemctl daemon-reload
-          sudo reboot
-EOF
+ssh $host_user@$node -i ~/.ssh/$cert_name "storage_disk_size=$storage_disk_size sudo su -c \"
+  # Find the disk that matches the storage_disk_size
+  BLK_ID=\$(lsblk --json | jq -r --arg size '\$storage_disk_size' '.blockdevices[] | select(.size == \$size and .type == \\\"disk\\\") | .name')
+  BLK_ID='/dev/\$BLK_ID'
+  if [ -n '\$BLK_ID' ]; then
+    MOUNT_POINT=/var/lib/longhorn
+    echo 'label: gpt' | sudo sfdisk \$BLK_ID
+    echo ',,L' | sudo sfdisk \$BLK_ID
+    sudo mkfs.ext4 -F \${BLK_ID}1
+    PART_UUID=\$(sudo blkid | grep \$BLK_ID | rev | cut -d ' ' -f -1 | tr -d '\"' | rev)
+    if [ -n '\$PART_UUID' ]; then
+      echo \$PART_UUID
+      sudo mkdir -p \$MOUNT_POINT
+      echo '\$PART_UUID \$MOUNT_POINT ext4 defaults 0 2' | sudo tee -a /etc/fstab
+      # sudo systemctl daemon-reload
+      # sudo reboot
+    else
+      echo 'PART_UUID is null, not updating /etc/fstab'
     fi
-    echo -e " \033[32;5mNode: $node Initialized!\033[0m"
-  done
-
-  echo -e " \033[32;5mAll nodes initialized!\033[0m"
-}
-
-
-
-ask_to_intialize() {
-  while true; do
-      # Prompt the user. The colon after the question suggests a default value of 'yes'
-      echo -n "Do you want to run intialize the environment? [Y/n]: "
-      read -r user_input
-      if [[ -z "$user_input" ]]; then
-        user_input="yes"
-      fi
-
-      # Convert to lowercase to simplify the comparison
-      user_input=$(echo "$user_input" | tr '[:upper:]' '[:lower:]')
-
-      case "$user_input" in
-        y|yes)
-          intialize_nodes
-          break
-          ;;
-        n|no)
-          echo "Function will not run."
-          break
-          ;;
-        *)
-          echo "Invalid input, please type 'Y' for yes or 'n' for no."
-          ask_to_intialize
-          ;;
-      esac
-  done
-}
-
-# ask_to_intialize
-initialize_nodes
+  else
+    echo 'BLK_ID is null, not proceeding with disk setup'
+  fi
+\""
