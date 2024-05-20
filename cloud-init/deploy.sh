@@ -101,6 +101,34 @@ ask_to_start_vm() {
   done
 }
 
+ask_to_initialize_nodes() {
+  while true; do
+      # Prompt the user. The colon after the question suggests a default value of 'yes'
+      echo -n "Do you want to run initialize the nodes? [Y/n]: "
+      read -r user_input
+      # Default to 'yes' if the input is empty
+      if [[ -z "$user_input" ]]; then
+        user_input="yes"
+      fi
+      user_input=$(echo "$user_input" | tr '[:upper:]' '[:lower:]')
+      case "$user_input" in
+        y|yes)
+          source ./initialize_nodes.sh
+          break
+          ;;
+        n|no)
+          echo "Nodes will not be initialized."
+          break
+          ;;
+        *)
+          echo "Invalid input, please type 'Y' for yes or 'n' for no."
+          ask_to_initialize_nodes
+          ;;
+      esac
+  done
+
+}
+
 deploy_vm () {
   ssh "$prox_user@$node_ip" -i ~/.ssh/$cert_name bash <<EOF
   qm set $vm_id --ipconfig0 ip=$vm_ip/$CIDR,gw=$GATEWAY;
