@@ -81,6 +81,7 @@ for node in "${all[@]}"; do
         echo 'BLK_ID is null, not proceeding with disk setup'
       fi
 EOF
+  echo -e " \033[32;5mStorage Node: $node Initialized!\033[0m"
   fi
   echo -e " \033[32;5mNode: $node Initialized!\033[0m"
 done
