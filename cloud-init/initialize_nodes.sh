@@ -36,9 +36,21 @@ storage_disk_size=200G
 #############################################
 #            DO NOT EDIT BELOW              #
 #############################################
-for node in "${all[@]}"; do
-  # Check if the current node is in the storage array
-  if [[ " ${storage[*]} " == *" $node "* ]]; then
+initialize_nodes() {
+  # Add ssh keys for all nodes
+  for node in "${all[@]}"; do
+    ssh-keyscan -H $node >> ~/.ssh/known_hosts
+    ssh-copy-id $host_user@$node
+    ssh $host_user@$node -i ~/.ssh/$cert_name sudo su <<EOF
+    NEEDRESTART_MODE=a
+    export DEBIAN_FRONTEND=noninteractive
+    apt-get update -q
+    apt-get install -yq policycoreutils open-iscsi nfs-common cryptsetup dmsetup jq
+    exit
+EOF
+
+    # Check if the current node is in the storage array
+   if [[ " ${storage[*]} " == *" $node "* ]]; then
     # unset storage_disk_size
     # storage_disk_size=$(jq -r --arg ip "$node" '.nodes[].vms[] | select(.ip == $ip) | .storage_disk_size' "$inventory")
     # echo "Storage disk size: $storage_disk_size"
@@ -84,6 +96,9 @@ EOF
     echo -e " \033[32;5mStorage Node: $node Initialized!\033[0m"
   fi
   echo -e " \033[32;5mNode: $node Initialized!\033[0m"
-done
+  done
 
-echo -e " \033[32;5mAll nodes initialized!\033[0m"
+  echo -e " \033[32;5mAll nodes initialized!\033[0m"
+}
+
+initialize_nodes
