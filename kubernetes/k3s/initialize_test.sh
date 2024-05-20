@@ -46,8 +46,8 @@ for node in "${all[@]}"; do
 
     ssh $host_user@$node -i ~/.ssh/$cert_name sudo su <<EOF
     echo "Setting up storage node: $node"
-    MOUNT_POINT=/var/lib/longhorn
-    echo "MOUNT POINT: \$MOUNT_POIN"
+    MOUNT_POINT='/var/lib/longhorn'
+    echo "MOUNT POINT: $MOUNT_POIN"
     if ! grep -q $MOUNT_POINT /etc/fstab; then
 
       BLK_ID=$(lsblk --json | jq -r '.blockdevices[]? | del(select(has("children"))) | select(.name != null and .type == "disk") | .name')
