@@ -46,7 +46,7 @@ for node in "${all[@]}"; do
 
     ssh $host_user@$node -i ~/.ssh/$cert_name sudo su <<EOF
     echo "Setting up storage node: $node"
-    MOUNT_POINT='/var/lib/longhorn'
+    MOUNT_POINT="/var/lib/longhorn"
     echo $MOUNT_POINT
     if ! grep -q $MOUNT_POINT /etc/fstab; then
 
