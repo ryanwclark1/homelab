@@ -44,7 +44,8 @@ for node in "${all[@]}"; do
     # storage_disk_size=$(jq -r --arg ip "$node" '.nodes[].vms[] | select(.ip == $ip) | .storage_disk_size' "$inventory")
     # echo "Storage disk size: $storage_disk_size"
 
-    ssh $host_user@$node -i ~/.ssh/$cert_name <<EOF
+    ssh $host_user@$node -i ~/.ssh/$cert_name sudo su <<EOF
+      echo "Setting up storage node: $node"
       MOUNT_POINT=/var/lib/longhorn
       if grep -q "$MOUNT_POINT" /etc/fstab; then
         echo "Mount point $MOUNT_POINT already exists in /etc/fstab"
