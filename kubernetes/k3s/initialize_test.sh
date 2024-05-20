@@ -45,7 +45,7 @@ for node in "${all[@]}"; do
     # echo "Storage disk size: $storage_disk_size"
 
     ssh $host_user@$node -i ~/.ssh/$cert_name sudo su <<EOF
-      echo "Setting up storage node: $node"
+     echo "Setting up storage node: $node"
       MOUNT_POINT=/var/lib/longhorn
       if ! grep -q "$MOUNT_POINT" /etc/fstab; then
 
@@ -77,11 +77,12 @@ for node in "${all[@]}"; do
           fi
         else
           echo 'BLK_ID is null, not proceeding with disk setup'
+        fi
       else
         echo 'MOUNT_POINT $MOUNT_POINT already in /etc/fstab'
       fi
 EOF
-  echo -e " \033[32;5mStorage Node: $node Initialized!\033[0m"
+    echo -e " \033[32;5mStorage Node: $node Initialized!\033[0m"
   fi
   echo -e " \033[32;5mNode: $node Initialized!\033[0m"
 done
