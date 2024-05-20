@@ -74,7 +74,7 @@ local kp =
           }],
         }],
         tls: {
-          secretName: 'techcasa-io-staging-tls',
+          secretName: 'techcasa-io-production-tls',
         },
       },
     ),
@@ -95,7 +95,7 @@ local kp =
           }],
         }],
         tls: {
-          secretName: 'techcasa-io-staging-tls',
+          secretName: 'techcasa-io-production-tls',
         },
       },
     ),
@@ -117,7 +117,7 @@ local kp =
           }],
         }],
         tls: {
-          secretName: 'techcasa-io-staging-tls',
+          secretName: 'techcasa-io-production-tls',
         },
       },
     ),

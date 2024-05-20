@@ -16,4 +16,4 @@ spec:
       namespace: monitoring
       port: 3000
   tls:
-    secretName: techcasa-io-staging-tls
+    secretName: techcasa-io-production-tls

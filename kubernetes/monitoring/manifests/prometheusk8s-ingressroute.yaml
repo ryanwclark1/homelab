@@ -17,4 +17,4 @@ spec:
       namespace: monitoring
       port: 9090
   tls:
-    secretName: techcasa-io-staging-tls
+    secretName: techcasa-io-production-tls

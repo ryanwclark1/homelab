@@ -14,4 +14,4 @@ spec:
         - name: loki-grafana
           port: 80
   tls:
-    secretName: techcasa-io-staging-tls # change this to your secret!!!
+    secretName: techcasa-io-production-tls # change this to your secret!!!
