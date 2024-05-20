@@ -45,42 +45,42 @@ for node in "${all[@]}"; do
     # echo "Storage disk size: $storage_disk_size"
 
     ssh $host_user@$node -i ~/.ssh/$cert_name sudo su <<EOF
-     echo "Setting up storage node: $node"
-      MOUNT_POINT=/var/lib/longhorn
-      if ! grep -q '$MOUNT_POINT' /etc/fstab; then
+    echo "Setting up storage node: $node"
+    MOUNT_POINT=/var/lib/longhorn
+    if ! grep -q '$MOUNT_POINT' /etc/fstab; then
 
-        BLK_ID=$(lsblk --json | jq -r '.blockdevices[]? | del(select(has("children"))) | select(.name != null and .type == "disk") | .name')
-        if [ -n "$BLK_ID" ]; then
-          BLK_ID_PATH="/dev/$BLK_ID"
-          echo $BLK_ID_PATH
-          echo 'label: gpt' | sudo sfdisk $BLK_ID_PATH
-          echo ',,L' | sudo sfdisk $BLK_ID_PATH
-          BLK_ID_CHILD=$(lsblk --json | jq -r --arg BLK_ID "$BLK_ID" '.blockdevices[]? | select(.name == $BLK_ID) | .children[0].name')
-          echo $BLK_ID_CHILD
-          BLK_ID_CHILD_PATH="/dev/$BLK_ID_CHILD"
-          sudo mkfs.ext4 -F $BLK_ID_CHILD_PATH
-          PART_UUID=$(lsblk -O --json | jq -r --arg BLK_ID_CHILD_PATH "$BLK_ID_CHILD_PATH" '.blockdevices[]?.children[]? | select(.path == $BLK_ID_CHILD_PATH) | .partuuid')
-          if [ -n "$PART_UUID" ]; then
-            echo $PART_UUID
-            sudo mkdir -p $MOUNT_POINT
-            if ! grep -q "$PART_UUID" /etc/fstab; then
-              echo "PARTUUID=$PART_UUID $MOUNT_POINT ext4 defaults 0 0" | sudo tee -a /etc/fstab
-            else
-              echo 'UUID already in /etc/fstab'
-            fi
-            sudo mount -a
-            sudo systemctl daemon-reload
-            sudo findmnt --verify --verbose
-            # sudo reboot
+      BLK_ID=$(lsblk --json | jq -r '.blockdevices[]? | del(select(has("children"))) | select(.name != null and .type == "disk") | .name')
+      if [ -n "$BLK_ID" ]; then
+        BLK_ID_PATH="/dev/$BLK_ID"
+        echo $BLK_ID_PATH
+        echo 'label: gpt' | sudo sfdisk $BLK_ID_PATH
+        echo ',,L' | sudo sfdisk $BLK_ID_PATH
+        BLK_ID_CHILD=$(lsblk --json | jq -r --arg BLK_ID "$BLK_ID" '.blockdevices[]? | select(.name == $BLK_ID) | .children[0].name')
+        echo $BLK_ID_CHILD
+        BLK_ID_CHILD_PATH="/dev/$BLK_ID_CHILD"
+        sudo mkfs.ext4 -F $BLK_ID_CHILD_PATH
+        PART_UUID=$(lsblk -O --json | jq -r --arg BLK_ID_CHILD_PATH "$BLK_ID_CHILD_PATH" '.blockdevices[]?.children[]? | select(.path == $BLK_ID_CHILD_PATH) | .partuuid')
+        if [ -n "$PART_UUID" ]; then
+          echo $PART_UUID
+          sudo mkdir -p $MOUNT_POINT
+          if ! grep -q "$PART_UUID" /etc/fstab; then
+            echo "PARTUUID=$PART_UUID $MOUNT_POINT ext4 defaults 0 0" | sudo tee -a /etc/fstab
           else
-            echo 'PART_UUID is null, not updating /etc/fstab'
+            echo 'UUID already in /etc/fstab'
           fi
+          sudo mount -a
+          sudo systemctl daemon-reload
+          sudo findmnt --verify --verbose
+          # sudo reboot
         else
-          echo 'BLK_ID is null, not proceeding with disk setup'
+          echo 'PART_UUID is null, not updating /etc/fstab'
         fi
       else
-        echo 'MOUNT_POINT $MOUNT_POINT already in /etc/fstab'
+        echo 'BLK_ID is null, not proceeding with disk setup'
       fi
+    else
+      echo 'MOUNT_POINT $MOUNT_POINT already in /etc/fstab'
+    fi
 EOF
     echo -e " \033[32;5mStorage Node: $node Initialized!\033[0m"
   fi
