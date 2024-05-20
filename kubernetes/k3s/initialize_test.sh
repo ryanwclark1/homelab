@@ -39,7 +39,7 @@ storage_disk_size=200G
 #############################################
 
 ssh $host_user@$node -i ~/.ssh/$cert_name sudo su <<EOF
-  BLK_ID=\$(lsblk --json | jq --raw-ouput '.blockdevices[]? | del(select(has("children"))) | select(.name != null) | .name')
+  BLK_ID=\$(lsblk --json | jq -r '.blockdevices[]? | del(select(has("children"))) | select(.name != null and .type == "disk") | .name')
   if [ -n '\$BLK_ID' ]; then
     BLK_ID='/dev/\$BLK_ID'
     MOUNT_POINT=/var/lib/longhorn
