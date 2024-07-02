@@ -150,6 +150,7 @@ echo_default() {
   echo -e "${DGN}Using MAC Address: ${BGN}Default${CL}"
   echo -e "${DGN}Using VLAN Tag: ${BGN}Default${CL}"
   echo -e "${DGN}Enable Root SSH Access: ${BGN}No${CL}"
+  echo -e "${DGN}Add NFS Shares: ${BGN}No${CL}"
   echo -e "${DGN}Enable Verbose Mode: ${BGN}No${CL}"
   echo -e "${BL}Creating a ${APP} LXC using the above default settings${CL}"
 }
@@ -467,7 +468,8 @@ advanced_settings() {
   fi
 
   if [[ "$NFS" == "yes" ]]; then
-    echo -e "${DGN} Add NFS Shares: ${BGN}$NFS${CL}"
+    collect_nfs_details
+    echo -e "${DGN} Add NFS Shares: ${BGN}$NFS_MOUNTS${CL}"
   fi
 
   if (whiptail --backtitle "Proxmox VE Helper Scripts" --defaultno --title "VERBOSE MODE" --yesno "Enable Verbose Mode?" 10 58); then
@@ -485,6 +487,38 @@ advanced_settings() {
     echo -e "${RD}Using Advanced Settings${CL}"
     advanced_settings
   fi
+}
+
+collect_nfs_details() {
+  NFS_MOUNTS=""
+  while true; do
+    local local_path
+    local remote_path
+
+    if local_path=$(whiptail --backtitle "Proxmox VE Helper Scripts" --inputbox "Enter the local path for the NFS mount:" 8 58 --title "LOCAL PATH" 3>&1 1>&2 2>&3); then
+      if [ -z "$local_path" ]; then
+        whiptail --backtitle "Proxmox VE Helper Scripts" --msgbox "Local path cannot be empty. Please try again." 8 58
+        continue
+      fi
+    else
+      exit-script
+    fi
+
+    if remote_path=$(whiptail --backtitle "Proxmox VE Helper Scripts" --inputbox "Enter the remote server path (format: ip:/remote/path):" 8 58 --title "REMOTE SERVER PATH" 3>&1 1>&2 2>&3); then
+      if [[ ! "$remote_path" =~ ^[a-zA-Z0-9._-]+:[/a-zA-Z0-9._-]+$ ]]; then
+        whiptail --backtitle "Proxmox VE Helper Scripts" --msgbox "Invalid remote server path format. Please try again." 8 58
+        continue
+      fi
+    else
+      exit-script
+    fi
+
+    NFS_MOUNTS+="$local_path $remote_path\n"
+
+    if ! (whiptail --backtitle "Proxmox VE Helper Scripts" --title "NFS MOUNT" --yesno "Do you want to add another NFS mount?" 10 58); then
+      break
+    fi
+  done
 }
 
 install_script() {
