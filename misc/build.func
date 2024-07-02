@@ -460,6 +460,16 @@ advanced_settings() {
     echo -e "${DGN}Enable Root SSH Access: ${BGN}$SSH${CL}"
   fi
 
+  if (whiptail --backtitle "Proxmox VE Helper Scripts" --defaultno --title "VERBOSE MODE" --yesno "Add NFS Shares?" 10 58); then
+    NFS="yes"
+  else
+    NFS="no"
+  fi
+
+  if [[ "$NFS" == "yes" ]]; then
+    echo -e "${DGN} Add NFS Shares: ${BGN}$NFS${CL}"
+  fi
+
   if (whiptail --backtitle "Proxmox VE Helper Scripts" --defaultno --title "VERBOSE MODE" --yesno "Enable Verbose Mode?" 10 58); then
     VERB="yes"
   else
