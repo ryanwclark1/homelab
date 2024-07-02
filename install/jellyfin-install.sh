@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+source <(curl -s https://raw.githubusercontent.com/ryanwclark1/homelab/main/misc/nfs.func)
 
 source /dev/stdin <<< "$FUNCTIONS_FILE_PATH"
 color
@@ -14,6 +15,11 @@ $STD apt-get install -y sudo
 $STD apt-get install -y gnupg
 $STD apt-get install -y mc
 msg_ok "Installed Dependencies"
+
+if [["$NFS" == "yes"]]; then
+  msg_info "Setting Up NFS"
+  $STD apt-get install -y nfs-common
+fi
 
 msg_info "Setting Up Hardware Acceleration"
 $STD apt-get -y install {va-driver-all,ocl-icd-libopencl1,intel-opencl-icd,vainfo,intel-gpu-tools}

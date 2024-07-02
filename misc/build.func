@@ -493,9 +493,11 @@ collect_nfs_details() {
   NFS_MOUNTS=""
   while true; do
     local local_path
+    local nfs_type
+    local nfs_options
     local remote_path
 
-    if local_path=$(whiptail --backtitle "Proxmox VE Helper Scripts" --inputbox "Enter the local path for the NFS mount:" 8 58 --title "LOCAL PATH" 3>&1 1>&2 2>&3); then
+    if local_path=$(whiptail --backtitle "Proxmox VE Helper Scripts" --inputbox "Enter the local path for the NFS mount: (format: /mnt/share" 8 58 --title "LOCAL PATH" 3>&1 1>&2 2>&3); then
       if [ -z "$local_path" ]; then
         whiptail --backtitle "Proxmox VE Helper Scripts" --msgbox "Local path cannot be empty. Please try again." 8 58
         continue
@@ -504,7 +506,22 @@ collect_nfs_details() {
       exit-script
     fi
 
-    if remote_path=$(whiptail --backtitle "Proxmox VE Helper Scripts" --inputbox "Enter the remote server path (format: ip:/remote/path):" 8 58 --title "REMOTE SERVER PATH" 3>&1 1>&2 2>&3); then
+    if ! (whiptail --backtitle "Proxmox VE Helper Scripts" --title "NFS TYPE" --yesno "Is this NFSv4?" 10 58); then
+      nfs_type="nfs"
+    else
+      nfs_type="nfs4"
+    fi
+
+    if nfs_options=$(whiptail --backtitle "Proxmox VE Helper Scripts" --inputbox "Enter NFS options (format: rw,soft,intr)" 8 58 --title "NFS OPTIONS" 3>&1 1>&2 2>&3); then
+      if [ -z "$nfs_options" ]; then
+        whiptail --backtitle "Proxmox VE Helper Scripts" --msgbox "NFS options cannot be empty. Please try again." 8 58
+        continue
+      fi
+    else
+      exit-script
+    fi
+
+    if remote_path=$(whiptail --backtitle "Proxmox VE Helper Scripts" --inputbox "Enter the remote server path (format: dns_or_ip:/remote/path):" 8 58 --title "REMOTE SERVER PATH" 3>&1 1>&2 2>&3); then
       if [[ ! "$remote_path" =~ ^[a-zA-Z0-9._-]+:[/a-zA-Z0-9._-]+$ ]]; then
         whiptail --backtitle "Proxmox VE Helper Scripts" --msgbox "Invalid remote server path format. Please try again." 8 58
         continue
@@ -513,7 +530,7 @@ collect_nfs_details() {
       exit-script
     fi
 
-    NFS_MOUNTS+="$local_path $remote_path\n"
+    NFS_MOUNTS+="$remote_path $local_path $nfs_type $nfs_options 0 0\n"
 
     if ! (whiptail --backtitle "Proxmox VE Helper Scripts" --title "NFS MOUNT" --yesno "Do you want to add another NFS mount?" 10 58); then
       break
@@ -612,6 +629,9 @@ build_container() {
     -unprivileged $CT_TYPE
     $PW
   "
+  export NFS="$NFS"
+  export NFS_MOUNTS="$NFS_MOUNTS"
+
   # This executes create_lxc.sh and creates the container and .conf file
   bash -c "$(wget -qLO - https://raw.githubusercontent.com/ryanwclark1/homelab/main/ct/create_lxc.sh)" || exit
 

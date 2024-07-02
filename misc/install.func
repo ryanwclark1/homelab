@@ -66,7 +66,6 @@ msg_info() {
   SPINNER_PID=$!
 }
 
-
 # This function displays a success message with a green color.
 msg_ok() {
   if [ -n "$SPINNER_PID" ] && ps -p $SPINNER_PID > /dev/null; then kill $SPINNER_PID > /dev/null; fi
@@ -81,6 +80,29 @@ msg_error() {
   printf "\e[?25h"
   local msg="$1"
   echo -e "${BFR} ${CROSS} ${RD}${msg}${CL}"
+}
+
+append_to_fstab() {
+  # Ensure each entry ends with a newline
+  formatted_nfs_share=$(echo -e "$NFS_SHARE")
+
+  # Append the formatted NFS shares to /etc/fstab
+  echo "$formatted_nfs_share" | sudo tee -a /etc/fstab > /dev/null
+
+  # Verify the changes
+  if grep -q "$formatted_nfs_share" /etc/fstab; then
+    echo "NFS shares appended to /etc/fstab successfully."
+
+    # Mount all filesystems mentioned in /etc/fstab
+    if sudo mount -a; then
+      echo "All filesystems mounted successfully."
+    else
+      echo "Failed to mount filesystems."
+    fi
+
+  else
+    echo "Failed to append NFS shares to /etc/fstab."
+  fi
 }
 
 # This function sets up the Container OS by generating the locale, setting the timezone, and checking the network connection
