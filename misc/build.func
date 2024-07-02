@@ -512,7 +512,7 @@ collect_nfs_details() {
       nfs_type="nfs4"
     fi
 
-    if nfs_options=$(whiptail --backtitle "Proxmox VE Helper Scripts" --inputbox "Enter NFS options (format: rw,soft,intr)" 8 58 --title "NFS OPTIONS" 3>&1 1>&2 2>&3); then
+    if nfs_options=$(whiptail --backtitle "Proxmox VE Helper Scripts" --inputbox "Enter NFS options (format: rw,soft)" 8 58 --title "NFS OPTIONS" 3>&1 1>&2 2>&3); then
       if [ -z "$nfs_options" ]; then
         whiptail --backtitle "Proxmox VE Helper Scripts" --msgbox "NFS options cannot be empty. Please try again." 8 58
         continue

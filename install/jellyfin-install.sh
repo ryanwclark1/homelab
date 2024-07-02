@@ -1,6 +1,4 @@
 #!/usr/bin/env bash
-source <(curl -s https://raw.githubusercontent.com/ryanwclark1/homelab/main/misc/nfs.func)
-
 source /dev/stdin <<< "$FUNCTIONS_FILE_PATH"
 color
 verb_ip6
