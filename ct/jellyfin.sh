@@ -40,7 +40,7 @@ function default_settings() {
   APT_CACHER_IP=""
   DISABLEIP6="no"
   MTU=""
-  SD=""
+  SD="techcasa.io"
   NS=""
   MAC=""
   VLAN=""
