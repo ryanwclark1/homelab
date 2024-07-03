@@ -84,7 +84,7 @@ msg_error() {
 
 append_to_fstab() {
   # Ensure each entry ends with a newline
-  formatted_nfs_share=$(echo -e "$NFS_SHARE")
+  formatted_nfs_share=$(echo -e "$NFS_SHARE_SCRIPT")
 
   # Append the formatted NFS shares to /etc/fstab
   echo "$formatted_nfs_share" | sudo tee -a /etc/fstab > /dev/null

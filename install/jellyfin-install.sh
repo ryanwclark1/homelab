@@ -6,6 +6,7 @@ catch_errors
 setting_up_container
 network_check
 update_os
+append_to_fstab
 
 msg_info "Installing Dependencies"
 $STD apt-get install -y curl
@@ -14,10 +15,11 @@ $STD apt-get install -y gnupg
 $STD apt-get install -y mc
 msg_ok "Installed Dependencies"
 
-msg_info "Setting up NFS yes/no {$NFS}"
-if $NFS == "yes"; then
+msg_info "Setting up NFS yes/no {$NFS_ENABLED}"
+if [ $NFS_ENABLED == "yes" ]; then
   msg_info "Setting Up NFS"
   $STD apt-get install -y nfs-common
+  append_to_fstab
 fi
 
 msg_info "Setting Up Hardware Acceleration"

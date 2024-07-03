@@ -629,8 +629,8 @@ build_container() {
     -unprivileged $CT_TYPE
     $PW
   "
-  export NFS="$NFS"
-  export NFS_MOUNTS="$NFS_MOUNTS"
+  export NFS_ENABLED="$NFS"
+  export NFS_MOUNTS_SCRIPT="$NFS_MOUNTS"
 
   # This executes create_lxc.sh and creates the container and .conf file
   bash -c "$(wget -qLO - https://raw.githubusercontent.com/ryanwclark1/homelab/main/ct/create_lxc.sh)" || exit
