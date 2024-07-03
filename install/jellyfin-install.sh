@@ -6,7 +6,6 @@ catch_errors
 setting_up_container
 network_check
 update_os
-# nfs
 
 
 msg_info "Installing Dependencies"
@@ -15,9 +14,9 @@ $STD apt-get install -y sudo
 $STD apt-get install -y gnupg
 $STD apt-get install -y mc
 # If $PCT_TYPE is ubuntu add-apt-repository universe
-if [[ "$PCT_OSTYPE" == "ubuntu" ]]; then
-  $STD add-apt-repository universe
-msg_ok "Installed Dependencies"
+# if [[ "$PCT_OSTYPE" == "ubuntu" ]]; then
+#   $STD add-apt-repository universe
+# msg_ok "Installed Dependencies"
 
 
 
