@@ -14,7 +14,8 @@ $STD apt-get install -y gnupg
 $STD apt-get install -y mc
 msg_ok "Installed Dependencies"
 
-if [["$NFS" == "yes"]]; then
+msg_info "Setting up NFS yes/no {$NFS}"
+if $NFS == "yes"; then
   msg_info "Setting Up NFS"
   $STD apt-get install -y nfs-common
 fi
