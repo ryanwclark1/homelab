@@ -14,6 +14,9 @@ $STD apt-get install -y curl
 $STD apt-get install -y sudo
 $STD apt-get install -y gnupg
 $STD apt-get install -y mc
+# If $PCT_TYPE is ubuntu add-apt-repository universe
+if [[ "$PCT_OSTYPE" == "ubuntu" ]]; then
+  $STD add-apt-repository universe
 msg_ok "Installed Dependencies"
 
 
