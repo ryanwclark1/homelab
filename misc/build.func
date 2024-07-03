@@ -476,7 +476,7 @@ advanced_settings() {
     local local_mp
     local server_path
 
-    if remote_path=$(whiptail --backtitle "Proxmox VE Helper Scripts" --inputbox "Enter the server path (Example: /mnt/path):" 8 58 --title "SERVER PATH" 3>&1 1>&2 2>&3); then
+    if remote_path=$(whiptail --backtitle "Proxmox VE Helper Scripts" --inputbox "Enter the server path (Example: /mnt/pve/path):" 8 58 --title "SERVER PATH" 3>&1 1>&2 2>&3); then
       if [ -z $remote_path ]; then
         whiptail --backtitle "Proxmox VE Helper Scripts" --msgbox "Server path cannot be empty. Please try again." 8 58
         continue
