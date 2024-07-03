@@ -109,6 +109,9 @@ nfs(){
   if [ "$NFS_ENABLED" = "yes" ]; then
     msg_info "Setting up NFS"
     $STD apt-get install -y nfs-common
+    for dir in "${NFS_LOCAL_PATH_LIST[@]}"; do
+      mkdir -p "/mnt/$dir"
+    done
     append_to_fstab
     msg_ok "NFS Setup Complete"
   fi
