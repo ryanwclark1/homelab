@@ -84,11 +84,11 @@ msg_error() {
 
 append_to_fstab() {
   # Ensure each entry ends with a newline
-  formatted_nfs_share=$(echo -e "$NFS_SHARE_SCRIPT")
+  formatted_nfs_share=$(echo -e "$NFS_MOUNTS_SCRIPT")
 
   # Append the formatted NFS shares to /etc/fstab
   echo "$formatted_nfs_share" | sudo tee -a /etc/fstab > /dev/null
-
+  echo $formatted_nfs_share
   # Verify the changes
   if grep -q "$formatted_nfs_share" /etc/fstab; then
     echo "NFS shares appended to /etc/fstab successfully."
@@ -102,6 +102,15 @@ append_to_fstab() {
 
   else
     echo "Failed to append NFS shares to /etc/fstab."
+  fi
+}
+
+nfs(){
+  if [ "$NFS_ENABLED" = "yes" ]; then
+    msg_info "Setting up NFS"
+    $STD apt-get install -y nfs-common
+    append_to_fstab
+    msg_ok "NFS Setup Complete"
   fi
 }
 

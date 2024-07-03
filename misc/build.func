@@ -261,6 +261,7 @@ advanced_settings() {
   done
 
 
+  # TODO: Verification for user input
   if CT_ID=$(whiptail --backtitle "Proxmox VE Helper Scripts" --inputbox "Set Container ID" 8 58 $NEXTID --title "CONTAINER ID" 3>&1 1>&2 2>&3); then
     if [ -z "$CT_ID" ]; then
       CT_ID="$NEXTID"
@@ -272,6 +273,7 @@ advanced_settings() {
     exit
   fi
 
+  # TODO: Verification for user input
   if CT_NAME=$(whiptail --backtitle "Proxmox VE Helper Scripts" --inputbox "Set Hostname" 8 58 $NSAPP --title "HOSTNAME" 3>&1 1>&2 2>&3); then
     if [ -z "$CT_NAME" ]; then
       HN="$NSAPP"
@@ -465,10 +467,48 @@ advanced_settings() {
     NFS="yes"
   else
     NFS="no"
+    NFS_MOUNTS=""
   fi
 
   if [[ "$NFS" == "yes" ]]; then
-    collect_nfs_details
+    while true; do
+    local local_path
+    local nfs_type
+    local nfs_options
+    local remote_path
+
+    if local_path=$(whiptail --backtitle "Proxmox VE Helper Scripts" --inputbox "Enter the local path for the NFS mount: (format: /mnt/share" 8 58 --title "LOCAL PATH" 3>&1 1>&2 2>&3); then
+      if [ -z "$local_path" ]; then
+        whiptail --backtitle "Proxmox VE Helper Scripts" --msgbox "Local path cannot be empty. Please try again." 8 58
+        continue
+      fi
+    else
+      exit-script
+    fi
+
+    if nfs_options=$(whiptail --backtitle "Proxmox VE Helper Scripts" --inputbox "Enter NFS options (format: rw,soft)" 8 58 --title "NFS OPTIONS" 3>&1 1>&2 2>&3); then
+      if [ -z "$nfs_options" ]; then
+      nfs_options="defaults"
+      fi
+    else
+      exit-script
+    fi
+
+    if remote_path=$(whiptail --backtitle "Proxmox VE Helper Scripts" --inputbox "Enter the remote server path (format: dns_or_ip:/remote/path):" 8 58 --title "REMOTE SERVER PATH" 3>&1 1>&2 2>&3); then
+      if [[ ! "$remote_path" =~ ^[a-zA-Z0-9._-]+:[/a-zA-Z0-9._-]+$ ]]; then
+        whiptail --backtitle "Proxmox VE Helper Scripts" --msgbox "Invalid remote server path format. Please try again." 8 58
+        continue
+      fi
+    else
+      exit-script
+    fi
+
+    NFS_MOUNTS+="$remote_path $local_path nfs $nfs_options 0 0\n"
+
+    if ! (whiptail --backtitle "Proxmox VE Helper Scripts" --title "NFS MOUNT" --yesno "Do you want to add another NFS mount?" 10 58); then
+      break
+    fi
+  done
     echo -e "${DGN} Add NFS Shares: ${BGN}$NFS_MOUNTS${CL}"
   fi
 
@@ -489,54 +529,6 @@ advanced_settings() {
   fi
 }
 
-collect_nfs_details() {
-  NFS_MOUNTS=""
-  while true; do
-    local local_path
-    local nfs_type
-    local nfs_options
-    local remote_path
-
-    if local_path=$(whiptail --backtitle "Proxmox VE Helper Scripts" --inputbox "Enter the local path for the NFS mount: (format: /mnt/share" 8 58 --title "LOCAL PATH" 3>&1 1>&2 2>&3); then
-      if [ -z "$local_path" ]; then
-        whiptail --backtitle "Proxmox VE Helper Scripts" --msgbox "Local path cannot be empty. Please try again." 8 58
-        continue
-      fi
-    else
-      exit-script
-    fi
-
-    if ! (whiptail --backtitle "Proxmox VE Helper Scripts" --title "NFS TYPE" --yesno "Is this NFSv4?" 10 58); then
-      nfs_type="nfs"
-    else
-      nfs_type="nfs4"
-    fi
-
-    if nfs_options=$(whiptail --backtitle "Proxmox VE Helper Scripts" --inputbox "Enter NFS options (format: rw,soft)" 8 58 --title "NFS OPTIONS" 3>&1 1>&2 2>&3); then
-      if [ -z "$nfs_options" ]; then
-        whiptail --backtitle "Proxmox VE Helper Scripts" --msgbox "NFS options cannot be empty. Please try again." 8 58
-        continue
-      fi
-    else
-      exit-script
-    fi
-
-    if remote_path=$(whiptail --backtitle "Proxmox VE Helper Scripts" --inputbox "Enter the remote server path (format: dns_or_ip:/remote/path):" 8 58 --title "REMOTE SERVER PATH" 3>&1 1>&2 2>&3); then
-      if [[ ! "$remote_path" =~ ^[a-zA-Z0-9._-]+:[/a-zA-Z0-9._-]+$ ]]; then
-        whiptail --backtitle "Proxmox VE Helper Scripts" --msgbox "Invalid remote server path format. Please try again." 8 58
-        continue
-      fi
-    else
-      exit-script
-    fi
-
-    NFS_MOUNTS+="$remote_path $local_path $nfs_type $nfs_options 0 0\n"
-
-    if ! (whiptail --backtitle "Proxmox VE Helper Scripts" --title "NFS MOUNT" --yesno "Do you want to add another NFS mount?" 10 58); then
-      break
-    fi
-  done
-}
 
 install_script() {
   pve_check

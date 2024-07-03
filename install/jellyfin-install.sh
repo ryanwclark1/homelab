@@ -6,7 +6,8 @@ catch_errors
 setting_up_container
 network_check
 update_os
-append_to_fstab
+nfs
+
 
 msg_info "Installing Dependencies"
 $STD apt-get install -y curl
@@ -15,12 +16,7 @@ $STD apt-get install -y gnupg
 $STD apt-get install -y mc
 msg_ok "Installed Dependencies"
 
-msg_info "Setting up NFS yes/no {$NFS_ENABLED}"
-if [ $NFS_ENABLED == "yes" ]; then
-  msg_info "Setting Up NFS"
-  $STD apt-get install -y nfs-common
-  append_to_fstab
-fi
+
 
 msg_info "Setting Up Hardware Acceleration"
 $STD apt-get -y install {va-driver-all,ocl-icd-libopencl1,intel-opencl-icd,vainfo,intel-gpu-tools}
