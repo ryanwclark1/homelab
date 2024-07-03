@@ -82,40 +82,40 @@ msg_error() {
   echo -e "${BFR} ${CROSS} ${RD}${msg}${CL}"
 }
 
-append_to_fstab() {
-  # Ensure each entry ends with a newline
-  formatted_nfs_share=$(echo -e "$NFS_MOUNTS_SCRIPT")
+# append_to_fstab() {
+#   # Ensure each entry ends with a newline
+#   formatted_nfs_share=$(echo -e "$NFS_MOUNTS_SCRIPT")
 
-  # Append the formatted NFS shares to /etc/fstab
-  echo "$formatted_nfs_share" | sudo tee -a /etc/fstab > /dev/null
-  echo $formatted_nfs_share
-  # Verify the changes
-  if grep -q "$formatted_nfs_share" /etc/fstab; then
-    echo "NFS shares appended to /etc/fstab successfully."
+#   # Append the formatted NFS shares to /etc/fstab
+#   echo "$formatted_nfs_share" | sudo tee -a /etc/fstab > /dev/null
+#   msg_info $formatted_nfs_share
+#   # Verify the changes
+#   if grep -q "$formatted_nfs_share" /etc/fstab; then
+#     echo "NFS shares appended to /etc/fstab successfully."
 
-    # Mount all filesystems mentioned in /etc/fstab
-    if sudo mount -a; then
-      echo "All filesystems mounted successfully."
-    else
-      echo "Failed to mount filesystems."
-    fi
+#     # Mount all filesystems mentioned in /etc/fstab
+#     if sudo mount -a; then
+#       echo "All filesystems mounted successfully."
+#     else
+#       echo "Failed to mount filesystems."
+#     fi
 
-  else
-    echo "Failed to append NFS shares to /etc/fstab."
-  fi
-}
+#   else
+#     echo "Failed to append NFS shares to /etc/fstab."
+#   fi
+# }
 
-nfs(){
-  if [ "$NFS_ENABLED" = "yes" ]; then
-    msg_info "Setting up NFS"
-    $STD apt-get install -y nfs-common
-    for dir in "${NFS_LOCAL_PATH_LIST[@]}"; do
-      mkdir -p "/mnt/$dir"
-    done
-    append_to_fstab
-    msg_ok "NFS Setup Complete"
-  fi
-}
+# nfs(){
+#   if [ "$NFS_ENABLED" = "yes" ]; then
+#     msg_info "Setting up NFS"
+#     $STD apt-get install -y nfs-common
+#     for dir in "${NFS_LOCAL_PATH_LIST[@]}"; do
+#       mkdir -p "/mnt/$dir"
+#     done
+#     append_to_fstab
+#     msg_ok "NFS Setup Complete"
+#   fi
+# }
 
 # This function sets up the Container OS by generating the locale, setting the timezone, and checking the network connection
 setting_up_container() {

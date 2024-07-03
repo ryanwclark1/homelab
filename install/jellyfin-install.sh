@@ -6,7 +6,7 @@ catch_errors
 setting_up_container
 network_check
 update_os
-nfs
+# nfs
 
 
 msg_info "Installing Dependencies"

@@ -27,7 +27,7 @@ catch_errors
 
 function default_settings() {
   CT_TYPE="1"
-  PW="password123"
+  PW=""
   CT_ID=$NEXTID
   HN=$NSAPP
   DISK_SIZE="$var_disk"
@@ -40,12 +40,12 @@ function default_settings() {
   APT_CACHER_IP=""
   DISABLEIP6="no"
   MTU=""
-  SD="techcasa.io"
+  SD=""
   NS=""
   MAC=""
   VLAN=""
   SSH="no"
-  NFS="no"
+  BM="no"
   VERB="no"
   echo_default
 }
