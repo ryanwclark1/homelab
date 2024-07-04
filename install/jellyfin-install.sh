@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+
 source /dev/stdin <<< "$FUNCTIONS_FILE_PATH"
 color
 verb_ip6
@@ -7,18 +8,11 @@ setting_up_container
 network_check
 update_os
 
-
 msg_info "Installing Dependencies"
 $STD apt-get install -y curl
 $STD apt-get install -y sudo
 $STD apt-get install -y gnupg
 $STD apt-get install -y mc
-# If $PCT_TYPE is ubuntu add-apt-repository universe
-# if [[ "$PCT_OSTYPE" == "ubuntu" ]]; then
-#   $STD add-apt-repository universe
-# msg_ok "Installed Dependencies"
-
-
 
 msg_info "Setting Up Hardware Acceleration"
 $STD apt-get -y install {va-driver-all,ocl-icd-libopencl1,intel-opencl-icd,vainfo,intel-gpu-tools}
