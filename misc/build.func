@@ -496,7 +496,7 @@ advanced_settings() {
 
     BM_MOUNTS+="mp$MP: $remote_path,mp=$local_mp\n"
     MP=$((MP + 1))
-    if ! (whiptail --backtitle "Proxmox VE Helper Scripts" --title "NFS MOUNT" --yesno "Do you want to add another NFS mount?" 10 58); then
+    if ! (whiptail --backtitle "Proxmox VE Helper Scripts" --title "ADDITIONAL MOUNT" --yesno "Do you want to add another mount?" 10 58); then
       break
     fi
   done
