@@ -31,7 +31,7 @@ services:
       - telegraf_conf
 configs:
   telegraf_conf:
-    file: ./telegraf.conf
+    file: ./telegraf/telegraf.conf
 
 # volumes:
 #     influxdb2-data:
