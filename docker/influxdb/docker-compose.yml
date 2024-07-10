@@ -35,9 +35,9 @@ services:
       - type: bind
         source: ./telegraf/telegraf.conf
         target: /etc/telegraf/telegraf.conf
-configs:
-  telegraf_conf:
-    file: ./telegraf/telegraf.conf
+# configs:
+#   telegraf_conf:
+#     file: ./telegraf/telegraf.conf
 # volumes:
 #     influxdb2-data:
 #         external: true
