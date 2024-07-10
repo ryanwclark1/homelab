@@ -10,6 +10,7 @@ services:
             # - type: volume
               # source: influxdb2-data
             - type: bind
+              source: /mnt/apps/influxdb
               target: /var/lib/influxdb2
             - type: bind
               source: /mnt/conf/influxdb
