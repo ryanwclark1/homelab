@@ -9,11 +9,9 @@ services:
     volumes:
       - type: volume
         source: influxdb2-data
-        # - type: bind
-        #   source: /mnt/apps/influxdb
         target: /var/lib/influxdb2
-      - type: bind
-        source: /mnt/conf/influxdb
+      - type: volume
+        source: influxdb2-config
         target: /etc/influxdb2
     environment:
       - DOCKER_INFLUXDB_INIT_MODE=${DOCKER_INFLUXDB_INIT_MODE:-setup}
@@ -42,3 +40,6 @@ volumes:
   influxdb2-data:
     external: true
     name: influxdb2-data
+  influxdb2-config:
+    external: true
+    name: influxdb2-config
