@@ -34,6 +34,7 @@ services:
 
   alertmanager:
     image: prom/alertmanager:v0.27.0
+    container_name: alertmanager
     ports:
       - 9093:9093
     # volumes:
@@ -50,6 +51,7 @@ services:
 
   cadvisor:
     image: gcr.io/cadvisor/cadvisor
+    container_name: cadvisor
     volumes:
       - /:/rootfs:ro
       - /var/run:/var/run:rw
@@ -61,6 +63,7 @@ services:
 
   graphite-exporter:
     image: prom/graphite-exporter:v0.10.0
+    container_name: graphite-exporter
     ports:
       - 9108:9108
       - 9109:9109
@@ -68,7 +71,8 @@ services:
     restart: always
 
   grafana:
-    image: grafana/grafana:10.2.8-ubuntu
+    image: grafana/grafana:11.1.0-ubuntu
+    container_name: grafana
     ports:
       - 3000:3000
     # volumes:
