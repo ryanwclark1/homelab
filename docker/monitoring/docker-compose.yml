@@ -36,11 +36,11 @@ services:
     image: prom/alertmanager:v0.27.0
     ports:
       - 9093:9093
-    volumes:
-      - "./alertmanager/:/etc/alertmanager/"
-    command:
-      - "--config.file=/etc/alertmanager/config.yml"
-      - "--storage.path=/alertmanager"
+    # volumes:
+    #   - "./alertmanager/:/etc/alertmanager/"
+    # command:
+    #   - "--config.file=/etc/alertmanager/config.yml"
+    #   - "--storage.path=/alertmanager"
     deploy:
       placement:
         constraints:
