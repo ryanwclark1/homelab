@@ -1,5 +1,5 @@
 ---
-name: influxdb2
+name: influxdb
 services:
   influxdb:
       image: influxdb:2
