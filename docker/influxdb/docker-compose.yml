@@ -7,10 +7,10 @@ services:
     ports:
       - 8086:8086
     volumes:
-      # - type: volume
-      # source: influxdb2-data
-      - type: bind
-        source: /mnt/apps/influxdb
+      - type: volume
+        source: influxdb2-data
+        # - type: bind
+        #   source: /mnt/apps/influxdb
         target: /var/lib/influxdb2
       - type: bind
         source: /mnt/conf/influxdb
@@ -38,7 +38,7 @@ services:
 # configs:
 #   telegraf_conf:
 #     file: ./telegraf/telegraf.conf
-# volumes:
-#     influxdb2-data:
-#         external: true
-#         name: influxdb2-data
+volumes:
+  influxdb2-data:
+    external: true
+    name: influxdb2-data
