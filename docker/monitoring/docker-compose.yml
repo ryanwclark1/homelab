@@ -59,6 +59,24 @@ services:
       - 8080:8080
     restart: always
 
+  graphite-exporter:
+    image: prom/graphite-exporter:v0.10.0
+    ports:
+      - 9108:9108
+      - 9109:9109
+      - 9109:9109/udp
+    restart: always
+
+  grafana:
+    image: grafana/grafana:10.2.8-ubuntu
+    ports:
+      - 3000:3000
+    # volumes:
+    #   - type: bind
+    #     source: ./grafana
+    #     target: /var/lib/grafana
+    restart: always
+
 volumes:
   prometheus_data:
     external: true
