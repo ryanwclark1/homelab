@@ -54,4 +54,4 @@ scrape_configs:
 
   - job_name: 'graphite-exporter-truenas'
     static_configs:
-      - targets: ['graphite-exporter-truenas:9109']
+      - targets: ['graphite-exporter-truenas:9108']
