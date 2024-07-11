@@ -99,8 +99,14 @@ services:
       - GF_INSTALL_PLUGINS=grafana-clock-panel,grafana-simple-json-datasource
     volumes:
       - type: bind
-        source: ./grafana/provisioning
-        target: /etc/grafana/provisioning
+        source: ./grafana/dashboards
+        target: /var/lib/grafana/dashboards
+      - type: bind
+        source: ./grafana/provisioning/datasources
+        target: /etc/grafana/provisioning/datasources
+      - type: bind
+        source: ./grafana/provisioning/dashboards
+        target: /etc/grafana/provisioning/dashboards
     restart: always
 
   unpoller:
