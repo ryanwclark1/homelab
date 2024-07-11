@@ -46,3 +46,7 @@ scrape_configs:
   - job_name: 'graphite-exporter2'
     static_configs:
       - targets: ['graphite-exporter2:9108']
+
+  - job_name: 'unifipoller'
+    static_configs:
+      - targets: ['unpoller:9130']

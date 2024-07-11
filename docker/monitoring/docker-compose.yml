@@ -108,6 +108,7 @@ services:
 
   unpoller:
     restart: always
+    container_name: unpoller
     image: ghcr.io/unpoller/unpoller:${POLLER_TAG}
     environment:
       - UP_UNIFI_DYNAMIC=${UNIFI_DYNAMIC:-false}
