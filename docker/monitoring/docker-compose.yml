@@ -90,9 +90,9 @@ services:
       - --graphite.listen-address=:2004
       - --log.level=debug
     ports:
-      - 9108:9109
-      - 2003:2004/tcp
-      - 2003:2004/udp
+      - 9109:9108
+      - 2004:2003/tcp
+      - 2004:2003/udp
     restart: always
 
   grafana:
