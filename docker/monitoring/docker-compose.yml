@@ -106,6 +106,24 @@ services:
     #     target: /var/lib/grafana
     restart: always
 
+  unpoller:
+    restart: always
+    image: ghcr.io/unpoller/unpoller:${POLLER_TAG}
+    environment:
+      - UP_UNIFI_DYNAMIC=${UNIFI_DYNAMIC:-false}
+      - UP_UNIFI_DEFAULT_USER=${UNIFI_USER:-admin}
+      - UP_UNIFI_DEFAULT_PASS=${UNIFI_PASS:-password123}
+      - UP_UNIFI_DEFAULT_URL=${UNIFI_URL:-https://unifi:8443}
+      - UP_UNIFI_DEFAULT_SAVE_SITES=${UNIFI_SAVE_SITES:-true}
+      - UP_UNIFI_DEFAULT_SAVE_DPI=${POLLER_SAVE_DPI:-true}
+      - UP_POLLER_DEBUG=${POLLER_DEBUG:-true}
+      - UP_POLLER_QUIET=${POLLER_QUIET:true}
+      - UP_PROMETHEUS_DISABLE=${PROMETHEUS_DISABLE:-false}
+      - UP_PROMETHEUS_NAMESPACE=${PROMETHEUS_NAMESPACE:-unifipoller}
+      - UP_PROMETHEUS_HTTP_LISTEN=${PROMETHEUS_HTTP_LISTEN:-0.0.0.0:9130}
+      - UP_PROMETHEUS_REPORT_ERRORS=${PROMETHEUS_REPORT_ERRORS:-false}
+      - UP_PROMETHEUS_BUFFER=${PROMETHEUS_BUFFER:-50}
+
 volumes:
   prometheus_data:
     external: false
