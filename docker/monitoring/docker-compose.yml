@@ -62,8 +62,9 @@ services:
     restart: always
 
   graphite-exporter:
-    image: prom/graphite-exporter:v0.10.0
+    image: prom/graphite-exporter:v0.15.1
     container_name: graphite-exporter
+    command: ["/bin/graphite_exporter", "--graphite.mapping-config=/config/graphite_mapping.conf"]
     ports:
       - 9108:9108
       - 9109:9109
