@@ -68,7 +68,7 @@ services:
       - type: bind
         source: ./graphite-exporter/graphite_mapping.conf
         target: /tmp/graphite_mapping.conf
-    command: --graphite.mapping-config=/config/graphite_mapping.conf
+    command: --graphite.mapping-config=/tmp/graphite_mapping.conf
     ports:
       - 9108:9108
       - 9109:9109
