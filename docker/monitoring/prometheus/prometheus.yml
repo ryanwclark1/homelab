@@ -51,3 +51,7 @@ scrape_configs:
 
     static_configs:
       - targets: ['10.10.100.190:9100']
+
+  - job_name: 'graphite-exporter'
+    static_configs:
+      - targets: ['graphite-exporter:9108']
