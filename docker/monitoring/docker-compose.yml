@@ -1,6 +1,5 @@
 name: monitoring
 services:
-
   prometheus:
     image: prom/prometheus:v2.53.1
     container_name: prometheus
@@ -97,7 +96,7 @@ services:
       GF_INSTALL_PLUGINS: grafana-clock-panel,grafana-simple-json-datasource
     volumes:
       - type: bind
-        source: ./grafana
+        source: ./grafana/provisioning
         target: /etc/grafana/provisioning
     restart: always
 
