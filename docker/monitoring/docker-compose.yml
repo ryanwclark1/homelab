@@ -1,5 +1,6 @@
 name: monitoring
 services:
+
   prometheus:
     image: prom/prometheus:v2.53.1
     container_name: prometheus
@@ -17,20 +18,7 @@ services:
       - "--web.console.templates=/usr/share/prometheus/consoles"
     ports:
       - 9090:9090
-    #     links:
-    #       - cadvisor:cadvisor
-    #       - alertmanager:alertmanager
-    # #      - pushgateway:pushgateway
-    #     depends_on:
-    #       - cadvisor
-    # #      - pushgateway
-    #     networks:
-    #       - back-tier
     restart: always
-  #    deploy:
-  #      placement:
-  #        constraints:
-  #          - node.hostname == ${HOSTNAME}
 
   alertmanager:
     image: prom/alertmanager:v0.27.0
@@ -50,14 +38,18 @@ services:
         condition: on-failure
 
   cadvisor:
-    image: gcr.io/cadvisor/cadvisor
+    image: gcr.io/cadvisor/cadvisor:v0.49.1
     container_name: cadvisor
+    privileged: true
+    devices:
+      - /dev/kmsg
     volumes:
       - /:/rootfs:ro
       - /var/run:/var/run:rw
       - /sys:/sys:ro
       - /var/lib/docker/:/var/lib/docker:ro
-      - /etc/machine-id:/etc/machine-id:ro
+      - /dev/disk/:/dev/disk:ro
+      # - /etc/machine-id:/etc/machine-id:ro
     ports:
       - 8080:8080
     restart: always
@@ -65,13 +57,14 @@ services:
   graphite-exporter:
     image: prom/graphite-exporter:v0.15.1
     container_name: graphite-exporter
-    volumes:
-      - type: bind
-        source: ./graphite-exporter/graphite_mapping.conf
-        target: /tmp/graphite_mapping.conf
+    # volumes:
+    #   - type: bind
+    #     source: ./graphite-exporter/graphite_mapping.conf
+    #     target: /tmp/graphite_mapping.conf
     command:
-      - --graphite.mapping-config=/tmp/graphite_mapping.conf
+      # - --graphite.mapping-config=/tmp/graphite_mapping.conf
       - --graphite.listen-address=:2003
+      - --log.level=debug
     ports:
       - 9108:9108
       - 2003:2003/tcp
@@ -100,10 +93,12 @@ services:
     container_name: grafana
     ports:
       - 3000:3000
-    # volumes:
-    #   - type: bind
-    #     source: ./grafana
-    #     target: /var/lib/grafana
+    environment:
+      GF_INSTALL_PLUGINS: grafana-clock-panel,grafana-simple-json-datasource
+    volumes:
+      - type: bind
+        source: ./grafana
+        target: /etc/grafana/provisioning
     restart: always
 
   unpoller:
