@@ -1,5 +1,6 @@
 name: monitoring
 services:
+
   prometheus:
     image: prom/prometheus:v2.53.1
     container_name: prometheus
@@ -40,6 +41,7 @@ services:
     image: gcr.io/cadvisor/cadvisor:v0.49.1
     container_name: cadvisor
     privileged: true
+    command: --docker_only=true --store_container_labels=false
     devices:
       - /dev/kmsg
     volumes:
@@ -127,6 +129,26 @@ services:
       - UP_PROMETHEUS_HTTP_LISTEN=${PROMETHEUS_HTTP_LISTEN:-0.0.0.0:9130}
       - UP_PROMETHEUS_REPORT_ERRORS=${PROMETHEUS_REPORT_ERRORS:-false}
       - UP_PROMETHEUS_BUFFER=${PROMETHEUS_BUFFER:-50}
+
+
+  loki:
+    container_name: loki
+    image: grafana/loki:2.4.0
+    volumes:
+      - ./loki:/etc/loki
+    ports:
+      - "3100:3100"
+    command: -config.file=/etc/loki/loki-config.yml
+    restart: unless-stopped
+
+  promtail:
+    container_name: promtail
+    image: grafana/promtail:main
+    volumes:
+      - /var/log:/var/log
+      - ./promtail:/etc/promtail
+    command: -config.file=/etc/promtail/promtail-config.yml
+    restart: unless-stopped
 
 volumes:
   prometheus_data:
