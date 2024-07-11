@@ -92,5 +92,5 @@ services:
 
 volumes:
   prometheus_data:
-    external: true
+    external: false
     name: prometheus_data
