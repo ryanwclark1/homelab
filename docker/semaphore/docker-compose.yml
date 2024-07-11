@@ -1,0 +1,30 @@
+services:
+  semaphore:
+    ports:
+      - 3000:3000
+    image: semaphoreui/semaphore:latest
+    environment:
+      SEMAPHORE_DB_USER: ${DB_USER:-semaphore}
+      SEMAPHORE_DB_PASS: ${DB_PASS:-semaphore}
+      SEMAPHORE_DB_HOST: ${DB_HOST:-semaphore}
+      SEMAPHORE_DB_PORT: ${DB_PORT:-5432}
+      SEMAPHORE_DB_DIALECT: ${DB_DIALECT:-postgres}
+      SEMAPHORE_DB: ${DB_TYPE:-postgres}
+      SEMAPHORE_PLAYBOOK_PATH: /tmp/semaphore/
+      SEMAPHORE_ADMIN_PASSWORD: ${SEMAPHORE_PASSWORD:-password123}
+      SEMAPHORE_ADMIN_NAME: ${SEMAPHORE_ADMIN:-semaphore}
+      SEMAPHORE_ADMIN_EMAIL: ${SEMAPHORE_ADMIN_EMAIL:-semaphore}
+      SEMAPHORE_ADMIN: admin
+      SEMAPHORE_ACCESS_KEY_ENCRYPTION: gs72mPntFATGJs9qK0pQ0rKtfidlexiMjYCH9gWKhTU=
+      TZ: UTC
+    # volumes:
+    #   - /path/to/data/home:/etc/semaphore # config.json location
+  postgres:
+    image: postgres:14
+    hostname: postgres
+    volumes:
+      - semaphore-postgres:/var/lib/postgresql/data
+    environment:
+      POSTGRES_USER: ${DB_USER:-semaphore}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-semaphore}
+      POSTGRES_DB: semaphore
