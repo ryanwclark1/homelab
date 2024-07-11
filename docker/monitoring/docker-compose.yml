@@ -64,7 +64,11 @@ services:
   graphite-exporter:
     image: prom/graphite-exporter:v0.15.1
     container_name: graphite-exporter
-    command: ["/bin/graphite_exporter", "--graphite.mapping-config=/config/graphite_mapping.conf"]
+    volumes:
+      - type: bind
+        source: ./graphite-exporter/graphite_mapping.conf
+        target: /tmp/graphite_mapping.conf
+    command: --graphite.mapping-config=/config/graphite_mapping.conf
     ports:
       - 9108:9108
       - 9109:9109
