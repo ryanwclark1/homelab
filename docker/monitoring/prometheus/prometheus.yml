@@ -42,6 +42,7 @@ scrape_configs:
     static_configs:
       - targets: ['graphite-exporter:9108']
 
+# Internal port for the graphite-exporter
   - job_name: 'graphite-exporter2'
     static_configs:
-      - targets: ['graphite-exporter2:9109']
+      - targets: ['graphite-exporter2:9108']
