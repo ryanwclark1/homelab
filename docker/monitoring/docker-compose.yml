@@ -60,7 +60,6 @@ services:
       - /sys:/sys:ro
       - /var/lib/docker/:/var/lib/docker:ro
       - /dev/disk/:/dev/disk:ro
-      # - /etc/machine-id:/etc/machine-id:ro
     ports:
       - 8080:8080
 
@@ -135,7 +134,7 @@ services:
       - UP_PROMETHEUS_BUFFER=${PROMETHEUS_BUFFER:-50}
 
   loki:
-    image: grafana/loki:{LOKI_TAG:-2.4.0}
+    image: grafana/loki:${LOKI_TAG:-2.4.0}
     <<: *common
     container_name: loki
     volumes:
