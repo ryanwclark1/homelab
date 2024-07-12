@@ -6,7 +6,6 @@ x-common: &common
     - monitoring-services
 
 services:
-
   prometheus:
     image: prom/prometheus:v2.53.1
     <<: *common
@@ -27,7 +26,6 @@ services:
       - "--storage.tsdb.retention.time=12m"
     ports:
       - 9090:9090
-
 
   alertmanager:
     image: prom/alertmanager:v0.27.0
@@ -66,7 +64,6 @@ services:
     ports:
       - 8080:8080
 
-
   graphite-exporter:
     image: prom/graphite-exporter:v0.15.1
     <<: *common
@@ -84,7 +81,6 @@ services:
       - 2003:2003/tcp
       - 2003:2003/udp
 
-
   graphite-exporter2:
     image: prom/graphite-exporter:v0.15.1
     <<: *common
@@ -101,7 +97,6 @@ services:
       - 9109:9108
       - 2004:2003/tcp
       - 2004:2003/udp
-
 
   grafana:
     image: grafana/grafana:11.1.0-ubuntu
@@ -138,7 +133,7 @@ services:
 
   unpoller:
     container_name: unpoller
-    image: ghcr.io/unpoller/unpoller:${POLLER_TAG}
+    image: ghcr.io/unpoller/unpoller:${POLLER_TAG:-latest}
     environment:
       - UP_UNIFI_DYNAMIC=${UNIFI_DYNAMIC:-false}
       - UP_UNIFI_DEFAULT_USER=${UNIFI_USER:-admin}
@@ -154,7 +149,6 @@ services:
       - UP_PROMETHEUS_REPORT_ERRORS=${PROMETHEUS_REPORT_ERRORS:-false}
       - UP_PROMETHEUS_BUFFER=${PROMETHEUS_BUFFER:-50}
 
-
   loki:
     container_name: loki
     image: grafana/loki:2.4.0
@@ -164,7 +158,6 @@ services:
       - "3100:3100"
     command: -config.file=/etc/loki/loki-config.yml
 
-
   promtail:
     container_name: promtail
     image: grafana/promtail:main
@@ -173,8 +166,12 @@ services:
       - ./promtail:/etc/promtail
     command: -config.file=/etc/promtail/promtail-config.yml
 
-
 volumes:
   prometheus_data:
     external: false
     name: prometheus_data
+
+networks:
+  monitoring-services:
+    # external: false
+    name: monitoring-services
