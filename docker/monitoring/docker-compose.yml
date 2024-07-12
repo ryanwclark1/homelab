@@ -6,6 +6,7 @@ x-common: &common
     - monitoring-services
 
 services:
+
   prometheus:
     image: prom/prometheus:${PROMETHEUS_TAG:-v2.53.1}
     <<: *common
