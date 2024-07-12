@@ -7,7 +7,7 @@ x-common: &common
 
 services:
   prometheus:
-    image: prom/prometheus:v2.53.1
+    image: prom/prometheus:${PROMETHEUS_TAG:-v2.53.1}
     <<: *common
     container_name: prometheus
     volumes:
@@ -28,7 +28,7 @@ services:
       - 9090:9090
 
   alertmanager:
-    image: prom/alertmanager:v0.27.0
+    image: prom/alertmanager:${ALERTMANAGER_TAG:-v0.27.0}
     <<: *common
     container_name: alertmanager
     ports:
@@ -47,7 +47,7 @@ services:
         condition: on-failure
 
   cadvisor:
-    image: gcr.io/cadvisor/cadvisor:v0.49.1
+    image: gcr.io/cadvisor/cadvisor:${CADVISOR_TAG:-v0.49.1}
     <<: *common
     container_name: cadvisor
     privileged: true
@@ -65,15 +65,15 @@ services:
       - 8080:8080
 
   graphite-exporter:
-    image: prom/graphite-exporter:v0.15.1
+    image: prom/graphite-exporter:${GRAPHITE_EXPORTER_TAG:-v0.15.1}
     <<: *common
     container_name: graphite-exporter
-    # volumes:
-    #   - type: bind
-    #     source: ./graphite-exporter/graphite_mapping.conf
-    #     target: /tmp/graphite_mapping.conf
+    volumes:
+      - type: bind
+        source: ./graphite-exporter/graphite_proxmox_mapping.conf
+        target: /tmp/graphite_mapping.conf
     command:
-      # - --graphite.mapping-config=/tmp/graphite_mapping.conf
+      - --graphite.mapping-config=/tmp/graphite_mapping.conf
       - --graphite.listen-address=:2003
       - --log.level=debug
     ports:
@@ -82,7 +82,7 @@ services:
       - 2003:2003/udp
 
   grafana:
-    image: grafana/grafana:11.1.0-ubuntu
+    image: grafana/grafana:${GRAFANA_TAG:-11.1.0-ubuntu}
     <<: *common
     container_name: grafana
     ports:
@@ -106,9 +106,9 @@ services:
         target: /etc/grafana/provisioning/dashboards
 
   renderer:
-    container_name: grafana-image-renderer
-    image: grafana/grafana-image-renderer:3.11.0
+    image: grafana/grafana-image-renderer:${RENDERER_TAG:-3.11.0}
     <<: *common
+    container_name: grafana-image-renderer
     ports:
       - "8081:8081"
     environment:
@@ -135,9 +135,9 @@ services:
       - UP_PROMETHEUS_BUFFER=${PROMETHEUS_BUFFER:-50}
 
   loki:
-    container_name: loki
-    image: grafana/loki:2.4.0
+    image: grafana/loki:{LOKI_TAG:-2.4.0}
     <<: *common
+    container_name: loki
     volumes:
       - ./loki:/etc/loki
     ports:
@@ -145,9 +145,9 @@ services:
     command: -config.file=/etc/loki/loki-config.yml
 
   promtail:
-    container_name: promtail
     image: grafana/promtail:main
     <<: *common
+    container_name: promtail
     volumes:
       - /var/log:/var/log
       - ./promtail:/etc/promtail
