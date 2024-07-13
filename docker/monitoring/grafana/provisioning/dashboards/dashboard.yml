@@ -11,4 +11,4 @@ providers:
     updateIntervalSeconds: 3600
     allowUiUpdates: true
     options:
-      path: /etc/grafana/provisioning/dashboards
+      path: /var/lib/grafana/dashboards
