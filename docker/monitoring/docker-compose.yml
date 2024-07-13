@@ -75,7 +75,6 @@ services:
     command:
       - --graphite.mapping-config=/tmp/graphite_mapping.conf
       - --graphite.listen-address=:2003
-      - --log.level=debug
     ports:
       - 9108:9108
       - 2003:2003/tcp
