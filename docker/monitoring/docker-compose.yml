@@ -36,7 +36,7 @@ services:
     # volumes:
     #   - "./alertmanager/:/etc/alertmanager/"
     command:
-      - "--config.file=/etc/alertmanager/config.yml"
+      # - "--config.file=/etc/alertmanager/config.yml"
       - "--storage.path=/alertmanager"
       - "--web.external-url=http://127.0.0.1:9093"
     deploy:
