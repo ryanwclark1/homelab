@@ -69,7 +69,7 @@ services:
     container_name: graphite-exporter
     volumes:
       - type: bind
-        source: ./graphite-exporter/graphite_mapping.conf
+        source: ./graphite-exporter/graphite_proxmox_mapping.conf
         target: /tmp/graphite_mapping.conf
     command:
       - --graphite.mapping-config=/tmp/graphite_mapping.conf
