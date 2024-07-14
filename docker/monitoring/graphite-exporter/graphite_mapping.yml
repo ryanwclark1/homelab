@@ -489,3 +489,29 @@ mappings:
     job: truenas
     instance: ${1}
     op: ${2}
+
+
+################################################
+# Proxmox Storages
+################################################
+
+- match: 'proxmox\.storages\.(.*)\.(.*)\.(.*)'
+  match_type: regex
+  name: 'proxmox_storage_nodes_${3}'
+  labels:
+    job: proxmox
+    node: ${1}
+    storage: ${2}
+    metric: ${3}
+
+
+################################################
+# system mappings
+################################################
+
+- match: 'proxmox\.(lxc|qemu)\.(.*)\.cpu'
+  match_type: regex
+  name: 'proxmox_vm_cpu'
+  labels:
+    job: proxmox
+    vmid: ${1}
