@@ -75,10 +75,13 @@ services:
     volumes:
       - type: bind
         source: ./graphite-exporter/graphite_mapping.conf
-        target: /tmp/graphite_mapping.conf
+        target: /etc/graphite-exporter/graphite_mapping.conf
     command:
-      - --graphite.mapping-config=/tmp/graphite_mapping.conf
+      - --web.listen-address=:9108
+      - --web.telemetry-path=/metrics
+      - --graphite.mapping-config=/etc/graphite-exporter/graphite_mapping.conf
       - --graphite.listen-address=:2003
+      - --graphite.sample-expiry="5m"
       - --log.level=debug
     ports:
       - 9108:9108
