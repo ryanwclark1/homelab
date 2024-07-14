@@ -74,10 +74,10 @@ services:
     container_name: graphite-exporter
     volumes:
       - type: bind
-        source: ./graphite-exporter/graphite_mapping.conf
-        target: /etc/graphite-exporter/graphite_mapping.conf
+        source: ./graphite-exporter/graphite_mapping.yml
+        target: /etc/graphite-exporter/graphite_mapping.yml
     command:
-      - --graphite.mapping-config=/etc/graphite-exporter/graphite_mapping.conf
+      - --graphite.mapping-config=/etc/graphite-exporter/graphite_mapping.yml
       - --graphite.listen-address=:2003
       - --log.level=debug
     ports:
