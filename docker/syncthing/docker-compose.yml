@@ -9,8 +9,8 @@ services:
       - PGID=1000
       - TZ=Etc/UTC
     volumes:
-      - syncthing_config:/config
-      - data1:/data1
+      - config_data:/config
+      - /mnt/ryan/documents:/data1
     ports:
       - 8384:8384
       - 22000:22000/tcp
@@ -21,9 +21,6 @@ services:
     network_mode: host
 
 volumes:
-  syncthing_config:
+  config_data:
     external: false
-    name: syncthing_config
-  data1:
-    external: false
-    name: data1
+    name: config_data
