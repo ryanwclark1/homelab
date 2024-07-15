@@ -533,12 +533,12 @@ mappings:
 #     vmid: ${1}
 #     nic: ${2}
 
-# - match: 'proxmox\.(lxc|qemu)\.(.*)\.cpu'
-#   match_type: regex
-#   name: 'proxmox_vm_cpu'
-#   labels:
-#     job: proxmox
-#     vmid: ${1}
+- match: 'proxmox\.(lxc|qemu)\.(.*)\.cpu'
+  match_type: regex
+  name: 'proxmox_vm_cpu'
+  labels:
+    job: proxmox
+    vmid: ${1}
 
 # - match: 'proxmox\.(lxc|qemu)\.(.*)\.cpus'
 #   match_type: regex
