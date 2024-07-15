@@ -26,3 +26,19 @@ services:
       - ${MEDIA_PATH}:/media
       - /transcode_cache:/temp
 
+volumes:
+  server_data:
+    external: false
+    name: server_data
+  server_configs_data:
+    external: false
+    name: server_configs_data
+  server_logs:
+    external: false
+    name: server_logs
+  media:
+    external: false
+    name: media
+  transcode_cache:
+    external: false
+    name: transcode_cache
