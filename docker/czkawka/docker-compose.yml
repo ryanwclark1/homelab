@@ -2,7 +2,8 @@ services:
   czkawka:
     image: jlesage/czkawka
     ports:
-      - "5800:5800"
+      - 5800:5800
+      - 5900:5900
     environment:
       - USER_ID=1000
       - GROUP_ID=1000
