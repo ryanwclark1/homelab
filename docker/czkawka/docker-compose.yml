@@ -21,4 +21,4 @@ services:
       - VNC_PASSWORD=${VNC_PASSWORD:-password}
     volumes:
       - config_data:/config:rw
-      - /mnt/share/rclark:/storage:rw
+      - /mnt/rclark:/storage:rw
