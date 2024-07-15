@@ -98,7 +98,7 @@ services:
       - --graphite.listen-address=:2002
       - --log.level=debug
     ports:
-      - 9107:91077
+      - 9107:9108
       - 2002:2002/tcp
       - 2002:2002/udp
 
