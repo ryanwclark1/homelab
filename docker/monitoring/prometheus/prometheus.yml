@@ -53,12 +53,17 @@ scrape_configs:
         labels:
           alias: 'node-exporter'
 
-  - job_name: 'graphite-exporter'
+  - job_name: 'graphite-exporter-proxmox'
     static_configs:
       - targets: ['graphite-exporter:9108']
         labels:
-          alias: 'graphite-exporter'
+          alias: 'graphite-exporter-proxmox'
 
+  - job_name: 'graphite-exporter-truenas'
+    static_configs:
+      - targets: ['graphite-exporter:9107']
+        labels:
+          alias: 'graphite-exporter-truenas'
 
   - job_name: 'unifipoller'
     static_configs:

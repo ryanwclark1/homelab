@@ -68,13 +68,13 @@ services:
     ports:
       - 8080:8080
 
-  graphite-exporter:
+  graphite-exporter-proxmox:
     image: prom/graphite-exporter:${GRAPHITE_EXPORTER_TAG:-v0.15.1}
     <<: *common
-    container_name: graphite-exporter
+    container_name: graphite-exporter-proxmox
     volumes:
       - type: bind
-        source: ./graphite-exporter/graphite_mapping.yml
+        source: ./graphite-exporter/graphite_mapping_proxmox.yml
         target: /etc/graphite-exporter/graphite_mapping.yml
     command:
       - --graphite.mapping-config=/etc/graphite-exporter/graphite_mapping.yml
@@ -84,6 +84,23 @@ services:
       - 9108:9108
       - 2003:2003/tcp
       - 2003:2003/udp
+
+  graphite-exporter-truenas:
+    image: prom/graphite-exporter:${GRAPHITE_EXPORTER_TAG:-v0.15.1}
+    <<: *common
+    container_name: graphite-exporter-truenas
+    volumes:
+      - type: bind
+        source: ./graphite-exporter/graphite_mapping_truenas.yml
+        target: /etc/graphite-exporter/graphite_mapping.yml
+    command:
+      - --graphite.mapping-config=/etc/graphite-exporter/graphite_mapping.yml
+      - --graphite.listen-address=:2002
+      - --log.level=debug
+    ports:
+      - 9107:91077
+      - 2002:2002/tcp
+      - 2002:2002/udp
 
   grafana:
     image: grafana/grafana:${GRAFANA_TAG:-11.1.0-ubuntu}
