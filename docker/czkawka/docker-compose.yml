@@ -10,7 +10,7 @@ services:
       - LANG=en_US.UTF-8
       - TZ=Etc/UTC
       - KEEP_APP_RUNNING=1
-      - APP_NICENESS=-20
+      # - APP_NICENESS=-20
       - CONTAINER_DEBUG=0
       - DARK_MODE=1
       - WEB_AUTHENTICATION=1
