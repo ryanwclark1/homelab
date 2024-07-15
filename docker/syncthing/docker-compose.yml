@@ -17,6 +17,8 @@ services:
       - 22000:22000/udp
       - 21027:21027/udp
     restart: unless-stopped
+    # Docker's default network mode prevents local IP addresses from being discovered, as Syncthing is only able to see the internal IP of the container on the 172.17.0.0/16 subnet. This will result in poor transfer rates if local device addresses are not manually configured.
+    network_mode: host
 
 volumes:
   syncthing_config:
