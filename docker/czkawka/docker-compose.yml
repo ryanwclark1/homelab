@@ -22,3 +22,8 @@ services:
     volumes:
       - config_data:/config:rw
       - /mnt/rclark:/storage:rw
+
+volumes:
+  config_data:
+    external: false
+    name: config_data
