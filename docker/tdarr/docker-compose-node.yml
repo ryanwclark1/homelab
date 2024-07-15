@@ -1,0 +1,33 @@
+services:
+  tdarr-node:
+    container_name: tdarr-node
+    image: ghcr.io/haveagitgat/tdarr_node:latest
+    restart: unless-stopped
+    network_mode: service:tdarr
+    environment:
+      - TZ=${TZ:-Etc/UTC}
+      - PUID=${PUID:-1000}
+      - PGID=${PGID:-1000}
+      - UMASK_SET=002
+      - nodeName=${NODE_NAME:-MyExternalNode}
+      - serverIP=${SERVER_IP:-0.0.0.0}
+      - serverPort=8266
+      - inContainer=true
+      - ffmpegVersion=6
+
+    devices:
+      - /dev/dri:/dev/dri
+
+    volumes:
+      - node_configs:/app/configs
+      - node_logs:/app/logs
+      - ${MEDIA_PATH}:/media
+      - /transcode_cache:/temp
+
+volumes:
+  node_configs:
+    external: false
+    name: node_configs
+  node_logs:
+    external: false
+    name: node_logs

@@ -1,0 +1,28 @@
+services:
+  tdarr:
+    container_name: tdarr-server
+    image: ghcr.io/haveagitgat/tdarr:latest
+    restart: unless-stopped
+    network_mode: bridge
+    ports:
+      - 8265:8265 # webUI port
+      - 8266:8266 # server port
+    environment:
+      - TZ=${TZ:-Etc/UTC}
+      - PUID=${PUID:-1000}
+      - PGID=${PGID:-1000}
+      - UMASK_SET=002
+      - serverIP=${SERVER_IP:-0.0.0.0}
+      - serverPort=8266
+      - webUIPort=8265
+      - internalNode=true
+      - inContainer=true
+      - ffmpegVersion=6
+      - nodeName=${SERVER_NAME:-MyInternalNode}
+    volumes:
+      - server_data:/app/server
+      - server_configs_data:/app/configs
+      - server_logs:/app/logs
+      - ${MEDIA_PATH}:/media
+      - /transcode_cache:/temp
+
