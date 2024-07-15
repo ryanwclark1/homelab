@@ -1,5 +1,5 @@
 services:
-  tdarr:
+  tdarr-server:
     container_name: tdarr-server
     image: ghcr.io/haveagitgat/tdarr:latest
     restart: unless-stopped
