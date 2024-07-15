@@ -10,7 +10,7 @@ services:
       - TZ=Etc/UTC
     volumes:
       - config_data:/config
-      - /mnt/ryan/documents:/data1
+      - /mnt/ryan/documents:/mnt/ryan/documents
     ports:
       - 8384:8384
       - 22000:22000/tcp
