@@ -3,7 +3,7 @@ services:
     container_name: tdarr-node
     image: ghcr.io/haveagitgat/tdarr_node:latest
     restart: unless-stopped
-    # network_mode: service:tdarr-server
+    network_mode: service:tdarr-server
     environment:
       - TZ=${TZ:-Etc/UTC}
       - PUID=${PUID:-1000}
