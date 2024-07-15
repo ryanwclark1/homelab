@@ -22,9 +22,9 @@ services:
       # - NVIDIA_DRIVER_CAPABILITIES=all
       # - NVIDIA_VISIBLE_DEVICES=all
     volumes:
-      - /docker/tdarr/server:/app/server
-      - /docker/tdarr/configs:/app/configs
-      - /docker/tdarr/logs:/app/logs
+      - server_data:/app/server
+      - server_configs_data:/app/configs
+      - server_logs:/app/logs
       - ${MEDIA_PATH}:/media
       - /transcode_cache:/temp
 
@@ -58,8 +58,8 @@ services:
       # - NVIDIA_VISIBLE_DEVICES=all
 
     volumes:
-      - /docker/tdarr/configs:/app/configs
-      - /docker/tdarr/logs:/app/logs
+      - node_configs:/app/configs
+      - node_logs:/app/logs
       - ${MEDIA_PATH}:/media
       - /transcode_cache:/temp
 
@@ -72,3 +72,20 @@ services:
     #         - driver: nvidia
     #           count: all
     #           capabilities: [gpu]
+
+volumes:
+  server_data:
+    external: false
+    name: server_data
+  server_configs_data:
+    external: false
+    name: server_configs_data
+  server_logs:
+    external: false
+    name: server_logs
+  node_configs:
+    external: false
+    name: node_configs
+  node_logs:
+    external: false
+    name: node_logs
