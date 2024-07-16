@@ -44,12 +44,12 @@ services:
   #     # - "--config.file=/etc/alertmanager/config.yml"
   #     - "--storage.path=/alertmanager"
   #     - "--web.external-url=http://127.0.0.1:9093"
-    deploy:
-      placement:
-        constraints:
-          - node.role==manager
-      restart_policy:
-        condition: on-failure
+  #   deploy:
+  #     placement:
+  #       constraints:
+  #         - node.role==manager
+  #     restart_policy:
+  #       condition: on-failure
 
   cadvisor:
     image: gcr.io/cadvisor/cadvisor:${CADVISOR_TAG:-v0.49.1}
