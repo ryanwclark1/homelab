@@ -65,6 +65,7 @@ services:
       - /sys:/sys:ro
       - /var/lib/docker/:/var/lib/docker:ro
       - /dev/disk/:/dev/disk:ro
+      - /etc/machine-id:/etc/machine-id:ro
     ports:
       - 8080:8080
 
@@ -114,7 +115,7 @@ services:
       - GF_USERS_ALLOW_SIGN_UP=${GF_SIGN_UP:-false}
       - GF_RENDERING_SERVER_URL=http://renderer:8081/render
       - GF_RENDERING_CALLBACK_URL=http://grafana:3000/
-      - GF_INSTALL_PLUGINS=grafana-clock-panel,grafana-simple-json-datasource,grafana-image-renderer,mock-datasource
+      - GF_INSTALL_PLUGINS=grafana-clock-panel,grafana-simple-json-datasource,mock-datasource
     volumes:
       - type: bind
         source: ./grafana/dashboards
@@ -148,7 +149,6 @@ services:
       - PROMETHEUS_PATH=${PROMETHEUS_PATH:-/metrics}
     ports:
       - ${PROMETHEUS_PORT}:${PROMETHEUS_PORT}
-
 
   unpoller:
     container_name: unpoller
