@@ -70,3 +70,9 @@ scrape_configs:
       - targets: ['unpoller:9130']
         labels:
           alias: 'unifipoller'
+
+  - job_name: 'tdarr-exporter'
+    static_configs:
+      - targets: ['tdarr-exporter:9110']
+        labels:
+          alias: 'tdarr-exporter'
