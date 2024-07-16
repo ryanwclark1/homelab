@@ -95,12 +95,12 @@ services:
         target: /etc/graphite-exporter/graphite_mapping.yml
     command:
       - --graphite.mapping-config=/etc/graphite-exporter/graphite_mapping.yml
-      - --graphite.listen-address=:2002
+      - --graphite.listen-address=:2003
       - --log.level=debug
     ports:
       - 9107:9108
-      - 2002:2002/tcp
-      - 2002:2002/udp
+      - 2002:2003/tcp
+      - 2002:2003/udp
 
   grafana:
     image: grafana/grafana:${GRAFANA_TAG:-11.1.0-ubuntu}
