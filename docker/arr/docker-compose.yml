@@ -1,0 +1,239 @@
+# Setup default propreties we want on all/most containers
+x-default-container &default-container:
+  user: 1000:1000
+  group_add:
+    - "109"
+  environment:
+    - PUID=1000
+    - PGID=100
+    - TZ=Etc/UTC
+  restart: unless-stopped
+
+x-mediarr-container &mediarr-container:
+  <<: *default-container
+  networks:
+    - mediarr
+  volumes:
+    - myMedia:/mnt/media
+    - myDlFolders:/mnt/downloads
+
+services:
+  jellyfin:
+    <<: *default-container
+    container_name: jellyfin
+    image: jellyfin/jellyfin
+    environment:
+      - JELLYFIN_CACHE_DIR=/var/cache/jellyfin
+      - JELLYFIN_CONFIG_DIR=/etc/jellyfin
+      - JELLYFIN_DATA_DIR=/var/lib/jellyfin
+      - JELLYFIN_LOG_DIR=/var/log/jellyfin
+    volumes:
+      - ./configs/jellyfin/etc:/etc/jellyfin
+      - ./configs/jellyfin/var-cache:/var/cache/jellyfin
+      - ./configs/jellyfin/var-lib:/var/lib/jellyfin
+      - ./configs/jellyfin/var-log:/var/log/jellyfin
+      - ./configs/jellyfin/timezone:/etc/timezone
+      - myMedia:/mnt/media
+    network_mode: "host"
+    devices:
+      - /dev/dri/renderD128:/dev/dri/renderD128
+
+  # firefox:
+  #   <<: *default-container
+  #   image: lscr.io/linuxserver/firefox:latest
+  #   container_name: firefox
+  #   security_opt:
+  #     - seccomp:unconfined
+  #   environment:
+  #     - DRINODE=/dev/dri/renderD128
+  #     - DISABLE_IPV6=true
+  #     - DOCKER_MODS=linuxserver/mods:firefox-fonts
+  #   volumes:
+  #     - ./configs/firefox:/config
+  #   ports:
+  #     - 3001:3001
+  #   networks:
+  #     - firefox
+  #   shm_size: "1gb"
+  #   devices:
+  #     - /dev/dri/renderD128:/dev/dri/renderD128
+
+  duplicati:
+    image: lscr.io/linuxserver/duplicati:latest
+    container_name: duplicati
+    volumes:
+      - ./configs/duplicati/config:/config
+      - ./configs:/source
+      - ./docker-compose.yml:/source/docker-compose.yml
+      - ./configs/duplicati/restore:/restore
+    networks:
+      - duplicati
+    # ports:
+
+  bazarr:
+    <<: *mediarr-container
+    image: lscr.io/linuxserver/bazarr:latest
+    container_name: bazarr
+    hostname: bazarr
+    volumes:
+      - ./configs/mediarr/bazarr:/config
+    ports:
+      - 6767:6767
+
+  jellyseerr:
+    <<: *mediarr-container
+    image: fallenbagel/jellyseerr:latest
+    container_name: jellyseerr
+    hostname: jellyseerr
+    ports:
+      - 5055:5055
+    volumes:
+      - ./configs/mediarr/jellyseerr:/app/config
+
+  prowlarr:
+    <<: *mediarr-container
+    image: linuxserver/prowlarr:latest
+    container_name: prowlarr
+    hostname: prowlarr
+    network_mode: "service:gluetun"
+    volumes:
+      - ./configs/mediarr/prowlarr:/config
+    ports:
+      - 9696:9696
+
+  flaresolverr:
+    <<: *mediarr-container
+    image: ghcr.io/flaresolverr/flaresolverr:latest
+    container_name: flaresolverr
+    hostname: flaresolverr
+    environment:
+      - LOG_LEVEL=${LOG_LEVEL:-info}
+      - LOG_HTML=${LOG_HTML:-false}
+      - CAPTCHA_SOLVER=${CAPTCHA_SOLVER:-none}
+    restart: unless-stopped
+
+  qbittorrent:
+    <<: *mediarr-container
+    image: lscr.io/linuxserver/qbittorrent:latest
+    container_name: qbittorrent
+    hostname: qbittorrent
+    network_mode: "service:gluetun"
+    environment:
+      - WEBUI_PORT=8080
+    volumes:
+      - ./configs/mediarr/qbittorrent:/config
+      - myDlFolders:/downloads
+    ports:
+      - 8080:8080
+      - 6881:6881
+      - 6881:6881/udp
+
+  radarr:
+    <<: *mediarr-container
+    image: lscr.io/linuxserver/radarr:latest
+    container_name: radarr
+    hostname: radarr
+    volumes:
+      - ./configs/mediarr/radarr:/config
+      - myMedia:/media
+    ports:
+      - 7878:7878
+
+  readarr:
+    <<: *mediarr-container
+    image: lscr.io/linuxserver/readarr:develop
+    container_name: readarr
+    hostname: readarr
+    volumes:
+      - ./mediarr/readarr:/config
+      -  myMedia:/media
+    ports:
+      - 8787:8787
+
+  sonarr:
+    <<: *mediarr-container
+    image: lscr.io/linuxserver/sonarr:latest
+    container_name: sonarr
+    hostname: sonarr
+    volumes:
+      - ./configs/mediarr/sonarr:/config
+      - myMedia:/media
+    ports:
+      - 8989:8989
+
+  lidarr:
+    <<: *mediarr-container
+    image: lscr.io/linuxserver/lidarr:latest
+    container_name: lidarr
+    hostname: lidarr
+    volumes:
+      - ./configs/mediarr/lidarr:/config
+      - myMedia:/media
+    ports:
+      - 8686:8686
+
+  whisparr:
+    <<: *mediarr-container
+    image: lscr.io/linuxserver/whisparr:latest
+    container_name: whisparr
+    hostname: whisparr
+    volumes:
+      - ./configs/mediarr/whisparr:/config
+      - myMedia:/media
+    ports:
+      - 6969:6969
+
+  stash:
+    <<: *mediarr-container
+    image: ghcr.io/hotio/stash:latest
+    container_name: stash
+    hostname: stash
+    volumes:
+      - ./configs/mediarr/stash:/config
+      - myMedia:/media
+    ports:
+      - 9999:9999
+    devices:
+      - /dev/dri/renderD128:/dev/dri/renderD128
+
+  gluetun:
+    image: qmcgaw/gluetun
+    # container_name: gluetun
+    # line above must be uncommented to allow external containers to connect.
+    # See https://github.com/qdm12/gluetun-wiki/blob/main/setup/connect-a-container-to-gluetun.md#external-container-to-gluetun
+    cap_add:
+      - NET_ADMIN
+    devices:
+      - /dev/net/tun:/dev/net/tun
+    ports:
+      - 8888:8888/tcp # HTTP proxy
+      - 8388:8388/tcp # Shadowsocks
+      - 8388:8388/udp # Shadowsocks
+    volumes:
+      - /yourpath:/gluetun
+    environment:
+      - VPN_SERVICE_PROVIDER=nordvpn
+      - VPN_TYPE=openvpn
+      - WIREGUARD_PRIVATE_KEY=${NORD_KEY}
+      - SERVER_COUNTRIES=Netherlands
+      - TZ=Etc/UTC
+      - UPDATER_PERIOD=
+
+networks:
+  duplicati:
+    driver: bridge
+  mediarr:
+    driver: bridge
+volumes:
+  myMedia:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: /mnt/media
+  myDlFolders:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: /mnt/HDD/downloads
