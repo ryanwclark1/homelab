@@ -80,7 +80,7 @@ services:
     command:
       - --graphite.mapping-config=/etc/graphite-exporter/graphite_mapping.yml
       - --graphite.listen-address=:2003
-      - --log.level=debug
+      - --log.level=info
     ports:
       - 9108:9108
       - 2003:2003/tcp
@@ -97,7 +97,7 @@ services:
     command:
       - --graphite.mapping-config=/etc/graphite-exporter/graphite_mapping.yml
       - --graphite.listen-address=:2003
-      - --log.level=debug
+      - --log.level=info
     ports:
       - 9107:9108
       - 2002:2003/tcp
@@ -166,7 +166,7 @@ services:
       - UP_UNIFI_DEFAULT_SAVE_DPI=${UNIFI_SAVE_DPI:-true}
       - UP_UNIFI_DEFAULT_SAVE_EVENTS=${UNIFI_SAVE_EVENTS:-true}
       - UP_UNIFI_DEFAULT_SAVE_SITES=${UNIFI_SAVE_SITES:-true}
-      - UP_POLLER_DEBUG=${POLLER_DEBUG:-true}
+      - UP_POLLER_DEBUG=${POLLER_DEBUG:-false}
       - UP_POLLER_QUIET=${POLLER_QUIET:-true}
       - UP_PROMETHEUS_DISABLE=${PROMETHEUS_DISABLE:-false}
       - UP_PROMETHEUS_NAMESPACE=${PROMETHEUS_NAMESPACE:-unpoller}
