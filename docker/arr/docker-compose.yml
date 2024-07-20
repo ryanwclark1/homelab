@@ -9,7 +9,6 @@ x-default-container &default-container:
     - TZ=Etc/UTC
   restart: unless-stopped
 
-
 services:
   jellyfin:
     container_name: jellyfin
@@ -89,7 +88,7 @@ services:
     hostname: prowlarr
     network_mode: "service:gluetun"
     volumes:
-      -  ${COMMON_CONFIG_PATH}/prowlarr:/config
+      - ${COMMON_CONFIG_PATH}/prowlarr:/config
     ports:
       - 9696:9696
 
@@ -104,7 +103,6 @@ services:
     restart: unless-stopped
     networks:
       - mediarr
-
 
   radarr:
     image: lscr.io/linuxserver/radarr:latest
@@ -155,7 +153,7 @@ services:
       - mediarr
 
   whisparr:
-    image: lscr.io/linuxserver/whisparr:latest
+    image: ghcr.io/hotio/whisparr:latest
     container_name: whisparr
     hostname: whisparr
     volumes:
