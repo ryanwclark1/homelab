@@ -69,7 +69,7 @@ services:
   #     # - ./configs/duplicati/restore:/restore
   #   networks:
   #     - duplicati
-    # ports:
+  # ports:
 
   bazarr:
     image: lscr.io/linuxserver/bazarr:latest
@@ -203,7 +203,7 @@ services:
   qbittorrent:
     image: lscr.io/linuxserver/qbittorrent:latest
     container_name: qbittorrent
-    hostname: qbittorrent
+    # hostname: qbittorrent
     network_mode: "service:gluetun"
     ports:
       - 8080:8080
