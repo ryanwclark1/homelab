@@ -13,9 +13,7 @@ x-mediarr-container &mediarr-container:
   <<: *default-container
   networks:
     - mediarr
-  volumes:
-    - myMedia:/mnt/media
-    - myDlFolders:/mnt/downloads
+
 
 services:
   jellyfin:
@@ -23,20 +21,19 @@ services:
     container_name: jellyfin
     image: jellyfin/jellyfin:10.9.4
     volumes:
-      - ${COMMON_PATH}/jellyfin:/config
-      - ${COMMON_PATH}/jellyfin/cache:/cache
+      - ${COMMON_CONFIG_PATH}/jellyfin/config:/config
+      - ${COMMON_CONFIG_PATH}/jellyfin/cache:/cache
       - type: bind
-        source: ${COMMON_PATH}
+        source: ${COMMON_SHARE_PATH}
         target: /media
       - type: bind
-        source: ${COMMON_PATH}
+        source: ${COMMON_SHARE_PATH}/downloads
         target: /downloads
     network_mode: "host"
     devices:
       - /dev/dri/renderD128:/dev/dri/renderD128
 
   jellyseerr:
-    <<: *mediarr-container
     image: fallenbagel/jellyseerr:latest
     container_name: jellyseerr
     hostname: jellyseerr
@@ -45,7 +42,9 @@ services:
     ports:
       - 5055:5055
     volumes:
-      - ${COMMON_PATH}/jellyseerr:/app/config
+      - ${COMMON_CONFIG_PATH}/jellyseerr:/app/config
+    networks:
+      - mediarr
 
   # firefox:
   #   <<: *default-container
@@ -71,37 +70,36 @@ services:
     image: lscr.io/linuxserver/duplicati:latest
     container_name: duplicati
     volumes:
-      - ./configs/duplicati/config:/config
-      - ./configs:/source
-      - ./docker-compose.yml:/source/docker-compose.yml
-      - ./configs/duplicati/restore:/restore
+      - ${COMMON_CONFIG_PATH}/duplicati/config:/config
+      # - ./configs:/source
+      # - ./docker-compose.yml:/source/docker-compose.yml
+      # - ./configs/duplicati/restore:/restore
     networks:
       - duplicati
     # ports:
 
   bazarr:
-    <<: *mediarr-container
     image: lscr.io/linuxserver/bazarr:latest
     container_name: bazarr
     hostname: bazarr
     volumes:
-      - ./configs/mediarr/bazarr:/config
+      - ${COMMON_CONFIG_PATH}/bazarr:/config
     ports:
       - 6767:6767
+    networks:
+      - mediarr
 
   prowlarr:
-    <<: *mediarr-container
     image: linuxserver/prowlarr:latest
     container_name: prowlarr
     hostname: prowlarr
     network_mode: "service:gluetun"
     volumes:
-      - ./configs/mediarr/prowlarr:/config
+      -  ${COMMON_CONFIG_PATH}/prowlarr:/config
     ports:
       - 9696:9696
 
   flaresolverr:
-    <<: *mediarr-container
     image: ghcr.io/flaresolverr/flaresolverr:latest
     container_name: flaresolverr
     hostname: flaresolverr
@@ -110,76 +108,83 @@ services:
       - LOG_HTML=${LOG_HTML:-false}
       - CAPTCHA_SOLVER=${CAPTCHA_SOLVER:-none}
     restart: unless-stopped
-
+    networks:
+      - mediarr
 
 
   radarr:
-    <<: *mediarr-container
     image: lscr.io/linuxserver/radarr:latest
     container_name: radarr
     hostname: radarr
     volumes:
-      - ./configs/mediarr/radarr:/config
-      - myMedia:/media
+      - ${COMMON_CONFIG_PATH}/radarr:/config
+      - ${COMMON_SHARE_PATH}:/media
     ports:
       - 7878:7878
+    networks:
+      - mediarr
 
   readarr:
-    <<: *mediarr-container
     image: lscr.io/linuxserver/readarr:develop
     container_name: readarr
     hostname: readarr
     volumes:
-      - ./mediarr/readarr:/config
-      -  myMedia:/media
+      - ${COMMON_CONFIG_PATH}/readarr:/config
+      - ${COMMON_SHARE_PATH}:/media
     ports:
       - 8787:8787
+    networks:
+      - mediarr
 
   sonarr:
-    <<: *mediarr-container
     image: lscr.io/linuxserver/sonarr:latest
     container_name: sonarr
     hostname: sonarr
     volumes:
-      - ./configs/mediarr/sonarr:/config
-      - myMedia:/media
+      - ${COMMON_CONFIG_PATH}/sonarr:/config
+      - ${COMMON_SHARE_PATH}:/media
     ports:
       - 8989:8989
+    networks:
+      - mediarr
 
   lidarr:
-    <<: *mediarr-container
     image: lscr.io/linuxserver/lidarr:latest
     container_name: lidarr
     hostname: lidarr
     volumes:
-      - ./configs/mediarr/lidarr:/config
-      - myMedia:/media
+      - ${COMMON_CONFIG_PATH}/lidarr:/config
+      - ${COMMON_SHARE_PATH}:/media
     ports:
       - 8686:8686
+    networks:
+      - mediarr
 
   whisparr:
-    <<: *mediarr-container
     image: lscr.io/linuxserver/whisparr:latest
     container_name: whisparr
     hostname: whisparr
     volumes:
-      - ./configs/mediarr/whisparr:/config
-      - myMedia:/media
+      - ${COMMON_CONFIG_PATH}/whisparr:/config
+      - ${COMMON_SHARE_PATH}:/media
     ports:
       - 6969:6969
+    networks:
+      - mediarr
 
   stash:
-    <<: *mediarr-container
     image: ghcr.io/hotio/stash:latest
     container_name: stash
     hostname: stash
     volumes:
-      - ./configs/mediarr/stash:/config
-      - myMedia:/media
+      - ${COMMON_CONFIG_PATH}/stash:/config
+      - ${COMMON_CONFIG_PATH}:/media
     ports:
       - 9999:9999
     devices:
       - /dev/dri/renderD128:/dev/dri/renderD128
+    networks:
+      - mediarr
 
   gluetun:
     image: qmcgaw/gluetun
@@ -194,7 +199,7 @@ services:
       - 8388:8388/tcp # Shadowsocks
       - 8388:8388/udp # Shadowsocks
     volumes:
-      - /yourpath:/gluetun
+      - ${COMMON_CONFIG_PATH}/gluetun:/gluetun
     environment:
       - VPN_SERVICE_PROVIDER=nordvpn
       - VPN_TYPE=openvpn
@@ -221,8 +226,7 @@ services:
       - TZ=${TZ}
       - DOCKER_MODS=ghcr.io/gabe565/linuxserver-mod-vuetorrent
     volumes:
-      - ${COMMON_PATH}:${COMMON_PATH}
-      - ${COMMON_PATH}/qbittorrent:/config
+      - ${COMMON_CONFIG_PATH}/qbittorrent:/config
       - ${COMMON_SHARE_PATH}/downloads:/downloads
     restart: unless-stopped
 
@@ -231,16 +235,16 @@ networks:
     driver: bridge
   mediarr:
     driver: bridge
-volumes:
-  myMedia:
-    driver: local
-    driver_opts:
-      type: none
-      o: bind
-      device: /mnt/media
-  myDlFolders:
-    driver: local
-    driver_opts:
-      type: none
-      o: bind
-      device: /mnt/downloads
+# volumes:
+#   myMedia:
+#     driver: local
+#     driver_opts:
+#       type: none
+#       o: bind
+#       device: /mnt/media
+#   myDlFolders:
+#     driver: local
+#     driver_opts:
+#       type: none
+#       o: bind
+#       device: /mnt/downloads
