@@ -22,7 +22,7 @@ services:
       - type: bind
         source: ${COMMON_SHARE_PATH}/downloads
         target: /downloads
-    network_mode: "host"
+    network_mode: host
     devices:
       - /dev/dri/renderD128:/dev/dri/renderD128
 
@@ -59,16 +59,16 @@ services:
   #   devices:
   #     - /dev/dri/renderD128:/dev/dri/renderD128
 
-  duplicati:
-    image: lscr.io/linuxserver/duplicati:latest
-    container_name: duplicati
-    volumes:
-      - ${COMMON_CONFIG_PATH}/duplicati/config:/config
-      # - ./configs:/source
-      # - ./docker-compose.yml:/source/docker-compose.yml
-      # - ./configs/duplicati/restore:/restore
-    networks:
-      - duplicati
+  # duplicati:
+  #   image: lscr.io/linuxserver/duplicati:latest
+  #   container_name: duplicati
+  #   volumes:
+  #     - ${COMMON_CONFIG_PATH}/duplicati/config:/config
+  #     # - ./configs:/source
+  #     # - ./docker-compose.yml:/source/docker-compose.yml
+  #     # - ./configs/duplicati/restore:/restore
+  #   networks:
+  #     - duplicati
     # ports:
 
   bazarr:
@@ -85,7 +85,7 @@ services:
   prowlarr:
     image: linuxserver/prowlarr:latest
     container_name: prowlarr
-    hostname: prowlarr
+    # hostname: prowlarr
     network_mode: "service:gluetun"
     volumes:
       - ${COMMON_CONFIG_PATH}/prowlarr:/config
