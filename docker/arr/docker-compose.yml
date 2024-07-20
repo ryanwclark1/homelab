@@ -82,16 +82,6 @@ services:
     networks:
       - mediarr
 
-  prowlarr:
-    image: linuxserver/prowlarr:latest
-    container_name: prowlarr
-    # hostname: prowlarr
-    network_mode: "service:gluetun"
-    volumes:
-      - ${COMMON_CONFIG_PATH}/prowlarr:/config
-    ports:
-      - 9696:9696
-
   flaresolverr:
     image: ghcr.io/flaresolverr/flaresolverr:latest
     container_name: flaresolverr
@@ -190,6 +180,7 @@ services:
       - 8888:8888/tcp # HTTP proxy
       - 8388:8388/tcp # Shadowsocks
       - 8388:8388/udp # Shadowsocks
+      - 9696:9696
     volumes:
       - ${COMMON_CONFIG_PATH}/gluetun:/gluetun
     environment:
@@ -200,15 +191,25 @@ services:
       - TZ=Etc/UTC
       - UPDATER_PERIOD=
 
+  prowlarr:
+    image: linuxserver/prowlarr:latest
+    container_name: prowlarr
+    # hostname: prowlarr
+    network_mode: "service:gluetun"
+    volumes:
+      - ${COMMON_CONFIG_PATH}/prowlarr:/config
+    # ports:
+    #   - 9696:9696
+
   qbittorrent:
     image: lscr.io/linuxserver/qbittorrent:latest
     container_name: qbittorrent
     # hostname: qbittorrent
     network_mode: "service:gluetun"
-    ports:
-      - 8080:8080
-      - 6881:6881
-      - 6881:6881/udp
+    # ports:
+    #   - 8080:8080
+    #   - 6881:6881
+    #   - 6881:6881/udp
     depends_on:
       - gluetun
     environment:
