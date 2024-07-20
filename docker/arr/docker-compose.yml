@@ -9,15 +9,9 @@ x-default-container &default-container:
     - TZ=Etc/UTC
   restart: unless-stopped
 
-x-mediarr-container &mediarr-container:
-  <<: *default-container
-  networks:
-    - mediarr
-
 
 services:
   jellyfin:
-    <<: *default-container
     container_name: jellyfin
     image: jellyfin/jellyfin:10.9.4
     volumes:
