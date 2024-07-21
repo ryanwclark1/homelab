@@ -16,12 +16,13 @@ services:
     volumes:
       - ${COMMON_CONFIG_PATH}/jellyfin/config:/config
       - ${COMMON_CONFIG_PATH}/jellyfin/cache:/cache
+      - ${COMMON_SHARE_PATH}/downloads:/downloads
       - type: bind
         source: ${COMMON_SHARE_PATH}
         target: /media
-      - type: bind
-        source: ${COMMON_SHARE_PATH}/downloads
-        target: /downloads
+      # - type: bind
+      #   source: ${COMMON_SHARE_PATH}/downloads
+      #   target: /downloads
     network_mode: host
     devices:
       - /dev/dri/renderD128:/dev/dri/renderD128
