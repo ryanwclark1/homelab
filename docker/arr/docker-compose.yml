@@ -186,11 +186,11 @@ services:
       - ${COMMON_CONFIG_PATH}/gluetun:/gluetun
     environment:
       - VPN_SERVICE_PROVIDER=nordvpn
-      - VPN_TYPE=openvpn
+      - VPN_TYPE=wireguard
       - WIREGUARD_PRIVATE_KEY=${NORD_KEY}
       - SERVER_COUNTRIES=Netherlands
       - TZ=Etc/UTC
-      - UPDATER_PERIOD=
+      # - UPDATER_PERIOD=
 
   prowlarr:
     image: linuxserver/prowlarr:latest
