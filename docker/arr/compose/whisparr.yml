@@ -1,33 +1,33 @@
 services:
   whisparr:
-  image: ghcr.io/hotio/whisparr:latest
-  container_name: whisparr
-  security_opt:
-    - no-new-privileges:true
-  restart: "no"
-  profiles: ["media","arrs", "all"]
-  networks:
-    - t3_proxy
-  ports:
-    - 6969:6969
-  volumes:
-    - ${COMMON_CONFIG_PATH}/whisparr:/config
-    - ${COMMON_DATA_PATH}:/media
-  labels:
-    - "traefik.enable=true"
-    # HTTP Routers Auth Bypass
-    - "traefik.http.routers.whisparr-rtr-bypass.entrypoints=websecure"
-    #- "traefik.http.routers.whisparr-rtr-bypass.rule=Host(`whisparr.$DOMAINNAME_HS`) && (Header(`X-Api-Key`, `$WHISPARR_API_KEY`) || Query(`apikey`, `$WHISPARR_API_KEY`))"
-    - "traefik.http.routers.whisparr-rtr-bypass.rule=Host(`whisparr.$DOMAINNAME_HS`) && Header(`traefik-auth-bypass-key`, `$TRAEFIK_AUTH_BYPASS_KEY`)" # Bypass Auth for LunaSea on iOS
-    - "traefik.http.routers.whisparr-rtr-bypass.priority=100"
-    # HTTP Routers Auth
-    - "traefik.http.routers.whisparr-rtr.entrypoints=websecure"
-    - "traefik.http.routers.whisparr-rtr.rule=Host(`whisparr.$DOMAINNAME_HS`)"
-    - "traefik.http.routers.whisparr-rtr.priority=99"
-    # Middlewares
-    - "traefik.http.routers.whisparr-rtr-bypass.middlewares=chain-no-auth@file"
-    - "traefik.http.routers.whisparr-rtr.middlewares=chain-oauth@file"
-    # HTTP Services
-    - "traefik.http.routers.whisparr-rtr.service=whisparr-svc"
-    - "traefik.http.routers.whisparr-rtr-bypass.service=whisparr-svc"
-    - "traefik.http.services.whisparr-svc.loadbalancer.server.port=6969"
+    image: ghcr.io/hotio/whisparr:latest
+    container_name: whisparr
+    security_opt:
+      - no-new-privileges:true
+    restart: "no"
+    profiles: ["media","arrs", "all"]
+    networks:
+      - t3_proxy
+    ports:
+      - 6969:6969
+    volumes:
+      - ${COMMON_CONFIG_PATH}/whisparr:/config
+      - ${COMMON_DATA_PATH}:/media
+    labels:
+      - "traefik.enable=true"
+      # HTTP Routers Auth Bypass
+      - "traefik.http.routers.whisparr-rtr-bypass.entrypoints=websecure"
+      #- "traefik.http.routers.whisparr-rtr-bypass.rule=Host(`whisparr.$DOMAINNAME_HS`) && (Header(`X-Api-Key`, `$WHISPARR_API_KEY`) || Query(`apikey`, `$WHISPARR_API_KEY`))"
+      - "traefik.http.routers.whisparr-rtr-bypass.rule=Host(`whisparr.$DOMAINNAME_HS`) && Header(`traefik-auth-bypass-key`, `$TRAEFIK_AUTH_BYPASS_KEY`)" # Bypass Auth for LunaSea on iOS
+      - "traefik.http.routers.whisparr-rtr-bypass.priority=100"
+      # HTTP Routers Auth
+      - "traefik.http.routers.whisparr-rtr.entrypoints=websecure"
+      - "traefik.http.routers.whisparr-rtr.rule=Host(`whisparr.$DOMAINNAME_HS`)"
+      - "traefik.http.routers.whisparr-rtr.priority=99"
+      # Middlewares
+      - "traefik.http.routers.whisparr-rtr-bypass.middlewares=chain-no-auth@file"
+      - "traefik.http.routers.whisparr-rtr.middlewares=chain-oauth@file"
+      # HTTP Services
+      - "traefik.http.routers.whisparr-rtr.service=whisparr-svc"
+      - "traefik.http.routers.whisparr-rtr-bypass.service=whisparr-svc"
+      - "traefik.http.services.whisparr-svc.loadbalancer.server.port=6969"
