@@ -47,62 +47,62 @@ secrets:
 
 include:
   # CORE
-  - arr/compose/traefik.yml
-  # - arr/compose/socket-proxy.yml
-  # - arr/compose/oauth.yml
-  # - arr/compose/authelia.yml
-  # - arr/compose/portainer.yml
-  # - arr/compose/dockge.yml
+  - arr/traefik.yml
+  # - arr/socket-proxy.yml
+  # - arr/oauth.yml
+  # - arr/authelia.yml
+  # - arr/portainer.yml
+  # - arr/dockge.yml
   # SECURITY
-  # - arr/compose/crowdsec.yml
-  # - arr/compose/traefik-bouncer.yml
+  # - arr/crowdsec.yml
+  # - arr/traefik-bouncer.yml
   # FRONTEND
-  # - arr/compose/autoindex.yml
-  - arr/compose/homepage.yml
-  # - arr/compose/phpmyadmin.yml
-  # - arr/compose/sitespeed.yml
-  - arr/compose/whoami.yml
+  # - arr/autoindex.yml
+  - arr/homepage.yml
+  # - arr/phpmyadmin.yml
+  # - arr/sitespeed.yml
+  - arr/whoami.yml
   # DOWNLOADERS
-  # - arr/compose/jdownloader.yml
-  - arr/compose/qbittorrent.yml
-  # - arr/compose/sabnzbd.yml
+  # - arr/jdownloader.yml
+  - arr/qbittorrent.yml
+  # - arr/sabnzbd.yml
   # PVRS
-  - arr/compose/sonarr.yml
-  - arr/compose/radarr.yml
-  - arr/compose/readarr.yml
-  - arr/compose/lidarr.yml
-  - arr/compose/whisparr.yml
-  - arr/compose/flaresolverr.yml
+  - arr/sonarr.yml
+  - arr/radarr.yml
+  - arr/readarr.yml
+  - arr/lidarr.yml
+  - arr/whisparr.yml
+  - arr/flaresolverr.yml
   # COMPLEMENTARY APPS
-  - arr/compose/prowlarr.yml
-  - arr/compose/notifiarr.yml
-  # - arr/compose/bazarr.yml
-  # - arr/compose/picard.yml
-  - arr/compose/stash.yml
+  - arr/prowlarr.yml
+  - arr/notifiarr.yml
+  # - arr/bazarr.yml
+  # - arr/picard.yml
+  - arr/stash.yml
   # MONITORING
-  # - arr/compose/grafana.yml
-  # - arr/compose/uptime-kuma.yml
-  # - arr/compose/dozzle.yml
-  # - arr/compose/scrutiny.yml
-  - arr/compose/radarr-exporter.yml
-  - arr/compose/sonarr-exporter.yml
-  - arr/compose/lidarr-exporter.yml
-  - arr/compose/prowlarr-exporter.yml
-  # - arr/compose/sabnzbd-exporter.yml
-  # - arr/compose/node-exporter.yml
+  # - arr/grafana.yml
+  # - arr/uptime-kuma.yml
+  # - arr/dozzle.yml
+  # - arr/scrutiny.yml
+  - arr/radarr-exporter.yml
+  - arr/sonarr-exporter.yml
+  - arr/lidarr-exporter.yml
+  - arr/prowlarr-exporter.yml
+  # - arr/sabnzbd-exporter.yml
+  # - arr/node-exporter.yml
   # ADMIN
-  # - arr/compose/guacamole.yml
-  # - arr/compose/kasm.yml
-  # - arr/compose/it-tools.yml
+  # - arr/guacamole.yml
+  # - arr/kasm.yml
+  # - arr/it-tools.yml
   # UTILITIES
-  # - arr/compose/firefox.yml
-  # - arr/compose/firefly.yml
+  # - arr/firefox.yml
+  # - arr/firefly.yml
   # FILE MANAGEMENT
-  # - arr/compose/vscode.yml
-  # - arr/compose/makemkv.yml
-  # - arr/compose/mkvtoolnix.yml
+  # - arr/vscode.yml
+  # - arr/makemkv.yml
+  # - arr/mkvtoolnix.yml
   # NETWORK
-  - arr/compose/gluetun.yml
+  - arr/gluetun.yml
   # MAINTENANCE
-  # - arr/compose/docker-gc.yml
-  # - arr/compose/deunhealth.yml
+  # - arr/docker-gc.yml
+  # - arr/deunhealth.yml
