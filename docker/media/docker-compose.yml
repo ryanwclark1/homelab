@@ -16,12 +16,12 @@ services:
     volumes:
       - ${COMMON_CONFIG_PATH}/jellyfin/config:/config
       - ${COMMON_CONFIG_PATH}/jellyfin/cache:/cache
-      - ${COMMON_SHARE_PATH}/downloads:/downloads
+      - ${COMMON_DATA_PATH}/downloads:/downloads
       - type: bind
-        source: ${COMMON_SHARE_PATH}
+        source: ${COMMON_DATA_PATH}
         target: /media
       # - type: bind
-      #   source: ${COMMON_SHARE_PATH}/downloads
+      #   source: ${COMMON_DATA_PATH}/downloads
       #   target: /downloads
     # Host mode requred in order to use DLNA
     network_mode: host
@@ -106,7 +106,7 @@ services:
     hostname: radarr
     volumes:
       - ${COMMON_CONFIG_PATH}/radarr:/config
-      - ${COMMON_SHARE_PATH}:/media
+      - ${COMMON_DATA_PATH}:/media
     ports:
       - 7878:7878
     networks:
@@ -119,7 +119,7 @@ services:
     hostname: readarr
     volumes:
       - ${COMMON_CONFIG_PATH}/readarr:/config
-      - ${COMMON_SHARE_PATH}:/media
+      - ${COMMON_DATA_PATH}:/media
     ports:
       - 8787:8787
     networks:
@@ -132,7 +132,7 @@ services:
     hostname: sonarr
     volumes:
       - ${COMMON_CONFIG_PATH}/sonarr:/config
-      - ${COMMON_SHARE_PATH}:/media
+      - ${COMMON_DATA_PATH}:/media
     ports:
       - 8989:8989
     networks:
@@ -145,7 +145,7 @@ services:
     hostname: lidarr
     volumes:
       - ${COMMON_CONFIG_PATH}/lidarr:/config
-      - ${COMMON_SHARE_PATH}:/media
+      - ${COMMON_DATA_PATH}:/media
     ports:
       - 8686:8686
     networks:
@@ -158,7 +158,7 @@ services:
     hostname: whisparr
     volumes:
       - ${COMMON_CONFIG_PATH}/whisparr:/config
-      - ${COMMON_SHARE_PATH}:/media
+      - ${COMMON_DATA_PATH}:/media
     ports:
       - 6969:6969
     networks:
@@ -171,7 +171,7 @@ services:
     hostname: stash
     volumes:
       - ${COMMON_CONFIG_PATH}/stash:/config
-      - ${COMMON_CONFIG_PATH}:/media
+      - ${COMMON_DATA_PATH}:/media
     ports:
       - 9999:9999
     devices:
@@ -248,7 +248,7 @@ services:
       - DOCKER_MODS=ghcr.io/gabe565/linuxserver-mod-vuetorrent
     volumes:
       - ${COMMON_CONFIG_PATH}/qbittorrent:/config
-      - ${COMMON_SHARE_PATH}/downloads:/downloads
+      - ${COMMON_DATA_PATH}/downloads:/downloads
     restart: unless-stopped
 
 networks:
