@@ -12,8 +12,8 @@ services:
         ipv4_address: ${MEDIA_SERVER_IP:-10.10.100.50} # You can specify a static IP
       # socket_proxy:
     command: # CLI arguments
-      - --global.checkNewVersion=true
-      - --global.sendAnonymousUsage=true
+      - --global.checkNewVersion=false
+      - --global.sendAnonymousUsage=false
       - --entrypoints.web.address=:80
       - --entrypoints.websecure.address=:443
       - --entrypoints.traefik.address=:8080
