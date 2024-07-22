@@ -95,7 +95,7 @@ services:
       # - ${COMMON_CONFIG_PATH}/traefik3/rules/$HOSTNAME:/rules # Dynamic File Provider directory
       - ${COMMON_CONFIG_PATH}/traefik3/rules/arr:/rules # Dynamic File Provider directory
       - /var/run/docker.sock:/var/run/docker.sock:ro # Enable if not using Socket Proxy
-      - ${COMMON_CONFIG_PATH}/traefik3/acme/acme.json:/acme.json # Certs File
+      # - ${COMMON_CONFIG_PATH}/traefik3/acme/acme.json:/acme.json # Certs File
       - ${COMMON_CONFIG_PATH}/traefik3/acme/:acme/
       # - $DOCKERDIR/logs/$HOSTNAME/traefik:/logs # Traefik logs
       - ${COMMON_CONFIG_PATH}/logs/arr/traefik:/logs # Traefik logs
