@@ -1,244 +1,111 @@
-# Setup default propreties we want on all/most containers
-x-default-container &default-container:
-  user: 1000:1000
-  group_add:
-    - "109"
-  environment:
-    - PUID=1000
-    - PGID=100
-    - TZ=Etc/UTC
-  restart: unless-stopped
-
-services:
-  jellyfin:
-    container_name: jellyfin
-    image: jellyfin/jellyfin:10.9.4
-    volumes:
-      - ${COMMON_CONFIG_PATH}/jellyfin/config:/config
-      - ${COMMON_CONFIG_PATH}/jellyfin/cache:/cache
-      - ${COMMON_SHARE_PATH}/downloads:/downloads
-      - type: bind
-        source: ${COMMON_SHARE_PATH}
-        target: /media
-      # - type: bind
-      #   source: ${COMMON_SHARE_PATH}/downloads
-      #   target: /downloads
-    network_mode: host
-    devices:
-      - /dev/dri/renderD128:/dev/dri/renderD128
-
-  jellyseerr:
-    image: fallenbagel/jellyseerr:latest
-    container_name: jellyseerr
-    hostname: jellyseerr
-    environment:
-      - LOG_LEVEL=debug
-    ports:
-      - 5055:5055
-    volumes:
-      - ${COMMON_CONFIG_PATH}/jellyseerr:/app/config
-    networks:
-      - mediarr
-
-  # firefox:
-  #   <<: *default-container
-  #   image: lscr.io/linuxserver/firefox:latest
-  #   container_name: firefox
-  #   security_opt:
-  #     - seccomp:unconfined
-  #   environment:
-  #     - DRINODE=/dev/dri/renderD128
-  #     - DISABLE_IPV6=true
-  #     - DOCKER_MODS=linuxserver/mods:firefox-fonts
-  #   volumes:
-  #     - ./configs/firefox:/config
-  #   ports:
-  #     - 3001:3001
-  #   networks:
-  #     - firefox
-  #   shm_size: "1gb"
-  #   devices:
-  #     - /dev/dri/renderD128:/dev/dri/renderD128
-
-  # duplicati:
-  #   image: lscr.io/linuxserver/duplicati:latest
-  #   container_name: duplicati
-  #   volumes:
-  #     - ${COMMON_CONFIG_PATH}/duplicati/config:/config
-  #     # - ./configs:/source
-  #     # - ./docker-compose.yml:/source/docker-compose.yml
-  #     # - ./configs/duplicati/restore:/restore
-  #   networks:
-  #     - duplicati
-  # ports:
-
-  bazarr:
-    image: lscr.io/linuxserver/bazarr:latest
-    container_name: bazarr
-    hostname: bazarr
-    volumes:
-      - ${COMMON_CONFIG_PATH}/bazarr:/config
-    ports:
-      - 6767:6767
-    networks:
-      - mediarr
-
-  flaresolverr:
-    image: ghcr.io/flaresolverr/flaresolverr:latest
-    container_name: flaresolverr
-    hostname: flaresolverr
-    environment:
-      - LOG_LEVEL=${LOG_LEVEL:-info}
-      - LOG_HTML=${LOG_HTML:-false}
-      - CAPTCHA_SOLVER=${CAPTCHA_SOLVER:-none}
-    restart: unless-stopped
-    networks:
-      - mediarr
-
-  radarr:
-    image: lscr.io/linuxserver/radarr:latest
-    container_name: radarr
-    hostname: radarr
-    volumes:
-      - ${COMMON_CONFIG_PATH}/radarr:/config
-      - ${COMMON_SHARE_PATH}:/media
-    ports:
-      - 7878:7878
-    networks:
-      - mediarr
-
-  readarr:
-    image: lscr.io/linuxserver/readarr:develop
-    container_name: readarr
-    hostname: readarr
-    volumes:
-      - ${COMMON_CONFIG_PATH}/readarr:/config
-      - ${COMMON_SHARE_PATH}:/media
-    ports:
-      - 8787:8787
-    networks:
-      - mediarr
-
-  sonarr:
-    image: lscr.io/linuxserver/sonarr:latest
-    container_name: sonarr
-    hostname: sonarr
-    volumes:
-      - ${COMMON_CONFIG_PATH}/sonarr:/config
-      - ${COMMON_SHARE_PATH}:/media
-    ports:
-      - 8989:8989
-    networks:
-      - mediarr
-
-  lidarr:
-    image: lscr.io/linuxserver/lidarr:latest
-    container_name: lidarr
-    hostname: lidarr
-    volumes:
-      - ${COMMON_CONFIG_PATH}/lidarr:/config
-      - ${COMMON_SHARE_PATH}:/media
-    ports:
-      - 8686:8686
-    networks:
-      - mediarr
-
-  whisparr:
-    image: ghcr.io/hotio/whisparr:latest
-    container_name: whisparr
-    hostname: whisparr
-    volumes:
-      - ${COMMON_CONFIG_PATH}/whisparr:/config
-      - ${COMMON_SHARE_PATH}:/media
-    ports:
-      - 6969:6969
-    networks:
-      - mediarr
-
-  stash:
-    image: ghcr.io/hotio/stash:latest
-    container_name: stash
-    hostname: stash
-    volumes:
-      - ${COMMON_CONFIG_PATH}/stash:/config
-      - ${COMMON_CONFIG_PATH}:/media
-    ports:
-      - 9999:9999
-    devices:
-      - /dev/dri/renderD128:/dev/dri/renderD128
-    networks:
-      - mediarr
-
-  gluetun:
-    image: qmcgaw/gluetun
-    container_name: gluetun
-    # See https://github.com/qdm12/gluetun-wiki/blob/main/setup/connect-a-container-to-gluetun.md#external-container-to-gluetun
-    cap_add:
-      - NET_ADMIN
-    devices:
-      - /dev/net/tun:/dev/net/tun
-    ports:
-      - 8888:8888/tcp # HTTP proxy
-      - 8388:8388/tcp # Shadowsocks
-      - 8388:8388/udp # Shadowsocks
-      - 9696:9696
-    volumes:
-      - ${COMMON_CONFIG_PATH}/gluetun:/gluetun
-    environment:
-      - VPN_SERVICE_PROVIDER=nordvpn
-      - VPN_TYPE=wireguard
-      - WIREGUARD_PRIVATE_KEY=${NORD_KEY}
-      - SERVER_COUNTRIES=Netherlands
-      - TZ=Etc/UTC
-      # - UPDATER_PERIOD=
-
-  prowlarr:
-    image: linuxserver/prowlarr:latest
-    container_name: prowlarr
-    # hostname: prowlarr
-    network_mode: "service:gluetun"
-    volumes:
-      - ${COMMON_CONFIG_PATH}/prowlarr:/config
-    # ports:
-    #   - 9696:9696
-
-  qbittorrent:
-    image: lscr.io/linuxserver/qbittorrent:latest
-    container_name: qbittorrent
-    # hostname: qbittorrent
-    network_mode: "service:gluetun"
-    # ports:
-    #   - 8080:8080
-    #   - 6881:6881
-    #   - 6881:6881/udp
-    depends_on:
-      - gluetun
-    environment:
-      - WEBUI_PORT=8080
-      - PUID=0
-      - PGID=0
-      - TZ=${TZ}
-      - DOCKER_MODS=ghcr.io/gabe565/linuxserver-mod-vuetorrent
-    volumes:
-      - ${COMMON_CONFIG_PATH}/qbittorrent:/config
-      - ${COMMON_SHARE_PATH}/downloads:/downloads
-    restart: unless-stopped
-
+########################### NETWORKS
+# You may customize the network subnets (192.168.x.0/24) below as you please.
 networks:
-  duplicati:
+  default:
     driver: bridge
-  mediarr:
+  socket_proxy:
+    name: socket_proxy
     driver: bridge
-# volumes:
-#   myMedia:
-#     driver: local
-#     driver_opts:
-#       type: none
-#       o: bind
-#       device: /mnt/media
-#   myDlFolders:
-#     driver: local
-#     driver_opts:
-#       type: none
-#       o: bind
-#       device: /mnt/downloads
+    ipam:
+      config:
+        - subnet: 10.10.101.0/24
+  # t2_proxy:
+  #   name: t2_proxy
+  #   driver: bridge
+  #   ipam:
+  #     config:
+  #       - subnet: 10.10.100.0/24
+  t3_proxy:
+    name: t3_proxy
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 10.10.100.0/24
+
+########################### SECRETS
+# secrets:
+  # basic_auth_credentials:
+  #   file: $DOCKERDIR/secrets/basic_auth_credentials
+  # cf_dns_api_token:
+  #   file: $DOCKERDIR/secrets/cf_dns_api_token
+  # traefik_forward_auth:
+  #   file: $DOCKERDIR/secrets/traefik_forward_auth
+  # mysql_root_password:
+  #   file: $DOCKERDIR/secrets/mysql_root_password
+  # authelia_jwt_secret:
+  #   file: $DOCKERDIR/secrets/authelia_jwt_secret
+  # authelia_session_secret:
+  #   file: $DOCKERDIR/secrets/authelia_session_secret
+  # authelia_storage_mysql_password:
+  #   file: $DOCKERDIR/secrets/authelia_storage_mysql_password
+  # authelia_notifier_smtp_password:
+  #   file: $DOCKERDIR/secrets/authelia_notifier_smtp_password
+  # authelia_duo_api_secret_key:
+  #   file: $DOCKERDIR/secrets/authelia_duo_api_secret_key
+  # authelia_storage_encryption_key:
+  #   file: $DOCKERDIR/secrets/authelia_storage_encryption_key
+  # guac_db_name:
+  #   file: $DOCKERDIR/secrets/guac_db_name
+  # guac_mysql_user:
+  #   file: $DOCKERDIR/secrets/guac_mysql_user
+  # guac_mysql_password:
+  #   file: $DOCKERDIR/secrets/guac_mysql_password
+
+include:
+
+  # CORE
+  - compose/traefik.yml
+  - compose/socket-proxy.yml
+  - compose/oauth.yml
+  - compose/authelia.yml
+  # - compose/portainer.yml
+  # - compose/dockge.yml
+  # SECURITY
+  - compose/crowdsec.yml
+  - compose/traefik-bouncer.yml
+  # FRONTEND
+  # - compose/autoindex.yml
+  # - compose/homepage.yml
+  # - compose/phpmyadmin.yml
+  # - compose/sitespeed.yml
+  # - compose/whoami.yml
+  # DOWNLOADERS
+  # - compose/jdownloader.yml
+  # - compose/qbittorrent.yml
+  # - compose/sabnzbd.yml
+  # PVRS
+  - compose/sonarr.yml
+  - compose/radarr.yml
+  # - compose/lidarr.yml
+  # COMPLEMENTARY APPS
+  - compose/prowlarr.yml
+  - compose/notifiarr.yml
+  # - compose/bazarr.yml
+  # - compose/picard.yml
+  # MONITORING
+  # - compose/grafana.yml
+  # - compose/uptime-kuma.yml
+  # - compose/dozzle.yml
+  # - compose/scrutiny.yml
+  # - compose/radarr-exporter.yml
+  # - compose/sonarr-exporter.yml
+  # - compose/lidarr-exporter.yml
+  # - compose/prowlarr-exporter.yml
+  # - compose/sabnzbd-exporter.yml
+  # - compose/node-exporter.yml
+  # ADMIN
+  # - compose/guacamole.yml
+  # - compose/kasm.yml
+  # - compose/it-tools.yml
+  # UTILITIES
+  # - compose/firefox.yml
+  # - compose/firefly.yml
+  # FILE MANAGEMENT
+  # - compose/vscode.yml
+  # - compose/makemkv.yml
+  # - compose/mkvtoolnix.yml
+  # NETWORK
+  - compose/gluetun.yml
+  # MAINTENANCE
+  # - compose/docker-gc.yml
+  # - compose/deunhealth.yml
