@@ -1,13 +1,13 @@
 service:
   flaresolverr:
-  image: ghcr.io/flaresolverr/flaresolverr:latest
-  restart: unless-stopped
-  profiles: ["media","arrs", "all"]
-  container_name: flaresolverr
-  networks:
-    - t3_proxy
-  environment:
-    - LOG_LEVEL=${FLARESOLVERR_LOG_LEVEL:-info}
-    - LOG_HTML=${FLARESOLVERR_LOG_HTML:-false}
-    - CAPTCHA_SOLVER=${FLARESOLVERR_CAPTCHA_SOLVER:-none}
+    image: ghcr.io/flaresolverr/flaresolverr:latest
+    restart: unless-stopped
+    profiles: ["media","arrs", "all"]
+    container_name: flaresolverr
+    networks:
+      - t3_proxy
+    environment:
+      - LOG_LEVEL=${FLARESOLVERR_LOG_LEVEL:-info}
+      - LOG_HTML=${FLARESOLVERR_LOG_HTML:-false}
+      - CAPTCHA_SOLVER=${FLARESOLVERR_CAPTCHA_SOLVER:-none}
 
