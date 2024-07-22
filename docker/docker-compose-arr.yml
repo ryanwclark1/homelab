@@ -26,8 +26,8 @@ networks:
 # secrets:
 # basic_auth_credentials:
 #   file: $DOCKERDIR/secrets/basic_auth_credentials
-# cf_dns_api_token:
-#   file: $DOCKERDIR/secrets/cf_dns_api_token
+cf_dns_api_token:
+  file: $DOCKERDIR/secrets/cf_dns_api_token
 # traefik_forward_auth:
 #   file: $DOCKERDIR/secrets/traefik_forward_auth
 # mysql_root_password:
