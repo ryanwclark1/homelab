@@ -3,12 +3,12 @@
 networks:
   default:
     driver: bridge
-  socket_proxy:
-    name: socket_proxy
-    driver: bridge
-    ipam:
-      config:
-        - subnet: 10.10.100.0/24
+  # socket_proxy:
+  #   name: socket_proxy
+  #   driver: bridge
+  #   ipam:
+  #     config:
+  #       - subnet: 10.10.100.0/24
   # t2_proxy:
   #   name: t2_proxy
   #   driver: bridge
