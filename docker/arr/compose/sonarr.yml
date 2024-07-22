@@ -13,11 +13,10 @@ services:
     ports:
       - "8989:8989"
     volumes:
-      - $DOCKERDIR/appdata/sonarr:/config
-      - $DATADIR/data/media/shows:/data/shows1
-      - $DATADIR/data2/media/shows:/data/shows2
-      - $DOWNLOADSDIR:/data/downloads
-      - "/etc/localtime:/etc/localtime:ro"
+      - ${COMMON_CONFIG_PATH}/sonarr:/config
+      - ${COMMON_DATA_PATH}/tv:/data/tv
+      - ${COMMON_DATA_PATH}/downloads:/data/downloads
+      - /etc/localtime:/etc/localtime:ro
     environment:
       TZ: ${TZ:-Etc/UTC}
       PUID: ${PUID:-1000}

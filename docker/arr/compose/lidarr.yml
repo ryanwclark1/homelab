@@ -13,8 +13,8 @@ services:
     ports:
       - "8686:8686"
     volumes:
-      - $DOCKERDIR/appdata/lidarr:/config
-      - $DATADIR:/data
+      - ${COMMON_CONFIG_PATH}/lidarr:/config
+      - ${COMMON_DATA_PATH}:/data
       - "/etc/localtime:/etc/localtime:ro"
     environment:
       TZ: ${TZ:-Etc/UTC}

@@ -23,5 +23,5 @@ services:
       - $DOCKERDIR/logs/cloudserver:/logs/cloudserver:ro
       - /var/log:/var/log:ro
       - $EXTDRIVE/zbox/var/log:/logs/zbox:ro
-      - $DOCKERDIR/appdata/crowdsec/data:/var/lib/crowdsec/data
-      - $DOCKERDIR/appdata/crowdsec/config:/etc/crowdsec
+      - ${COMMON_CONFIG_PATH}/crowdsec/data:/var/lib/crowdsec/data
+      - ${COMMON_CONFIG_PATH}/crowdsec/config:/etc/crowdsec

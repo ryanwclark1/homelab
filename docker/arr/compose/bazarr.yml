@@ -12,8 +12,8 @@ services:
     ports:
       - "6767:6767"
     volumes:
-      - $DOCKERDIR/appdata/bazarr:/config
-      - $DATADIR/media:/data/media
+      - ${COMMON_CONFIG_PATH}/bazarr:/config
+      - ${COMMON_DATA_PATH}:/data/media
     environment:
       TZ: ${TZ:-Etc/UTC}
       PUID: ${PUID:-1000}

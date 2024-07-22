@@ -12,13 +12,14 @@ services:
     # ports:
     #   - "8081:8080" # Explosed via gluetun. 8081 because crowdsec is using port 8080
     volumes:
-      - $DOCKERDIR/appdata/qbittorrent:/config
-      - $DOWNLOADSDIR:/data/downloads # Ensure that downloads folder is set to /data/downloads in qBittorrent
+      - ${COMMON_CONFIG_PATH}/qbittorrent:/config
+      - ${COMMON_DATA_PATH}/downloads:/data/downloads # Ensure that downloads folder is set to /data/downloads in qBittorrent
     environment:
       TZ: ${TZ:-Etc/UTC}
       PUID: ${PUID:-1000}
       PGID: ${PGID:-1000}
       UMASK_SET: 002
+      DOCKER_MODS: ghcr.io/gabe565/linuxserver-mod-vuetorrent
     healthcheck: # https://github.com/qdm12/gluetun/issues/641#issuecomment-933856220
       test: "curl -sf https://example.com  || exit 1"
       interval: 1m

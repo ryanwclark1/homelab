@@ -1,0 +1,46 @@
+services:
+  stash:
+    image: ghcr.io/hotio/stash:latest
+    container_name: stash
+    restart: "no"
+    profiles: ["media", "arrs", "all"]
+    networks:
+      - t3_proxy
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - ${COMMON_CONFIG_PATH}/stash/config:/root/.stash
+      - ${COMMON_CONFIG_PATH}/stash/metadata:/metadata
+      - ${COMMON_CONFIG_PATH}/stash/cache:/cache
+      - ${COMMON_CONFIG_PATH}/stash/generated:/generated
+      - ${COMMON_CONFIG_PATH}/stash/blobs:/blobs
+      - ${COMMON_DATA_PATH}:/data
+    ports:
+      - 9999:9999
+    devices:
+      - /dev/dri/renderD128:/dev/dri/renderD128
+    environment:
+      # - STASH_HOST=${STASH_HOST:-0.0.0.0}
+      - STASH_PORT=${STASH_PORT:-9999}
+      # - STASH_EXTERNAL_HOST=stash.$DOMAINNAME_HS
+      - STASH_STASH=/data/
+      - STASH_GENERATED=/generated/
+      - STASH_METADATA=/metadata/
+      - STASH_CACHE=/cache/
+    labels:
+      - "traefik.enable=true"
+      # HTTP Routers Auth Bypass
+      - "traefik.http.routers.stash-rtr-bypass.entrypoints=websecure"
+      #- "traefik.http.routers.stash-rtr-bypass.rule=Host(`stash.$DOMAINNAME_HS`) && (Header(`X-Api-Key`, `$STASH_API_KEY`) || Query(`apikey`, `$STASH_API_KEY`))"
+      - "traefik.http.routers.stash-rtr-bypass.rule=Host(`stash.$DOMAINNAME_HS`) && Header(`traefik-auth-bypass-key`, `$TRAEFIK_AUTH_BYPASS_KEY`)" # Bypass Auth for LunaSea on iOS
+      - "traefik.http.routers.stash-rtr-bypass.priority=100"
+      # HTTP Routers Auth
+      - "traefik.http.routers.stash-rtr.entrypoints=websecure"
+      - "traefik.http.routers.stash-rtr.rule=Host(`stash.$DOMAINNAME_HS`)"
+      - "traefik.http.routers.stash-rtr.priority=99"
+      # Middlewares
+      - "traefik.http.routers.stash-rtr-bypass.middlewares=chain-no-auth@file"
+      - "traefik.http.routers.stash-rtr.middlewares=chain-oauth@file"
+      # HTTP Services
+      - "traefik.http.routers.stash-rtr.service=stash-svc"
+      - "traefik.http.routers.stash-rtr-bypass.service=stash-svc"
+      - "traefik.http.services.stash-svc.loadbalancer.server.port=9999"

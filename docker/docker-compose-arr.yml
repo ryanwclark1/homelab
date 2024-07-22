@@ -50,13 +50,13 @@ include:
   # CORE
   - arr/compose/traefik.yml
   - arr/compose/socket-proxy.yml
-  - arr/compose/oauth.yml
-  - arr/compose/authelia.yml
+  # - arr/compose/oauth.yml
+  # - arr/compose/authelia.yml
   # - arr/compose/portainer.yml
   # - arr/compose/dockge.yml
   # SECURITY
-  - arr/compose/crowdsec.yml
-  - arr/compose/traefik-bouncer.yml
+  # - arr/compose/crowdsec.yml
+  # - arr/compose/traefik-bouncer.yml
   # FRONTEND
   # - arr/compose/autoindex.yml
   # - arr/compose/homepage.yml
@@ -70,7 +70,7 @@ include:
   # PVRS
   - arr/compose/sonarr.yml
   - arr/compose/radarr.yml
-  # - arr/compose/lidarr.yml
+  - arr/compose/lidarr.yml
   # COMPLEMENTARY APPS
   - arr/compose/prowlarr.yml
   - arr/compose/notifiarr.yml
@@ -81,10 +81,10 @@ include:
   # - arr/compose/uptime-kuma.yml
   # - arr/compose/dozzle.yml
   # - arr/compose/scrutiny.yml
-  # - arr/compose/radarr-exporter.yml
-  # - arr/compose/sonarr-exporter.yml
-  # - arr/compose/lidarr-exporter.yml
-  # - arr/compose/prowlarr-exporter.yml
+  - arr/compose/radarr-exporter.yml
+  - arr/compose/sonarr-exporter.yml
+  - arr/compose/lidarr-exporter.yml
+  - arr/compose/prowlarr-exporter.yml
   # - arr/compose/sabnzbd-exporter.yml
   # - arr/compose/node-exporter.yml
   # ADMIN
