@@ -1,6 +1,6 @@
 services:
   readarr:
-    image: lscr.io/linuxserver/readarr:develop
+    image: lscr.io/linuxserver/readarr:${READARR_TAG:-latest}
     container_name: readarr
     security_opt:
       - no-new-privileges:true

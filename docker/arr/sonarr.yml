@@ -2,7 +2,7 @@ services:
   # Sonarr - TV Shows Management
   # Set url_base in sonarr settings if using PathPrefix
   sonarr:
-    image: lscr.io/linuxserver/sonarr:develop
+    image: lscr.io/linuxserver/sonarr:${SONARR_TAG:-latest}
     container_name: sonarr
     security_opt:
       - no-new-privileges:true
