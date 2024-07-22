@@ -64,7 +64,7 @@ include:
   # - arr/compose/whoami.yml
   # DOWNLOADERS
   # - arr/compose/jdownloader.yml
-  - arr/compose/qbittorrent.yml
+  # - arr/compose/qbittorrent.yml
   # - arr/compose/sabnzbd.yml
   # PVRS
   - arr/compose/sonarr.yml
