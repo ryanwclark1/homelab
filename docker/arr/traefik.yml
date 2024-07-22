@@ -55,7 +55,7 @@ services:
       - --providers.file.directory=/rules # Load dynamic configuration from one or more .toml or .yml files in a directory
       - --providers.file.watch=true # Only works on top level files in the rules folder
       - --certificatesResolvers.dns-cloudflare.acme.caServer=https://acme-staging-v02.api.letsencrypt.org/directory # LetsEncrypt Staging Server - uncomment when testing
-      # - --certificatesResolvers.dns-cloudflare.acme.storage=/acme.json
+      - --certificatesResolvers.dns-cloudflare.acme.storage=/acme/acme.json
       - --certificatesResolvers.dns-cloudflare.acme.dnsChallenge.provider=cloudflare
       - --certificatesResolvers.dns-cloudflare.acme.dnsChallenge.resolvers=1.1.1.1:53,1.0.0.1:53
       - --certificatesResolvers.dns-cloudflare.acme.dnsChallenge.delayBeforeCheck=90 # To delay DNS check and reduce LE hitrate
@@ -96,6 +96,7 @@ services:
       - ${COMMON_CONFIG_PATH}/traefik3/rules/arr:/rules # Dynamic File Provider directory
       - /var/run/docker.sock:/var/run/docker.sock:ro # Enable if not using Socket Proxy
       - ${COMMON_CONFIG_PATH}/traefik3/acme/acme.json:/acme.json # Certs File
+      - ${COMMON_CONFIG_PATH}/traefik3/acme/:acme/
       # - $DOCKERDIR/logs/$HOSTNAME/traefik:/logs # Traefik logs
       - ${COMMON_CONFIG_PATH}/logs/arr/traefik:/logs # Traefik logs
     environment:
