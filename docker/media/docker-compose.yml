@@ -4,9 +4,9 @@ x-default-container &default-container:
   group_add:
     - "109"
   environment:
-    - PUID=1000
+    - PUID=${PUID:-1000}
     - PGID=100
-    - TZ=Etc/UTC
+    - TZ=${TZ:-Etc/UTC}
   restart: unless-stopped
 
 services:
@@ -244,7 +244,7 @@ services:
       - WEBUI_PORT=8080
       - PUID=0
       - PGID=0
-      - TZ=${TZ}
+      - TZ=${TZ:-Etc/UTC}
       - DOCKER_MODS=ghcr.io/gabe565/linuxserver-mod-vuetorrent
     volumes:
       - ${COMMON_CONFIG_PATH}/qbittorrent:/config

@@ -4,9 +4,9 @@ services:
     image: lscr.io/linuxserver/resilio-sync:latest
     container_name: resilio-sync
     environment:
-      - PUID=1000
-      - PGID=1000
-      - TZ=Etc/UTC
+      - PUID=${PUID:-1000}
+      - PGID=${PGID:-1000}
+      - TZ=${TZ:-Etc/UTC}
     volumes:
       - config_data:/config
       - downloads_data:/downloads

@@ -23,7 +23,7 @@ services:
     volumes:
       - $DOCKERDIR/appdata/gluetun:/gluetun
     environment:
-      TZ: $TZ
+      TZ: ${TZ:-Etc/UTC}
       # Wireguard
       VPN_SERVICE_PROVIDER: surfshark
       VPN_TYPE: wireguard

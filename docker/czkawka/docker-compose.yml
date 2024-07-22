@@ -9,7 +9,7 @@ services:
       - GROUP_ID=1000
       - UMASK=022
       - LANG=en_US.UTF-8
-      - TZ=Etc/UTC
+      - TZ=${TZ:-Etc/UTC}
       - KEEP_APP_RUNNING=1
       # - APP_NICENESS=-20
       - CONTAINER_DEBUG=0

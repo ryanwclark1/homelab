@@ -15,9 +15,9 @@ services:
       - $DOCKERDIR/appdata/bazarr:/config
       - $DATADIR/media:/data/media
     environment:
-      TZ: $TZ
-      PUID: $PUID
-      PGID: $PGID
+      TZ: ${TZ:-Etc/UTC}
+      PUID: ${PUID:-1000}
+      PGID: ${PGID:-1000}
     labels:
       - "traefik.enable=true"
       # HTTP Routers Auth

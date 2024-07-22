@@ -65,7 +65,7 @@ services:
       # - --metrics.prometheus.addrouterslabels=true
       # - --metrics.prometheus.addServicesLabels=true
       # - --metrics.influxdb2=true
-      # - --metrics.influxdb2.address=http://192.168.1.111:8086
+      # - --metrics.influxdb2.address=http://10.10.1.111:8086
       # - --metrics.influxdb2.token=$INFLUXDB_TOKEN
       # - --metrics.influxdb2.org=zHome
       # - --metrics.influxdb2.bucket=traefik-hs
@@ -97,7 +97,7 @@ services:
       - $DOCKERDIR/appdata/traefik3/acme/acme.json:/acme.json # Certs File
       - $DOCKERDIR/logs/$HOSTNAME/traefik:/logs # Traefik logs
     environment:
-      - TZ=$TZ
+      - TZ=${TZ:-Etc/UTC}
       - CF_DNS_API_TOKEN_FILE=/run/secrets/cf_dns_api_token
       - HTPASSWD_FILE=/run/secrets/basic_auth_credentials # HTTP Basic Auth Credentials
       - DOMAINNAME_HS # Passing the domain name to traefik container to be able to use the variable in rules.

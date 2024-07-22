@@ -1,5 +1,5 @@
 ########################### NETWORKS
-# You may customize the network subnets (192.168.x.0/24) below as you please.
+# You may customize the network subnets (10.10.x.0/24) below as you please.
 networks:
   default:
     driver: bridge
@@ -44,68 +44,62 @@ networks:
   #   file: $DOCKERDIR/secrets/authelia_duo_api_secret_key
   # authelia_storage_encryption_key:
   #   file: $DOCKERDIR/secrets/authelia_storage_encryption_key
-  # guac_db_name:
-  #   file: $DOCKERDIR/secrets/guac_db_name
-  # guac_mysql_user:
-  #   file: $DOCKERDIR/secrets/guac_mysql_user
-  # guac_mysql_password:
-  #   file: $DOCKERDIR/secrets/guac_mysql_password
 
 include:
 
   # CORE
-  - compose/traefik.yml
-  - compose/socket-proxy.yml
-  - compose/oauth.yml
-  - compose/authelia.yml
-  # - compose/portainer.yml
-  # - compose/dockge.yml
+  - arr/compose/traefik.yml
+  - arr/compose/socket-proxy.yml
+  - arr/compose/oauth.yml
+  - arr/compose/authelia.yml
+  # - arr/compose/portainer.yml
+  # - arr/compose/dockge.yml
   # SECURITY
-  - compose/crowdsec.yml
-  - compose/traefik-bouncer.yml
+  - arr/compose/crowdsec.yml
+  - arr/compose/traefik-bouncer.yml
   # FRONTEND
-  # - compose/autoindex.yml
-  # - compose/homepage.yml
-  # - compose/phpmyadmin.yml
-  # - compose/sitespeed.yml
-  # - compose/whoami.yml
+  # - arr/compose/autoindex.yml
+  # - arr/compose/homepage.yml
+  # - arr/compose/phpmyadmin.yml
+  # - arr/compose/sitespeed.yml
+  # - arr/compose/whoami.yml
   # DOWNLOADERS
-  # - compose/jdownloader.yml
-  # - compose/qbittorrent.yml
-  # - compose/sabnzbd.yml
+  # - arr/compose/jdownloader.yml
+  - arr/compose/qbittorrent.yml
+  # - arr/compose/sabnzbd.yml
   # PVRS
-  - compose/sonarr.yml
-  - compose/radarr.yml
-  # - compose/lidarr.yml
+  - arr/compose/sonarr.yml
+  - arr/compose/radarr.yml
+  # - arr/compose/lidarr.yml
   # COMPLEMENTARY APPS
-  - compose/prowlarr.yml
-  - compose/notifiarr.yml
-  # - compose/bazarr.yml
-  # - compose/picard.yml
+  - arr/compose/prowlarr.yml
+  - arr/compose/notifiarr.yml
+  # - arr/compose/bazarr.yml
+  # - arr/compose/picard.yml
   # MONITORING
-  # - compose/grafana.yml
-  # - compose/uptime-kuma.yml
-  # - compose/dozzle.yml
-  # - compose/scrutiny.yml
-  # - compose/radarr-exporter.yml
-  # - compose/sonarr-exporter.yml
-  # - compose/lidarr-exporter.yml
-  # - compose/prowlarr-exporter.yml
-  # - compose/sabnzbd-exporter.yml
-  # - compose/node-exporter.yml
+  # - arr/compose/grafana.yml
+  # - arr/compose/uptime-kuma.yml
+  # - arr/compose/dozzle.yml
+  # - arr/compose/scrutiny.yml
+  # - arr/compose/radarr-exporter.yml
+  # - arr/compose/sonarr-exporter.yml
+  # - arr/compose/lidarr-exporter.yml
+  # - arr/compose/prowlarr-exporter.yml
+  # - arr/compose/sabnzbd-exporter.yml
+  # - arr/compose/node-exporter.yml
   # ADMIN
-  # - compose/guacamole.yml
-  # - compose/kasm.yml
-  # - compose/it-tools.yml
+  # - arr/compose/guacamole.yml
+  # - arr/compose/kasm.yml
+  # - arr/compose/it-tools.yml
   # UTILITIES
-  # - compose/firefox.yml
-  # - compose/firefly.yml
+  # - arr/compose/firefox.yml
+  # - arr/compose/firefly.yml
   # FILE MANAGEMENT
-  # - compose/vscode.yml
-  # - compose/makemkv.yml
-  # - compose/mkvtoolnix.yml
+  # - arr/compose/vscode.yml
+  # - arr/compose/makemkv.yml
+  # - arr/compose/mkvtoolnix.yml
   # NETWORK
-  - compose/gluetun.yml
+  - arr/compose/gluetun.yml
   # MAINTENANCE
-  # - compose/docker-gc.yml
-  # - compose/deunhealth.yml
+  # - arr/compose/docker-gc.yml
+  # - arr/compose/deunhealth.yml

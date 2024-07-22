@@ -18,8 +18,8 @@ services:
       - N8N_BASIC_AUTH_USER=username
       - N8N_BASIC_AUTH_PASSWORD=password
       - WEBHOOK_URL=https://n8n.easypi.duckdns.org/
-      - GENERIC_TIMEZONE=Asia/Shanghai
-      - TZ=Asia/Shanghai
+      - GENERIC_TIMEZONE=Etc/UTC
+      - TZ=${TZ:-Etc/UTC}
     depends_on:
       - postgres
     restart: unless-stopped

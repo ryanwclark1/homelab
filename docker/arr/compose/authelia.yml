@@ -15,7 +15,7 @@ services:
     volumes:
       - $DOCKERDIR/appdata/authelia:/config
     environment:
-      - TZ=$TZ
+      - TZ={$TZ:-Etc/UTC}
       - PUID=$PUID
       - PGID=$PGID
       - AUTHELIA_IDENTITY_VALIDATION_RESET_PASSWORD_JWT_SECRET_FILE=/run/secrets/authelia_jwt_secret
