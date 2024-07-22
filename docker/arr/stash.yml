@@ -8,7 +8,7 @@ services:
       - t3_proxy
     volumes:
       - /etc/localtime:/etc/localtime:ro
-      - ${COMMON_CONFIG_PATH}/stash/config:/root/.stash
+      - ${COMMON_CONFIG_PATH}/stash/config:/config
       - ${COMMON_CONFIG_PATH}/stash/metadata:/metadata
       - ${COMMON_CONFIG_PATH}/stash/cache:/cache
       - ${COMMON_CONFIG_PATH}/stash/generated:/generated
