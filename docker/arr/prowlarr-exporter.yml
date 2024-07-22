@@ -5,8 +5,8 @@ services:
     container_name: prowlarr-exporter
     security_opt:
       - no-new-privileges:true
-    restart: unless-stopped
-    profiles: ["all", "apps"]
+    restart: "no"
+    profiles: ["all", "media", "exporter"]
     networks:
       - t3_proxy
     ports:
