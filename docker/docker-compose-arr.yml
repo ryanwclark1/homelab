@@ -8,7 +8,7 @@ networks:
     driver: bridge
     ipam:
       config:
-        - subnet: 10.10.101.0/24
+        - subnet: 10.10.100.0/24
   # t2_proxy:
   #   name: t2_proxy
   #   driver: bridge
@@ -20,7 +20,7 @@ networks:
     driver: bridge
     ipam:
       config:
-        - subnet: 10.10.102.0/24
+        - subnet: 10.10.101.0/24
 
 ########################### SECRETS
 secrets:
