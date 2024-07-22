@@ -17,8 +17,8 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock:ro
     environment:
       TZ: ${TZ:-Etc/UTC}
-      PUID: ${PUID:-1000}
-      PGID: ${PGID:-1000}
+      PUID: 0
+      PGID: 0
     labels:
       - "traefik.enable=true"
       # HTTP Routers
