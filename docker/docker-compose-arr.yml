@@ -61,10 +61,10 @@ include:
   - arr/compose/homepage.yml
   # - arr/compose/phpmyadmin.yml
   # - arr/compose/sitespeed.yml
-  # - arr/compose/whoami.yml
+  - arr/compose/whoami.yml
   # DOWNLOADERS
   # - arr/compose/jdownloader.yml
-  # - arr/compose/qbittorrent.yml
+  - arr/compose/qbittorrent.yml
   # - arr/compose/sabnzbd.yml
   # PVRS
   - arr/compose/sonarr.yml
