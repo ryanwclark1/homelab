@@ -31,13 +31,13 @@ networks:
         - subnet: 10.10.90.0/24
 
 ########################### SECRETS
-secrets:
-  basic_auth_credentials:
-    file: $DOCKERDIR/secrets/basic_auth_credentials
-  cf_dns_api_token:
-    file: $DOCKERDIR/secrets/cf_dns_api_token
-  traefik_forward_auth:
-    file: $DOCKERDIR/secrets/traefik_forward_auth
+# secrets:
+#   basic_auth_credentials:
+#     file: $DOCKERDIR/secrets/basic_auth_credentials
+#   cf_dns_api_token:
+#     file: $DOCKERDIR/secrets/cf_dns_api_token
+#   traefik_forward_auth:
+#     file: $DOCKERDIR/secrets/traefik_forward_auth
 
 include:
   ########################### SERVICES
