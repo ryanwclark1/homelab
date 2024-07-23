@@ -9,7 +9,7 @@ services:
     ports:
       - "8191:8191"
     environment:
-      - API_KEY=${FLARESOLVERR_API_KEY:-}
+      - API_KEY=${FLARESOLVERR_API_KEY:-xyz123}
       - LOG_LEVEL=${FLARESOLVERR_LOG_LEVEL:-info}
       - LOG_HTML=${FLARESOLVERR_LOG_HTML:-false}
       - CAPTCHA_SOLVER=${FLARESOLVERR_CAPTCHA_SOLVER:-none}
