@@ -30,7 +30,7 @@ services:
       - --entrypoints.websecure.forwardedHeaders.trustedIPs=$CLOUDFLARE_IPS,$LOCAL_IPS
       - --log=true
       - --log.filePath=/logs/traefik.log
-      - --log.level=INFO # (Default: error) DEBUG, INFO, WARN, ERROR, FATAL, PANIC
+      - --log.level=DEBUG # (Default: error) DEBUG, INFO, WARN, ERROR, FATAL, PANIC
       - --accessLog=true
       - --accessLog.filePath=/logs/access.log
       - --accessLog.bufferingSize=100 # Configuring a buffer of 100 lines
@@ -102,7 +102,7 @@ services:
     environment:
       - TZ=${TZ:-Etc/UTC}
       - CLOUDFLARE_EMAIL=${CLOUDFLARE_EMAIL:-me@gmail.com}
-      - CF_DNS_API_TOKEN=/run/secrets/cf_dns_api_token
+      - CLOUDFLARE_DNS_API_TOKEN=/run/secrets/cf_dns_api_token
       - HTPASSWD_FILE=/run/secrets/basic_auth_credentials # HTTP Basic Auth Credentials
       - DOMAINNAME_HS=${DOMAINNAME_HS:-mydomain.com} # Passing the domain name to traefik container to be able to use the variable in rules.
       # - DOMAINNAME_1 # Additional Domain variable passthrough to container
