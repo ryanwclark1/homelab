@@ -102,7 +102,7 @@ services:
     environment:
       - TZ=${TZ:-Etc/UTC}
       - CLOUDFLARE_EMAIL=${CLOUDFLARE_EMAIL:-me@gmail.com}
-      - CLOUDFLARE_API_KEY=/run/secrets/cf_dns_api_token
+      - CF_DNS_API_TOKEN=/run/secrets/cf_dns_api_token
       - HTPASSWD_FILE=/run/secrets/basic_auth_credentials # HTTP Basic Auth Credentials
       - DOMAINNAME_HS=${DOMAINNAME_HS:-mydomain.com} # Passing the domain name to traefik container to be able to use the variable in rules.
       # - DOMAINNAME_1 # Additional Domain variable passthrough to container
