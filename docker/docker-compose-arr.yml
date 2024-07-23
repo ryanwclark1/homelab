@@ -55,7 +55,7 @@ include:
   - arr/dockge.yml
   # SECURITY
   # - arr/crowdsec.yml
-  - arr/traefik-bouncer.yml
+  # - arr/traefik-bouncer.yml
   # FRONTEND
   # - arr/autoindex.yml
   - arr/homepage.yml
