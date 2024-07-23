@@ -126,8 +126,8 @@ services:
       - "traefik.http.routers.traefik-rtr.rule=Host(`traefik.$DOMAINNAME_HS`) && (PathPrefix(`/api`) || PathPrefix(`/dashboard`))"
       # Services - API
       - "traefik.http.routers.traefik-rtr.service=api@internal"
-      - "traefik.http.routers.traefik-rtr.middlewares=auth"
-      - "traefik.http.middlewares.auth.basicauth.users=${HTPASSWD_FILE}"
+      # - "traefik.http.routers.traefik-rtr.middlewares=auth"
+      # - "traefik.http.middlewares.auth.basicauth.users=${HTPASSWD_FILE}"
       # Healthcheck/ping
       #- "traefik.http.routers.ping.rule=Host(`traefik.$DOMAINNAME_HS`) && Path(`/ping`)"
       #- "traefik.http.routers.ping.tls=true"
