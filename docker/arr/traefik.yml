@@ -107,6 +107,9 @@ services:
       # - ${COMMON_CONFIG_PATH}/traefik3/acme/:/acme
       # - $DOCKERDIR/logs/$HOSTNAME/traefik:/logs # Traefik logs
       - ${COMMON_CONFIG_PATH}/logs/arr/traefik:/logs # Traefik logs
+    secrets:
+      - cf_dns_api_token
+      - basic_auth_credentials
     environment:
       - TZ=${TZ:-Etc/UTC}
       - CLOUDFLARE_EMAIL=${CLOUDFLARE_EMAIL:-me@gmail.com}
@@ -115,9 +118,6 @@ services:
       - DOMAINNAME_HS=${DOMAINNAME_HS:-mydomain.com} # Passing the domain name to traefik container to be able to use the variable in rules.
       # - DOMAINNAME_1 # Additional Domain variable passthrough to container
       # - DOMAINNAME_AT # Additional Domain variable passthrough to container
-    secrets:
-      - cf_dns_api_token
-      - basic_auth_credentials
     labels:
       #- "autoheal=true"
       - "traefik.enable=true"
