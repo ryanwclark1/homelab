@@ -50,11 +50,11 @@ include:
   - arr/traefik.yml
   # - arr/socket-proxy.yml
   # - arr/oauth.yml
-  - arr/authelia.yml
+  # - arr/authelia.yml
   # - arr/portainer.yml
   - arr/dockge.yml
   # SECURITY
-  - arr/crowdsec.yml
+  # - arr/crowdsec.yml
   - arr/traefik-bouncer.yml
   # FRONTEND
   # - arr/autoindex.yml
