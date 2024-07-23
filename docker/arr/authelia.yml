@@ -16,7 +16,7 @@ services:
       - ${COMMON_CONFIG_PATH}/authelia:/config
     environment:
       - TZ={$TZ:-Etc/UTC}
-      - PUID=${PUID:-1000
+      - PUID=${PUID:-1000}
       - PGID=${PGID:-1000}
       - AUTHELIA_IDENTITY_VALIDATION_RESET_PASSWORD_JWT_SECRET_FILE=/run/secrets/authelia_jwt_secret
       - AUTHELIA_SESSION_SECRET_FILE=/run/secrets/authelia_session_secret
