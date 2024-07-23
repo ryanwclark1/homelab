@@ -10,7 +10,7 @@ services:
     networks:
       - t3_proxy
     volumes:
-      - $EXTDRIVE/ssd/sitespeed:/var/lib/nginx/html:ro # Location you want to index
+      - ${COMMON_CONFIG_PATH}/ssd/sitespeed:/var/lib/nginx/html:ro # Location you want to index
     labels:
       - "traefik.enable=true"
       # HTTP Routers

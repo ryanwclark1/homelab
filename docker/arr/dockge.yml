@@ -14,7 +14,7 @@ services:
       # - socket_proxy
     volumes:
       - ${COMMON_CONFIG_PATH}/dockge:/app/data
-      - $USERDIR/test:/opt/stacks
+      - ${COMMON_CONFIG_PATH}/test:/opt/stacks
     environment:
       - DOCKGE_STACKS_DIR=/opt/stacks
       # - DOCKER_HOST=tcp://socket-proxy:2375

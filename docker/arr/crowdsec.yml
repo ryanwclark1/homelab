@@ -22,6 +22,6 @@ services:
     volumes:
       - ${COMMON_CONFIG_PATH}/logs/cloudserver:/logs/cloudserver:ro
       - /var/log:/var/log:ro
-      - $EXTDRIVE/zbox/var/log:/logs/zbox:ro
+      - ${COMMON_CONFIG_PATH}/zbox/var/log:/logs/zbox:ro
       - ${COMMON_CONFIG_PATH}/crowdsec/data:/var/lib/crowdsec/data
       - ${COMMON_CONFIG_PATH}/crowdsec/config:/etc/crowdsec
