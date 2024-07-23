@@ -26,6 +26,7 @@ services:
       - STASH_GENERATED=/generated/
       - STASH_METADATA=/metadata/
       - STASH_CACHE=/cache/
+      - UMASK=002
     labels:
       - "traefik.enable=true"
       # HTTP Routers Auth Bypass
