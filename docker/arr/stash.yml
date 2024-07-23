@@ -30,7 +30,7 @@ services:
       - "traefik.enable=true"
       # HTTP Routers Auth Bypass
       - "traefik.http.routers.stash-rtr-bypass.entrypoints=websecure"
-      - "traefik.http.routers.stash-rtr-bypass.rule=Host(`stash.$DOMAINNAME_HS`) && (Header(`X-Api-Key`, `$STASH_API_KEY`) || Query(`apikey`, `$STASH_API_KEY`))"
+      # - "traefik.http.routers.stash-rtr-bypass.rule=Host(`stash.$DOMAINNAME_HS`) && (Header(`X-Api-Key`, `$STASH_API_KEY`) || Query(`apikey`, `$STASH_API_KEY`))"
       # - "traefik.http.routers.stash-rtr-bypass.rule=Host(`stash.$DOMAINNAME_HS`) && Header(`traefik-auth-bypass-key`, `$TRAEFIK_AUTH_BYPASS_KEY`)" # Bypass Auth for LunaSea on iOS
       - "traefik.http.routers.stash-rtr-bypass.priority=100"
       # HTTP Routers Auth
@@ -39,7 +39,7 @@ services:
       - "traefik.http.routers.stash-rtr.priority=99"
       # Middlewares
       - "traefik.http.routers.stash-rtr-bypass.middlewares=chain-no-auth@file"
-      - "traefik.http.routers.stash-rtr.middlewares=chain-oauth@file"
+      # - "traefik.http.routers.stash-rtr.middlewares=chain-oauth@file"
       # HTTP Services
       - "traefik.http.routers.stash-rtr.service=stash-svc"
       - "traefik.http.routers.stash-rtr-bypass.service=stash-svc"
