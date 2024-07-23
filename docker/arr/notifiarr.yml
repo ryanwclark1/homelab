@@ -26,7 +26,7 @@ services:
       - "traefik.http.routers.notifiarr-rtr.entrypoints=websecure"
       - "traefik.http.routers.notifiarr-rtr.rule=Host(`notifiarr.$DOMAINNAME_HS`)"
       # Middlewares
-      - "traefik.http.routers.notifiarr-rtr.middlewares=chain-oauth@file"
+      # - "traefik.http.routers.notifiarr-rtr.middlewares=chain-oauth@file"
       # HTTP Services
       - "traefik.http.routers.notifiarr-rtr.service=notifiarr-svc"
       - "traefik.http.services.notifiarr-svc.loadbalancer.server.port=5454"

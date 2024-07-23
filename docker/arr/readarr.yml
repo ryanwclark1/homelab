@@ -26,7 +26,7 @@ services:
         - "traefik.http.routers.readarr-rtr.priority=99"
         # Middlewares
         - "traefik.http.routers.readarr-rtr-bypass.middlewares=chain-no-auth@file"
-        - "traefik.http.routers.readarr-rtr.middlewares=chain-oauth@file"
+        # - "traefik.http.routers.readarr-rtr.middlewares=chain-oauth@file"
         # HTTP Services
         - "traefik.http.routers.readarr-rtr.service=readarr-svc"
         - "traefik.http.routers.readarr-rtr-bypass.service=readarr-svc"

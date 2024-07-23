@@ -33,7 +33,7 @@ services:
       - "traefik.http.routers.flaresolverr-rtr.priority=99"
       # Middlewares
       - "traefik.http.routers.flaresolverr-rtr-bypass.middlewares=chain-no-auth@file"
-      - "traefik.http.routers.flaresolverr-rtr.middlewares=chain-oauth@file"
+      # - "traefik.http.routers.flaresolverr-rtr.middlewares=chain-oauth@file"
       # HTTP Services
       - "traefik.http.routers.flaresolverr-rtr.service=flaresolverr-svc"
       - "traefik.http.routers.flaresolverr-rtr-bypass.service=flaresolverr-svc"
