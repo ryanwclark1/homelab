@@ -89,7 +89,7 @@ include:
   - arr/lidarr-exporter.yml
   - arr/prowlarr-exporter.yml
   # - arr/sabnzbd-exporter.yml
-  # - arr/node-exporter.yml
+  - arr/node-exporter.yml
   # ADMIN
   # - arr/guacamole.yml
   # - arr/kasm.yml
