@@ -2,14 +2,14 @@ services:
   # Traefik 3 - Reverse Proxy
   traefik:
     container_name: traefik
-    image: traefik:3.1
+    image: traefik:3.0
     security_opt:
       - no-new-privileges:true
     restart: unless-stopped
     profiles: ["core", "all"]
     networks:
       t3_proxy:
-        ipv4_address: ${MEDIA_SERVER_IP:-10.10.100.50} # You can specify a static IP
+        # ipv4_address: ${MEDIA_SERVER_IP:-10.10.100.50} # You can specify a static IP
       # socket_proxy:
     command: # CLI arguments
       - --global.checkNewVersion=false
@@ -17,7 +17,7 @@ services:
       - --entrypoints.web.address=:80
       - --entrypoints.websecure.address=:443
       - --entrypoints.traefik.address=:8080
-      # - --entrypoints.ping.address=:8081
+      - --entrypoints.ping.address=:8082
       - --entrypoints.web.http.redirections.entrypoint.to=websecure
       - --entrypoints.web.http.redirections.entrypoint.scheme=https
       - --entrypoints.web.http.redirections.entrypoint.permanent=true
@@ -45,20 +45,26 @@ services:
       - --entrypoints.websecure.http.tls=true
       # - --entrypoints.websecure.http.tls.options=tls-opts@file
       # Add dns-cloudflare as default certresolver for all services. Also enables TLS and no need to specify on individual services
-      - --entrypoints.websecure.http.tls.certresolver=dns-cloudflare
-      - --entrypoints.websecure.http.tls.domains[0].main=$DOMAINNAME_HS
-      - --entrypoints.websecure.http.tls.domains[0].sans=*.$DOMAINNAME_HS
+      # - --entrypoints.websecure.http.tls.certresolver=dns-cloudflare
+      # - --entrypoints.websecure.http.tls.domains[0].main=$DOMAINNAME_HS
+      # - --entrypoints.websecure.http.tls.domains[0].sans=*.$DOMAINNAME_HS
       # - --entrypoints.websecure.http.tls.domains[1].main=$DOMAINNAME_1
       # - --entrypoints.websecure.http.tls.domains[1].sans=*.$DOMAINNAME_1
       # - --entrypoints.websecure.http.tls.domains[2].main=$DOMAINNAME_2 # Pulls main cert for third domain
       # - --entrypoints.websecure.http.tls.domains[2].sans=*.$DOMAINNAME_2 # Pulls wildcard cert for third domain
       - --providers.file.directory=/rules # Load dynamic configuration from one or more .toml or .yml files in a directory
       - --providers.file.watch=true # Only works on top level files in the rules folder
-      - --certificatesResolvers.dns-cloudflare.acme.caServer=https://acme-staging-v02.api.letsencrypt.org/directory # LetsEncrypt Staging Server - uncomment when testing
-      - --certificatesResolvers.dns-cloudflare.acme.storage=acme.json
-      - --certificatesResolvers.dns-cloudflare.acme.dnsChallenge.provider=cloudflare
-      - --certificatesResolvers.dns-cloudflare.acme.dnsChallenge.resolvers=1.1.1.1:53,1.0.0.1:53
-      - --certificatesResolvers.dns-cloudflare.acme.dnsChallenge.delayBeforeCheck=90 # To delay DNS check and reduce LE hitrate
+      # - --certificatesResolvers.dns-cloudflare.acme.caServer=https://acme-staging-v02.api.letsencrypt.org/directory # LetsEncrypt Staging Server - uncomment when testing
+      # - --certificatesResolvers.dns-cloudflare.acme.storage=acme.json
+      # - --certificatesResolvers.dns-cloudflare.acme.dnsChallenge.provider=cloudflare
+      # - --certificatesResolvers.dns-cloudflare.acme.dnsChallenge.resolvers=1.1.1.1:53,1.0.0.1:53
+      # - --certificatesResolvers.dns-cloudflare.acme.dnsChallenge.delayBeforeCheck=90 # To delay DNS check and reduce LE hitrate
+      - --certificatesresolvers.myresolver.acme.dnschallenge=true"
+      - --certificatesresolvers.myresolver.acme.dnschallenge.provider=cloudflare
+      - --certificatesresolvers.myresolver.acme.caserver=https://acme-staging-v02.api.letsencrypt.org/directory
+      - --certificatesresolvers.myresolver.acme.email=${CLOUDFLARE_EMAIL}
+      - --certificatesresolvers.myresolver.acme.storage=/letsencrypt/acme.json
+
       # - --metrics.prometheus=true
       # - --metrics.prometheus.buckets=0.1,0.3,1.2,5.0
       # - --metrics.prometheus.addEntryPointsLabels=true
@@ -95,6 +101,7 @@ services:
       # - ${COMMON_CONFIG_PATH}/traefik3/rules/$HOSTNAME:/rules # Dynamic File Provider directory
       - $DOCKERDIR/appdata/traefik3:/rules # Dynamic File Provider directory
       - /var/run/docker.sock:/var/run/docker.sock:ro # Enable if not using Socket Proxy
+      - ${COMMON_CONFIG_PATH}/traefik3/letsencrypt:/letsencrypt # Certs Directory
       # - ${COMMON_CONFIG_PATH}/traefik3/acme/acme.json:/acme.json # Certs File
       # - ${COMMON_CONFIG_PATH}/traefik3/acme/:/acme
       # - $DOCKERDIR/logs/$HOSTNAME/traefik:/logs # Traefik logs
@@ -123,6 +130,7 @@ services:
       #- "traefik.http.routers.ping.tls=true"
       #- "traefik.http.routers.ping.service=ping@internal"
       # Middlewares
+      #  - "traefik.http.middlewares.test-auth.basicauth.users=
       # - "traefik.http.routers.traefik-rtr.middlewares=chain-no-auth@file" # For No Authentication
       - "traefik.http.routers.traefik-rtr.middlewares=chain-basic-auth@file" # For Basic HTTP Authentication
       # - "traefik.http.routers.traefik-rtr.middlewares=chain-oauth@file" # For Google OAuth
