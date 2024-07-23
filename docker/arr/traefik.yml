@@ -87,10 +87,10 @@ services:
         published: 443
         protocol: tcp
         mode: host
-      # - target: 8080 # need to enable --api.insecure=true
-      #   published: 8080
-      #   protocol: tcp
-      #   mode: host
+      - target: 8080 # need to enable --api.insecure=true
+        published: 8080
+        protocol: tcp
+        mode: host
     volumes:
       # - ${COMMON_CONFIG_PATH}/traefik3/rules/$HOSTNAME:/rules # Dynamic File Provider directory
       - $DOCKERDIR/appdata/traefik3:/rules # Dynamic File Provider directory
