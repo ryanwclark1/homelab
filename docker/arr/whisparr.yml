@@ -17,8 +17,8 @@ services:
       - "traefik.enable=true"
       # HTTP Routers Auth Bypass
       - "traefik.http.routers.whisparr-rtr-bypass.entrypoints=websecure"
-      #- "traefik.http.routers.whisparr-rtr-bypass.rule=Host(`whisparr.$DOMAINNAME_HS`) && (Header(`X-Api-Key`, `$WHISPARR_API_KEY`) || Query(`apikey`, `$WHISPARR_API_KEY`))"
-      - "traefik.http.routers.whisparr-rtr-bypass.rule=Host(`whisparr.$DOMAINNAME_HS`) && Header(`traefik-auth-bypass-key`, `$TRAEFIK_AUTH_BYPASS_KEY`)" # Bypass Auth for LunaSea on iOS
+      - "traefik.http.routers.whisparr-rtr-bypass.rule=Host(`whisparr.$DOMAINNAME_HS`) && (Header(`X-Api-Key`, `$WHISPARR_API_KEY`) || Query(`apikey`, `$WHISPARR_API_KEY`))"
+      # - "traefik.http.routers.whisparr-rtr-bypass.rule=Host(`whisparr.$DOMAINNAME_HS`) && Header(`traefik-auth-bypass-key`, `$TRAEFIK_AUTH_BYPASS_KEY`)" # Bypass Auth for LunaSea on iOS
       - "traefik.http.routers.whisparr-rtr-bypass.priority=100"
       # HTTP Routers Auth
       - "traefik.http.routers.whisparr-rtr.entrypoints=websecure"
