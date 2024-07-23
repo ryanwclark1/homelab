@@ -129,6 +129,7 @@ services:
       #- "traefik.http.routers.ping.rule=Host(`traefik.$DOMAINNAME_HS`) && Path(`/ping`)"
       #- "traefik.http.routers.ping.tls=true"
       #- "traefik.http.routers.ping.service=ping@internal"
+      - traefik.http.routers.traefik-rtr.tls.certresolver=myresolver"
       # Middlewares
       #  - "traefik.http.middlewares.test-auth.basicauth.users=
       # - "traefik.http.routers.traefik-rtr.middlewares=chain-no-auth@file" # For No Authentication
