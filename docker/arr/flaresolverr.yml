@@ -21,7 +21,7 @@ services:
       - HOST=${FLARESOLVERR_HOST:-0.0.0.0}
       - PROMETHEUS_ENABLE=${FLARESOLVERR_PROMETHEUS_ENABLE:-false}
       - PROMETHEUS_PORT=${FLARESOLVERR_PROMETHEUS_PORT:-8192}
-    labels:
+    # labels:
       # - "traefik.enable=true"
       # # HTTP Routers Auth Bypass
       # - "traefik.http.routers.flaresolverr-rtr-bypass.entrypoints=websecure"
