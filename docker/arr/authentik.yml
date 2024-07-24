@@ -1,7 +1,7 @@
 services:
 
   postgresql:
-    image: docker.io/library/postgres:{POSTGRES_VERSION:-16.3}
+    image: docker.io/library/postgres:${POSTGRES_TAG:-16.3}
     restart: unless-stopped
     profiles: ["core", "all"]
     healthcheck:
@@ -21,7 +21,7 @@ services:
       t3_proxy:
 
   redis:
-    image: docker.io/library/redis:${REDIS_VERSION:-7.2-alpine}
+    image: docker.io/library/redis:${REDIS_TAG:-7.2-alpine}
     command: --save 60 1 --loglevel warning
     restart: unless-stopped
     profiles: ["core", "all"]
@@ -47,7 +47,7 @@ services:
       AUTHENTIK_POSTGRESQL__HOST: postgresql
       AUTHENTIK_POSTGRESQL__USER: ${AUTHENTIK_PG_USER:-authentik}
       AUTHENTIK_POSTGRESQL__NAME: ${AUTHENTIK_PG_DB:-authentik}
-      AUTHENTIK_POSTGRESQL__PASSWORD: ${AUTHENTIK_PG_PWD}
+      AUTHENTIK_POSTGRESQL__PASSWORD: ${AUTHENTIK_PG_PWD:?database password required}
       AUTHENTIK_SECRET_KEY: ${AUTHENTIK_SECRET_KEY:-password}
       AUTHENTIK_EMAIL__HOST: ${AUTHENTIK_EMAIL_HOST:-localhost}
       AUTHENTIK_EMAIL__PORT: ${AUTHENTIK_EMAIL_PORT:-25}
@@ -90,7 +90,7 @@ services:
       AUTHENTIK_POSTGRESQL__HOST: postgresql
       AUTHENTIK_POSTGRESQL__USER: ${AUTHENTIK_PG_USER:-authentik}
       AUTHENTIK_POSTGRESQL__NAME: ${AUTHENTIK_PG_DB:-authentik}
-      AUTHENTIK_POSTGRESQL__PASSWORD: ${AUTHENTIK_PG_PWD}
+      AUTHENTIK_POSTGRESQL__PASSWORD: ${AUTHENTIK_PG_PWD:?database password required}
     # `user: root` and the docker socket volume are optional.
     # See more for the docker socket integration here:
     # https://goauthentik.io/docs/outposts/integrations/docker
