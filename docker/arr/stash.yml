@@ -19,9 +19,9 @@ services:
     devices:
       - /dev/dri/renderD128:/dev/dri/renderD128
     environment:
-      # - STASH_HOST=${STASH_HOST:-0.0.0.0}
+      - STASH_HOST=${STASH_HOST:-0.0.0.0}
       - STASH_PORT=${STASH_PORT:-9999}
-      # - STASH_EXTERNAL_HOST=stash.$DOMAINNAME_HS
+      - STASH_EXTERNAL_HOST=stash.$DOMAINNAME_HS
       - STASH_STASH=/data/
       - STASH_GENERATED=/generated/
       - STASH_METADATA=/metadata/

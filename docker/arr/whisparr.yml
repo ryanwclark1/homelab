@@ -10,6 +10,13 @@ services:
       - t3_proxy
     ports:
       - 6969:6969
+    environment:
+      - PUID=${PUID:-1000}
+      - PGID=${PGID:-1000}
+      - TZ=${TZ:-Etc/UTC}
+      - UMASK_SET=${UMASK_SET:-022}
+      - WHISPARR_API_KEY=${WHISPARR_API_KEY}
+      - WHISPARR_URL=${WHISPARR_URL:-https://whisparr.$DOMAINNAME_HS}
     volumes:
       - ${COMMON_CONFIG_PATH}/whisparr:/config
       - ${COMMON_DATA_PATH}:/media
