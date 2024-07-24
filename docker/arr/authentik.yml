@@ -40,7 +40,7 @@ services:
 
   authentik-server:
     image: ${AUTHENTIK_IMAGE:-ghcr.io/goauthentik/server}:${AUTHENTIK_TAG:-2024.6.1}
-    container_name: authentik_server
+    container_name: authentik-server
     restart: unless-stopped
     profiles: ["core", "all"]
     command: server
@@ -87,7 +87,7 @@ services:
 
   authentik-worker:
     image: ${AUTHENTIK_IMAGE:-ghcr.io/goauthentik/server}:${AUTHENTIK_TAG:-2024.6.1}
-    container_name: authentik_worker
+    container_name: authentik-worker
     restart: unless-stopped
     profiles: ["core", "all"]
     command: worker
