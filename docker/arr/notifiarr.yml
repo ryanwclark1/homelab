@@ -48,7 +48,7 @@ services:
 
 
 
-    labels:
+    # labels:
       # - "traefik.enable=true"
       # # HTTP Routers Auth
       # - "traefik.http.routers.notifiarr-rtr.entrypoints=websecure"
