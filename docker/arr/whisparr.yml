@@ -33,7 +33,7 @@ services:
       - "traefik.http.routers.whisparr-secure.tls.certresolver=cloudflare-dns"
       - "traefik.http.routers.whisparr-secure.service=whisparr"
       # - "traefik.http.services.whisparr-svc.loadbalancer.server.scheme=https"
-      - "traefik.http.services.whisparr.loadbalancer.server.port=9999"
+      - "traefik.http.services.whisparr.loadbalancer.server.port=6969"
       - "traefik.docker.network=t3_proxy"
 
       # - "traefik.enable=true"
