@@ -35,7 +35,6 @@ services:
       # - "traefik.http.services.prowlarr-svc.loadbalancer.server.scheme=https"
       - "traefik.http.services.prowlarr.loadbalancer.server.port=9696"
       - "traefik.docker.network=t3_proxy"
-      - "traefik.enable=true"
       # # HTTP Routers
       # - "traefik.http.routers.prowlarr-rtr.entrypoints=websecure"
       # - "traefik.http.routers.prowlarr-rtr.rule=Host(`prowlarr.$DOMAINNAME_HS`)"
