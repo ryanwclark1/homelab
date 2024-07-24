@@ -9,32 +9,33 @@ services:
     ports:
       - "8191:8191"
     environment:
-      # - API_KEY=${FLARESOLVERR_API_KEY:-xyz123}
       - LOG_LEVEL=${FLARESOLVERR_LOG_LEVEL:-info}
       - LOG_HTML=${FLARESOLVERR_LOG_HTML:-false}
       - CAPTCHA_SOLVER=${FLARESOLVERR_CAPTCHA_SOLVER:-none}
       - TZ=${TZ:-Etc/UTC}
       - LANG=${LANG:-en_US.UTF-8}
+      - HEADLESS=${FLARESOLVERR_HEADLESS:-true}
+      - BROWSER_TIMEOUT=${FLARESOLVERR_BROWSER_TIMEOUT:-40000}
       - TEST_URL=${FLARESOLVERR_TEST_URL:-https://www.google.com}
       - PORT=${FLARESOLVERR_PORT:-8191}
       - HOST=${FLARESOLVERR_HOST:-0.0.0.0}
       - PROMETHEUS_ENABLE=${FLARESOLVERR_PROMETHEUS_ENABLE:-false}
       - PROMETHEUS_PORT=${FLARESOLVERR_PROMETHEUS_PORT:-8192}
     labels:
-      - "traefik.enable=true"
-      # HTTP Routers Auth Bypass
-      - "traefik.http.routers.flaresolverr-rtr-bypass.entrypoints=websecure"
-      # - "traefik.http.routers.flaresolverr-rtr-bypass.rule=Host(`flaresolverr.$DOMAINNAME_HS`) && (Header(`X-Api-Key`, `$FLARESOLVERR_API_KEY`) || Query(`apikey`, `$FLARESOLVERR_API_KEY`))"
-      # - "traefik.http.routers.flaresolverr-rtr-bypass.rule=Host(`flaresolverr.$DOMAINNAME_HS`) && Header(`traefik-auth-bypass-key`, `$TRAEFIK_AUTH_BYPASS_KEY`)" # Bypass Auth for LunaSea on iOS
-      - "traefik.http.routers.flaresolverr-rtr-bypass.priority=100"
-      # HTTP Routers Auth
-      - "traefik.http.routers.flaresolverr-rtr.entrypoints=websecure"
-      - "traefik.http.routers.flaresolverr-rtr.rule=Host(`flaresolverr.$DOMAINNAME_HS`)"
-      - "traefik.http.routers.flaresolverr-rtr.priority=99"
-      # Middlewares
-      # - "traefik.http.routers.flaresolverr-rtr-bypass.middlewares=chain-no-auth@file"
-      # - "traefik.http.routers.flaresolverr-rtr.middlewares=chain-oauth@file"
-      # HTTP Services
-      - "traefik.http.routers.flaresolverr-rtr.service=flaresolverr-svc"
-      - "traefik.http.routers.flaresolverr-rtr-bypass.service=flaresolverr-svc"
-      - "traefik.http.services.flaresolverr-svc.loadbalancer.server.port=8191"
+      # - "traefik.enable=true"
+      # # HTTP Routers Auth Bypass
+      # - "traefik.http.routers.flaresolverr-rtr-bypass.entrypoints=websecure"
+      # # - "traefik.http.routers.flaresolverr-rtr-bypass.rule=Host(`flaresolverr.$DOMAINNAME_HS`) && (Header(`X-Api-Key`, `$FLARESOLVERR_API_KEY`) || Query(`apikey`, `$FLARESOLVERR_API_KEY`))"
+      # # - "traefik.http.routers.flaresolverr-rtr-bypass.rule=Host(`flaresolverr.$DOMAINNAME_HS`) && Header(`traefik-auth-bypass-key`, `$TRAEFIK_AUTH_BYPASS_KEY`)" # Bypass Auth for LunaSea on iOS
+      # - "traefik.http.routers.flaresolverr-rtr-bypass.priority=100"
+      # # HTTP Routers Auth
+      # - "traefik.http.routers.flaresolverr-rtr.entrypoints=websecure"
+      # - "traefik.http.routers.flaresolverr-rtr.rule=Host(`flaresolverr.$DOMAINNAME_HS`)"
+      # - "traefik.http.routers.flaresolverr-rtr.priority=99"
+      # # Middlewares
+      # # - "traefik.http.routers.flaresolverr-rtr-bypass.middlewares=chain-no-auth@file"
+      # # - "traefik.http.routers.flaresolverr-rtr.middlewares=chain-oauth@file"
+      # # HTTP Services
+      # - "traefik.http.routers.flaresolverr-rtr.service=flaresolverr-svc"
+      # - "traefik.http.routers.flaresolverr-rtr-bypass.service=flaresolverr-svc"
+      # - "traefik.http.services.flaresolverr-svc.loadbalancer.server.port=8191"
