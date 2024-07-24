@@ -16,7 +16,7 @@ services:
     devices:
       - /dev/net/tun
     ports:
-      - "${QBIT_WEBUI_PORT:-8085}:8080" # Exposing qBittorrent through Docker Host LAN IP
+      - "${QBIT_WEBUI_PORT:-8080}:8080" # Exposing qBittorrent through Docker Host LAN IP
       - 6881:6881
       - 6881:6881/udp
     # #   - 8888:8888/tcp # HTTP proxy
@@ -47,4 +47,4 @@ services:
       # - "traefik.http.routers.gluetun-qbittorrent-rtr.middlewares=chain-oauth@file" # qBittorrent
       # HTTP Services
       - "traefik.http.routers.gluetun-qbittorrent-rtr.service=gluetun-svc" # qBittorrent
-      - "traefik.http.services.gluetun-svc.loadbalancer.server.port=8081" # qBittorrent
+      - "traefik.http.services.gluetun-svc.loadbalancer.server.port=8080" # qBittorrent
