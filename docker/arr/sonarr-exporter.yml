@@ -6,7 +6,7 @@ services:
     security_opt:
       - no-new-privileges:true
     restart: "no"
-    profiles: ["all", "media", "exporter"]
+    profiles: ["all", "exporter"]
     networks:
       - t3_proxy
     ports:

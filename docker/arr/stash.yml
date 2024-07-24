@@ -3,7 +3,7 @@ services:
     image: ghcr.io/hotio/stash:latest
     container_name: stash
     restart: "no"
-    profiles: ["media", "arrs", "all"]
+    profiles: ["media", "apps", "all"]
     networks:
       - t3_proxy
     volumes:
