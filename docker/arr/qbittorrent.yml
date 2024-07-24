@@ -21,7 +21,7 @@ services:
       DOCKER_MODS: ghcr.io/gabe565/linuxserver-mod-vuetorrent
       WEBUI_PORT: ${QBIT_WEBUI_PORT:-8080}
     healthcheck: # https://github.com/qdm12/gluetun/issues/641#issuecomment-933856220
-      test: "curl -sf https://example.com  || exit 1"
+      test: "curl -sf https://ipv4.icanhazip.com/ || exit 1"
       interval: 1m
       timeout: 10s
       retries: 1
