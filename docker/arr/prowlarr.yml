@@ -20,11 +20,27 @@ services:
       PGID: ${PGID:-1000}
     labels:
       - "traefik.enable=true"
-      # HTTP Routers
-      - "traefik.http.routers.prowlarr-rtr.entrypoints=websecure"
-      - "traefik.http.routers.prowlarr-rtr.rule=Host(`prowlarr.$DOMAINNAME_HS`)"
-      # Middlewares
-      # - "traefik.http.routers.prowlarr-rtr.middlewares=chain-oauth@file"
-      # HTTP Services
-      - "traefik.http.routers.prowlarr-rtr.service=prowlarr-svc"
+      - "traefik.http.routers.prowlarr.entrypoints=web"
+      - "traefik.http.routers.prowlarr.rule=Host(`prowlarr.$DOMAINNAME_HS`)"
+      - "traefik.http.middlewares.prowlarr-https-redirect.redirectscheme.scheme=https"
+      - "traefik.http.middlewares.sslheader.headers.customrequestheaders.X-Forwarded-Proto=https"
+      - "traefik.http.routers.prowlarr.middlewares=prowlarr-https-redirect"
+      - "traefik.http.routers.prowlarr-secure.entrypoints=websecure"
+      - "traefik.http.routers.prowlarr-secure.rule=Host(`prowlarr.$DOMAINNAME_HS`)"
+      - "traefik.http.routers.prowlarr-secure.tls=true"
+      - "traefik.http.routers.prowlarr-secure.tls.certresolver=cloudflare"
+      - "traefik.http.routers.prowlarr-secure.tls.domains[0].main=$DOMAINNAME_HS"
+      - "traefik.http.routers.prowlarr-secure.tls.domains[0].sans=*.$DOMAINNAME_HS"
+      - "traefik.http.routers.prowlarr-secure.service=prowlarr-svc"
+      - "traefik.http.services.prowlarr-svc.loadbalancer.server.scheme=https"
       - "traefik.http.services.prowlarr-svc.loadbalancer.server.port=9696"
+      - "traefik.docker.network=t3_proxy"
+      - "traefik.enable=true"
+      # # HTTP Routers
+      # - "traefik.http.routers.prowlarr-rtr.entrypoints=websecure"
+      # - "traefik.http.routers.prowlarr-rtr.rule=Host(`prowlarr.$DOMAINNAME_HS`)"
+      # # Middlewares
+      # # - "traefik.http.routers.prowlarr-rtr.middlewares=chain-oauth@file"
+      # # HTTP Services
+      # - "traefik.http.routers.prowlarr-rtr.service=prowlarr-svc"
+      # - "traefik.http.services.prowlarr-svc.loadbalancer.server.port=9696"
