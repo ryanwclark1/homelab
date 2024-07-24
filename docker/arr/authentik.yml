@@ -76,10 +76,13 @@ services:
       - "traefik.http.routers.authentik.middlewares=authentik-https-redirect"
       - "traefik.http.routers.authentik-secure.entrypoints=websecure"
       - "traefik.http.routers.authentik-secure.rule=Host(`authentik.$DOMAINNAME_HS`)"
-      # - "traefik.http.routers.authentik-secure.tls=true"
-      - "traefik.http.routers.authentik-secure.service=authentik"
-      - "traefik.http.services.authentik.loadbalancer.server.scheme=https"
-      - "traefik.http.services.authentik.loadbalancer.server.port=9000"
+      - "traefik.http.routers.authentik-secure.tls=true"
+      - "traefik.http.routers.authentik-secure.tls.certresolver=cloudflare"
+      - "traefik.http.routers.authentik-secure.tls.domains[0].main=$DOMAINNAME_HS"
+      - "traefik.http.routers.authentik-secure.tls.domains[0].sans=*.$DOMAINNAME_HS"
+      - "traefik.http.routers.authentik-secure.service=authentik-svc"
+      - "traefik.http.services.authentik-svc.loadbalancer.server.scheme=https"
+      - "traefik.http.services.authentik-svc.loadbalancer.server.port=9000"
       - "traefik.docker.network=t3_proxy"
 
   worker:
