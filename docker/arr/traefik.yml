@@ -12,38 +12,17 @@ services:
         # ipv4_address: ${MEDIA_SERVER_IP:-10.10.100.50} # You can specify a static IP
       # socket_proxy:
     command: # CLI arguments
-      - --global.checkNewVersion=false
-      - --global.sendAnonymousUsage=false
-      - --entrypoints.web.address=:80
-      - --entrypoints.websecure.address=:443
-      - --entrypoints.traefik.address=:8080
-      - --entrypoints.ping.address=:8082
-      - --entrypoints.web.http.redirections.entrypoint.to=websecure
-      - --entrypoints.web.http.redirections.entrypoint.scheme=https
-      - --entrypoints.web.http.redirections.entrypoint.permanent=true
       - --api=true
       - --api.dashboard=true
       - --api.debug=true
-      # - --api.insecure=true
-      # - --ping=true
-      # - --serversTransport.insecureSkipVerify=true
-      # Allow these IPs to set the X-Forwarded-* headers - Cloudflare IPs: https://www.cloudflare.com/ips/
+      ###### Entry Points ######
+      - --entrypoints.web.address=:80
+      - --entrypoints.web.http.redirections.entrypoint.to=websecure
+      - --entrypoints.web.http.redirections.entrypoint.scheme=https
+      # - --entrypoints.web.http.redirections.entrypoint.permanent=true
+      - --entrypoints.websecure.address=:443
       - --entrypoints.websecure.forwardedHeaders.trustedIPs=$CLOUDFLARE_IPS,$LOCAL_IPS
-      - --log=true
-      - --log.filePath=/logs/traefik.log
-      - --log.level=DEBUG # (Default: error) DEBUG, INFO, WARN, ERROR, FATAL, PANIC
-      - --accessLog=true
-      - --accessLog.filePath=/logs/access.log
-      - --accessLog.bufferingSize=100 # Configuring a buffer of 100 lines
-      - --accessLog.filters.statusCodes=204-299,400-499,500-599
-      - --providers.docker=true
-      - --providers.docker.endpoint=unix:///var/run/docker.sock # Disable for Socket Proxy. Enable otherwise.
-      # - --providers.docker.endpoint=tcp://socket-proxy:2375 # Enable for Socket Proxy. Disable otherwise.
-      - --providers.docker.exposedByDefault=false
-      - --providers.docker.network=t3_proxy
-      # - --providers.docker.swarmMode=false # Traefik v2 Swarm
-      # - --providers.swarm.endpoint=tcp://127.0.0.1:2377 # Traefik v3 Swarm
-      - --entrypoints.websecure.http.tls=true
+      # - --entrypoints.websecure.http.tls=true
       # - --entrypoints.websecure.http.tls.options=tls-opts@file
       # Add dns-cloudflare as default certresolver for all services. Also enables TLS and no need to specify on individual services
       # - --entrypoints.websecure.http.tls.certresolver=dns-cloudflare
@@ -53,19 +32,41 @@ services:
       # - --entrypoints.websecure.http.tls.domains[1].sans=*.$DOMAINNAME_1
       # - --entrypoints.websecure.http.tls.domains[2].main=$DOMAINNAME_2 # Pulls main cert for third domain
       # - --entrypoints.websecure.http.tls.domains[2].sans=*.$DOMAINNAME_2 # Pulls wildcard cert for third domain
+      ###### Servers Transport ######
+      - --serversTransport.insecureSkipVerify=true
+      # Allow these IPs to set the X-Forwarded-* headers - Cloudflare IPs: https://www.cloudflare.com/ips/
+      ###### Global Configuration ######
+      - --global.checkNewVersion=false
+      - --global.sendAnonymousUsage=false
+      ###### Log Configuration ######
+      - --log=true
+      - --log.filePath=/logs/traefik.log
+      - --log.level=DEBUG # (Default: error) DEBUG, INFO, WARN, ERROR, FATAL, PANIC
+      ###### Access Log Configuration ######
+      - --accessLog=true
+      - --accessLog.filePath=/logs/access.log
+      - --accessLog.bufferingSize=100 # Configuring a buffer of 100 lines
+      - --accessLog.filters.statusCodes=204-299,400-499,500-599
+      ###### Providers Configuration ######
+      - --providers.docker=true
+      - --providers.docker.endpoint=unix:///var/run/docker.sock # Disable for Socket Proxy. Enable otherwise.
+      # - --providers.docker.endpoint=tcp://socket-proxy:2375 # Enable for Socket Proxy. Disable otherwise.
+      - --providers.docker.exposedByDefault=false
+      - --providers.docker.network=t3_proxy
+      # - --providers.docker.swarmMode=false # Traefik v2 Swarm
+      # - --providers.swarm.endpoint=tcp://127.0.0.1:2377 # Traefik v3 Swarm
       - --providers.file.directory=/rules # Load dynamic configuration from one or more .toml or .yml files in a directory
       - --providers.file.watch=true # Only works on top level files in the rules folder
-      # - --certificatesResolvers.dns-cloudflare.acme.caServer=https://acme-staging-v02.api.letsencrypt.org/directory # LetsEncrypt Staging Server - uncomment when testing
-      # - --certificatesResolvers.dns-cloudflare.acme.storage=acme.json
-      # - --certificatesResolvers.dns-cloudflare.acme.dnsChallenge.provider=cloudflare
-      # - --certificatesResolvers.dns-cloudflare.acme.dnsChallenge.resolvers=1.1.1.1:53,1.0.0.1:53
-      # - --certificatesResolvers.dns-cloudflare.acme.dnsChallenge.delayBeforeCheck=90 # To delay DNS check and reduce LE hitrate
-      - --certificatesresolvers.myresolver.acme.dnschallenge=true"
-      - --certificatesresolvers.myresolver.acme.dnschallenge.provider=cloudflare
-      - --certificatesresolvers.myresolver.acme.caserver=https://acme-staging-v02.api.letsencrypt.org/directory
-      - --certificatesresolvers.myresolver.acme.email=${CLOUDFLARE_EMAIL}
-      - --certificatesresolvers.myresolver.acme.storage=/letsencrypt/acme.json
-
+      ###### Certificate Resolvers Configuration ######
+      - --certificatesresolvers.cloudflare-dns.acme.email=${CLOUDFLARE_EMAIL}
+      - --certificatesresolvers.cloudflare-dns.acme.storage=/letsencrypt/acme.json
+      - --certificatesresolvers.cloudflare-dns.acme.caserver=https://acme-staging-v02.api.letsencrypt.org/directory # LetsEncrypt Staging Server
+      - --certificatesresolvers.cloudflare-dns.acme.caserver=https://acme-v02.api.letsencrypt.org/directory
+      - --certificatesresolvers.cloudflare-dns.acme.dnschallenge=true"
+      - --certificatesresolvers.cloudflare-dns.acme.dnschallenge.provider=cloudflare
+      - --certificatesResolvers.cloudflare-dns.acme.dnsChallenge.resolvers=1.1.1.1:53,1.0.0.1:53
+      - --certificatesResolvers.cloudflare-dns.acme.dnsChallenge.delayBeforeCheck=90 # To delay DNS check and reduce LE hitrate
+      ###### Metrics Configuration ######
       # - --metrics.prometheus=true
       # - --metrics.prometheus.buckets=0.1,0.3,1.2,5.0
       # - --metrics.prometheus.addEntryPointsLabels=true
@@ -114,7 +115,7 @@ services:
     environment:
       - TZ=${TZ:-Etc/UTC}
       - CF_DNS_API_TOKEN_FILE=/run/secrets/cf_dns_api_token
-      - CLOUDFLARE_DNS_API_TOKEN=/run/secrets/cf_dns_api_token
+      # - CLOUDFLARE_DNS_API_TOKEN=/run/secrets/cf_dns_api_token
       - CLOUDFLARE_EMAIL=${CLOUDFLARE_EMAIL:-me@gmail.com}
       - HTPASSWD_FILE=/run/secrets/basic_auth_credentials # HTTP Basic Auth Credentials
       - DOMAINNAME_HS=${DOMAINNAME_HS:-mydomain.com} # Passing the domain name to traefik container to be able to use the variable in rules.
@@ -122,13 +123,13 @@ services:
       # - DOMAINNAME_AT # Additional Domain variable passthrough to container
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.traefik.entrypoints=http"
+      - "traefik.http.routers.traefik.entrypoints=web"
       - "traefik.http.routers.traefik.rule=Host(`traefik.$DOMAINNAME_HS`)"
       - "traefik.http.middlewares.traefik-auth.basicauth.usersfile=/run/secrets/basic_auth_credentials"
       - "traefik.http.middlewares.traefik-https-redirect.redirectscheme.scheme=https"
       - "traefik.http.middlewares.sslheader.headers.customrequestheaders.X-Forwarded-Proto=https"
       - "traefik.http.routers.traefik.middlewares=traefik-https-redirect"
-      - "traefik.http.routers.traefik-secure.entrypoints=https"
+      - "traefik.http.routers.traefik-secure.entrypoints=websecure"
       - "traefik.http.routers.traefik-secure.rule=Host(`traefik.$DOMAINNAME_HS`)"
       - "traefik.http.routers.traefik-secure.middlewares=traefik-auth"
       - "traefik.http.routers.traefik-secure.tls=true"
@@ -157,7 +158,7 @@ services:
       # #- "traefik.http.routers.ping.rule=Host(`traefik.$DOMAINNAME_HS`) && Path(`/ping`)"
       # #- "traefik.http.routers.ping.tls=true"
       # #- "traefik.http.routers.ping.service=ping@internal"
-      # # - traefik.http.routers.traefik-secure-rtr.tls.certresolver=myresolver"
+      # # - traefik.http.routers.traefik-secure-rtr.tls.certresolver=cloudflare-dns"
       # # Middlewares
       # # - "traefik.http.middlewares.traefik-secure-rtr.basicauth.usersfile=/run/secrets/basic_auth_credentials"
       # #  - "traefik.http.middlewares.test-auth.basicauth.users=
