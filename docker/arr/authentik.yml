@@ -38,7 +38,7 @@ services:
     networks:
       t3_proxy:
 
-  server:
+  authentik-server:
     image: ${AUTHENTIK_IMAGE:-ghcr.io/goauthentik/server}:${AUTHENTIK_TAG:-2024.6.1}
     container_name: authentik_server
     restart: unless-stopped
@@ -85,7 +85,7 @@ services:
       - "traefik.http.services.authentik-svc.loadbalancer.server.port=9000"
       - "traefik.docker.network=t3_proxy"
 
-  worker:
+  authentik-worker:
     image: ${AUTHENTIK_IMAGE:-ghcr.io/goauthentik/server}:${AUTHENTIK_TAG:-2024.6.1}
     container_name: authentik_worker
     restart: unless-stopped
