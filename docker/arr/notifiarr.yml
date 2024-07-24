@@ -21,7 +21,7 @@ services:
       DN_API_KEY: $NOTIFIARR_API_KEY
       DN_AUTO_UPDATE: off
       DN_BIND_ADDR: 0.0.0.0:5454
-      DN_QUIET: off
+      DN_QUIET: false
       # DN_UI_PASSWORD: $NOTIFIARR_UI_PASSWORD
       DN_LIDARR_0_NAME: lidarr
       DN_LIDARR_0_URL: http://lidarr:8686
