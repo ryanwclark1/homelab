@@ -21,12 +21,15 @@ services:
     environment:
       - STASH_HOST=${STASH_HOST:-0.0.0.0}
       - STASH_PORT=${STASH_PORT:-9999}
-      - STASH_EXTERNAL_HOST=stash.$DOMAINNAME_HS
+      # - STASH_EXTERNAL_HOST=stash.$DOMAINNAME_HS
       - STASH_STASH=/data/
       - STASH_GENERATED=/generated/
       - STASH_METADATA=/metadata/
       - STASH_CACHE=/cache/
+      - PUID=${PUID:-1000}
+      - PGID=${PGID:-1000}
       - UMASK=002
+      - TZ=${TZ:-Etc/UTC}
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.stash.entrypoints=web"
