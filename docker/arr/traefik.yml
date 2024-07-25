@@ -113,7 +113,7 @@ services:
       CLOUDFLARE_EMAIL: ${CLOUDFLARE_EMAIL:-me@gmail.com}
       HTPASSWD_FILE: /run/secrets/basic_auth_credentials # HTTP Basic Auth Credentials
       # DOMAINNAME_1: ${DOMAINNAME_HS:-mydomain.com}
-      # DOMAINNAME_HS: ${DOMAINNAME_HS:-mydomain.com} # Passing the domain name to traefik container to be able to use the variable in rules.
+      DOMAINNAME_HS: ${DOMAINNAME_HS:-mydomain.com} # Passing the domain name to traefik container to be able to use the variable in rules.
       # - DOMAINNAME_1 # Additional Domain variable passthrough to container
       # - DOMAINNAME_AT # Additional Domain variable passthrough to container
     labels:
@@ -132,18 +132,6 @@ services:
       - "traefik.http.routers.traefik-secure.tls.domains[0].main=$DOMAINNAME_HS"
       - "traefik.http.routers.traefik-secure.tls.domains[0].sans=*.$DOMAINNAME_HS"
       - "traefik.http.routers.traefik-secure.service=api@internal"
-
-      # - "traefik.enable=true"
-      # # HTTP Routers
-      # - "traefik.http.routers.traefik-rtr.entrypoints=http"
-      # - "traefik.http.routers.traefik-rtr.rule=Host(`traefik.$DOMAINNAME_HS`)"
-      # - "traefik.http.routers.traefik-secure-rtr.entrypoints=https"
-      # - "traefik.http.routers.traefik-secure-rtr.rule=Host(`traefik.$DOMAINNAME_HS`)"
-      # - "traefik.http.routers.traefik-secure-rtr.
-      # # Middlewares
-      # - "traefik.http.middlewares.traefik-auth.basicauth.usersfile=/run/secrets/basic_auth_credentials"
-      # - "traefik.http.middlewares.traefik-https-redirect.redirectscheme.scheme=https"
-      # - "traefik.http.middlewares.sslheaders.headers.customrequestheaders.X-Forwarded-Proto=https"
 
       # # Services - API
       # - "traefik.http.routers.traefik-secure-rtr.service=api@internal"
