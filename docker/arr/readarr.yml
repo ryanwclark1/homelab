@@ -1,4 +1,5 @@
 services:
+  # Readarr - Book Management
   readarr:
     image: lscr.io/linuxserver/readarr:${READARR_TAG:-develop}
     container_name: readarr
@@ -8,28 +9,44 @@ services:
     profiles: ["media","arrs", "all"]
     networks:
       - t3_proxy
-
-
-    volumes:
-      - ${COMMON_CONFIG_PATH}/readarr:/config
-      - ${COMMON_DATA_PATH}:/media
     ports:
-      - 8787:8787
+      - mode: ingress
+        target: 8787
+        published: "8787"
+        protocol: tcp
+    volumes:
+      - type: bind
+        source: /etc/localtime
+        target: /etc/localtime
+        read_only: true
+        bind:
+          create_host_path: true
+      - type: bind
+        source: ${COMMON_CONFIG_PATH}/readarr
+        target: /config
+        bind:
+          create_host_path: true
+      - type: bind
+        source: ${COMMON_DATA_PATH}
+        target: /storage
+        bind:
+          create_host_path: true
+    environment:
+      TZ: ${TZ:-Etc/UTC}
+      PUID: ${PUID:-1000}
+      PGID: ${PGID:-1000}
     labels:
-        - "traefik.enable=true"
-        # HTTP Routers Auth Bypass
-        - "traefik.http.routers.readarr-rtr-bypass.entrypoints=websecure"
-        - "traefik.http.routers.readarr-rtr-bypass.rule=Host(`readarr.$DOMAINNAME_HS`) && (Header(`X-Api-Key`, `$READARR_API_KEY`) || Query(`apikey`, `$READARR_API_KEY`))"
-        # - "traefik.http.routers.readarr-rtr-bypass.rule=Host(`readarr.$DOMAINNAME_HS`) && Header(`traefik-auth-bypass-key`, `$TRAEFIK_AUTH_BYPASS_KEY`)" # Bypass Auth for LunaSea on iOS
-        - "traefik.http.routers.readarr-rtr-bypass.priority=100"
-        # HTTP Routers Auth
-        - "traefik.http.routers.readarr-rtr.entrypoints=websecure"
-        - "traefik.http.routers.readarr-rtr.rule=Host(`readarr.$DOMAINNAME_HS`)"
-        - "traefik.http.routers.readarr-rtr.priority=99"
-        # Middlewares
-        - "traefik.http.routers.readarr-rtr-bypass.middlewares=chain-no-auth@file"
-        # - "traefik.http.routers.readarr-rtr.middlewares=chain-oauth@file"
-        # HTTP Services
-        - "traefik.http.routers.readarr-rtr.service=readarr-svc"
-        - "traefik.http.routers.readarr-rtr-bypass.service=readarr-svc"
-        - "traefik.http.services.readarr-svc.loadbalancer.server.port=8787"
+      - "traefik.enable=true"
+      - "traefik.http.routers.readarr.entrypoints=web"
+      - "traefik.http.routers.readarr.rule=Host(`readarr.$DOMAINNAME_HS`)"
+      - "traefik.http.middlewares.readarr-https-redirect.redirectscheme.scheme=https"
+      - "traefik.http.middlewares.sslheader.headers.customrequestheaders.X-Forwarded-Proto=https"
+      - "traefik.http.routers.readarr.middlewares=readarr-https-redirect"
+      - "traefik.http.routers.readarr-secure.entrypoints=websecure"
+      - "traefik.http.routers.readarr-secure.rule=Host(`readarr.$DOMAINNAME_HS`)"
+      - "traefik.http.routers.readarr-secure.tls=true"
+      - "traefik.http.routers.readarr-secure.tls.certresolver=cloudflare-dns"
+      - "traefik.http.routers.readarr-secure.service=readarr"
+      # - "traefik.http.services.readarr.loadbalancer.server.scheme=https"
+      - "traefik.http.services.readarr.loadbalancer.server.port=8787"
+      - "traefik.docker.network=t3_proxy"
