@@ -76,10 +76,10 @@ services:
       - --metrics.prometheus.addrouterslabels=true
       - --metrics.prometheus.addServicesLabels=true
       - --metrics.prometheus.entryPoint=metrics
-    #healthcheck:
-    #  test: ["CMD", "traefik", "healthcheck", "--ping"]
-    #  interval: 5s
-    #  retries: 3
+    healthcheck:
+     test: ["CMD", "traefik", "healthcheck", "--ping"]
+     interval: 5s
+     retries: 3
     ports:
       - target: 80
         published: 80
