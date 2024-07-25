@@ -48,7 +48,7 @@ secrets:
 include:
   # CORE
   - arr/traefik.yml
-  - arr/authentik.yml
+  # - arr/authentik.yml
   - arr/socket-proxy.yml
   - arr/gotify.yml
   # - arr/oauth.yml
