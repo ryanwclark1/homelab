@@ -14,7 +14,7 @@ services:
         target: 3030
         published: "3030"
         protocol: tcp
-    user: $PUID
+    user: ${PUID:-1000}:${PGID:-1000}
     volumes:
       - $DOCKERDIR/appdata/grafana:/usr/local/etc/grafana
     environment:
@@ -45,7 +45,7 @@ services:
       GF_AUTH_DISABLE_LOGIN_FORM: ${GF_AUTH_DISABLE_LOGIN_FORM:-false} # Enable for OAuth
       GF_SMTP_ENABLED: ${GF_SMTP_ENABLED:-false}
       GF_EMAILS_WELCOME_EMAIL_ON_SIGN_UP: ${GF_EMAILS_WELCOME_EMAIL_ON_SIGN_UP:-false}
-      GF_LOG_MODE: ${GF_LOG_MODE:-"console file"}
+      # GF_LOG_MODE: ${GF_LOG_MODE:-"file"}
       GF_LOG_LEVEL: ${GF_LOG_LEVEL:-info}
       GF_PLUGINS_ENABLE_ALPHA: ${GF_PLUGINS_ENABLE_ALPHA:-true}
       GF_INSTALL_PLUGINS: "grafana-clock-panel,grafana-simple-json-datasource,grafana-worldmap-panel,grafana-piechart-panel,cloudflare-app"
