@@ -18,11 +18,15 @@ services:
         target: /config
         bind:
           create_host_path: true
+      - type: bind
+        source: ${COMMON_DATA_PATH}
+        target: /storage
+        bind:
+          create_host_path: true
       - ${COMMON_CONFIG_PATH}/stash/metadata:/metadata
       - ${COMMON_CONFIG_PATH}/stash/cache:/cache
       - ${COMMON_CONFIG_PATH}/stash/generated:/generated
       - ${COMMON_CONFIG_PATH}/stash/blobs:/blobs
-      - ${COMMON_DATA_PATH}:/data
     ports:
       - mode: ingress
         target: 9999
