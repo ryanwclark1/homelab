@@ -1,7 +1,7 @@
 services:
   # Prometheus - Database for sensor data
   prometheus:
-    image: prom/prometheus:latest
+    image: prom/prometheus:${PROMETHEUS_TAG:-v2.53.1}
     container_name: prometheus
     networks:
       - t3_proxy
