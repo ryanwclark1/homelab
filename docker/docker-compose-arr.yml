@@ -79,7 +79,8 @@ include:
   # - arr/picard.yml
   - arr/stash.yml
   # MONITORING
-  # - arr/grafana.yml
+  - arr/prometheus.yml
+  - arr/grafana.yml
   # - arr/uptime-kuma.yml
   # - arr/dozzle.yml
   # - arr/scrutiny.yml
