@@ -28,7 +28,7 @@ services:
       - "--web.console.libraries=/usr/share/prometheus/console_libraries"
       - "--web.console.templates=/usr/share/prometheus/consoles"
       - "--web.external-url=http://127.0.0.1:9090"
-      - "--storage.tsdb.retention.time=12m"
+      - "--storage.tsdb.retention.time=12d"
     ports:
       - 9090:9090
 
