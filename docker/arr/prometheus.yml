@@ -1,0 +1,47 @@
+services:
+  # Prometheus - Database for sensor data
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: prometheus
+    networks:
+      - t3_proxy
+      - default
+    security_opt:
+      - no-new-privileges:true
+    restart: unless-stopped
+    profiles: ["dbs", "all"]
+    ports:
+      - mode: ingress
+        target: 9090
+        published: "9090"
+        protocol: tcp
+    volumes:
+      - type: bind
+        source: $DOCKERDIR/appdata/prometheus
+        target: /etc/prometheus
+        bind:
+          create_host_path: true
+      - type: bind
+        source: ${COMMON_CONFIG_PATH}/prometheus/data
+        target: /prometheus
+        bind:
+          create_host_path: true
+      # - $DOCKERDIR/appdata/prometheus/data:/prometheus
+    user: $PUID:$PGID
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/usr/share/prometheus/console_libraries'
+      - '--web.console.templates=/usr/share/prometheus/consoles'
+      - '--web.enable-lifecycle'
+      - '--web.enable-admin-api'
+    labels:
+      - "traefik.enable=true"
+      # HTTP Routers
+      - "traefik.http.routers.prometheus-rtr.entrypoints=websecure"
+      - "traefik.http.routers.prometheus-rtr.rule=Host(`SUBDOMAIN-PLACEHOLDER.$DOMAINNAME_1`)"
+      # Middlewares
+      - "traefik.http.routers.prometheus-rtr.middlewares=CHAIN-PLACEHOLDER@file"
+      # HTTP Services
+      - "traefik.http.routers.prometheus-rtr.service=prometheus-svc"
+      - "traefik.http.services.prometheus-svc.loadbalancer.server.port=9090"
