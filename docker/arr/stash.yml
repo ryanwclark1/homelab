@@ -14,7 +14,7 @@ services:
         bind:
           create_host_path: true
       - type: bind
-        source: ${COMMON_CONFIG_PATH}/stash
+        source: ${COMMON_CONFIG_PATH}/stash/config
         target: /config
         bind:
           create_host_path: true
