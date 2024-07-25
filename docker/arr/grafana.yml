@@ -22,8 +22,8 @@ services:
         bind:
           propagation: shared
       - type: bind
-        source: $DOCKERDIR/appdata/grafana
-        target: $GF_PATHS_PROVISIONING
+        source: $DOCKERDIR/appdata/grafana/provisioning
+        target: ${GF_PATHS_PROVISIONING:-/etc/grafana/provisioning}
         bind:
           create_host_path: true
     environment:
