@@ -1,25 +1,38 @@
 services:
   # qBittorrent - Torrent downloader
-  # Needs trailing / if using PathPrefixStrip
   qbittorrent:
-    image: lscr.io/linuxserver/qbittorrent:latest
+    image: lscr.io/linuxserver/qbittorrent:${QBIT_TAG:-latest}
     container_name: qbittorrent
     security_opt:
       - no-new-privileges:true
     restart: unless-stopped
     profiles: ["apps", "downloads", "all"]
     network_mode: "container:gluetun"
-    # ports:
-    #   - "8081:8080" # Explosed via gluetun. 8081 because crowdsec is using port 8080
     volumes:
-      - ${COMMON_CONFIG_PATH}/qbittorrent:/config
-      - ${COMMON_DATA_PATH}/downloads:/data/downloads # Ensure that downloads folder is set to /data/downloads in qBittorrent
+      - type: bind
+        source: /etc/localtime
+        target: /etc/localtime
+        read_only: true
+        bind:
+          create_host_path: true
+      - type: bind
+        source: ${COMMON_CONFIG_PATH}/qbittorrent
+        target: /config
+        bind:
+          create_host_path: true
+      - type: bind
+        source: ${COMMON_DATA_PATH}
+        target: /storage
+        bind:
+          create_host_path: true
+      # - ${COMMON_CONFIG_PATH}/qbittorrent:/config
+      # - ${COMMON_DATA_PATH}/downloads:/data/downloads # Ensure that downloads folder is set to /data/downloads in qBittorrent
     environment:
       TZ: ${TZ:-Etc/UTC}
       PUID: ${PUID:-1000}
       PGID: ${PGID:-1000}
-      DOCKER_MODS: ghcr.io/gabe565/linuxserver-mod-vuetorrent
       WEBUI_PORT: ${QBIT_WEBUI_PORT:-8080}
+      DOCKER_MODS: ghcr.io/gabe565/linuxserver-mod-vuetorrent
     healthcheck: # https://github.com/qdm12/gluetun/issues/641#issuecomment-933856220
       test: "curl -sf https://ipv4.icanhazip.com/ || exit 1"
       interval: 1m
