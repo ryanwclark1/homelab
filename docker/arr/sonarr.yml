@@ -48,5 +48,5 @@ services:
       - "traefik.http.routers.sonarr-secure.tls.certresolver=cloudflare-dns"
       - "traefik.http.routers.sonarr-secure.service=sonarr"
       # - "traefik.http.services.sonarr.loadbalancer.server.scheme=https"
-      - "traefik.http.services.sonarr.loadbalancer.server.port=8787"
+      - "traefik.http.services.sonarr.loadbalancer.server.port=8989"
       - "traefik.docker.network=t3_proxy"
