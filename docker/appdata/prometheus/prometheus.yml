@@ -35,3 +35,9 @@ scrape_configs:
       - targets: ['traefik:8082']
         labels:
           alias: 'traefik'
+
+  - job_name: 'node-exporter'
+    static_configs:
+      - targets: ['node-exporter:9100']
+        labels:
+          alias: 'node'
