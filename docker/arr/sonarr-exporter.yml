@@ -10,7 +10,10 @@ services:
     networks:
       - t3_proxy
     ports:
-      - "9708:9708"
+      - mode: ingress
+        target: 9708
+        published: "9708"
+        protocol: tcp
     environment:
       PORT: 9708
       URL: "http://sonarr:8989"

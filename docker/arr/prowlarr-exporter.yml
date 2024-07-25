@@ -10,7 +10,10 @@ services:
     networks:
       - t3_proxy
     ports:
-      - "9710:9710"
+      - mode: ingress
+        target: 9710
+        published: "9710"
+        protocol: tcp
     environment:
       PORT: 9710
       URL: "http://prowlarr:9696"

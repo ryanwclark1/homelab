@@ -10,7 +10,10 @@ services:
     networks:
       - t3_proxy
     ports:
-      - "9709:9709"
+      - mode: ingress
+        target: 9709
+        published: "9709"
+        protocol: tcp
     environment:
       PORT: 9709
       URL: "http://lidarr:8686"

@@ -76,7 +76,7 @@ include:
   # COMPLEMENTARY APPS
   - arr/prowlarr.yml
   - arr/notifiarr.yml
-  # - arr/bazarr.yml
+  - arr/bazarr.yml
   # - arr/picard.yml
   - arr/stash.yml
   # MONITORING

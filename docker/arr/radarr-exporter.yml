@@ -10,7 +10,10 @@ services:
     networks:
       - t3_proxy
     ports:
-      - "9707:9707"
+      - mode: ingress
+        target: 9707
+        published: "9707"
+        protocol: tcp
     environment:
       PORT: 9707
       URL: "http://radarr:7878"

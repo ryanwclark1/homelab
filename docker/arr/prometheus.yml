@@ -37,11 +37,16 @@ services:
       - '--web.enable-admin-api'
     labels:
       - "traefik.enable=true"
-      # HTTP Routers
-      - "traefik.http.routers.prometheus-rtr.entrypoints=websecure"
-      # - "traefik.http.routers.prometheus-rtr.rule=Host(`SUBDOMAIN-PLACEHOLDER.$DOMAINNAME_1`)"
-      # Middlewares
-      - "traefik.http.routers.prometheus-rtr.middlewares=CHAIN-PLACEHOLDER@file"
-      # HTTP Services
-      - "traefik.http.routers.prometheus-rtr.service=prometheus-svc"
-      - "traefik.http.services.prometheus-svc.loadbalancer.server.port=9090"
+      - "traefik.http.routers.prometheus.entrypoints=web"
+      - "traefik.http.routers.prometheus.rule=Host(`prometheus.$DOMAINNAME_HS`)"
+      - "traefik.http.middlewares.prometheus-https-redirect.redirectscheme.scheme=https"
+      - "traefik.http.middlewares.sslheader.headers.customrequestheaders.X-Forwarded-Proto=https"
+      - "traefik.http.routers.prometheus.middlewares=prometheus-https-redirect"
+      - "traefik.http.routers.prometheus-secure.entrypoints=websecure"
+      - "traefik.http.routers.prometheus-secure.rule=Host(`prometheus.$DOMAINNAME_HS`)"
+      - "traefik.http.routers.prometheus-secure.tls=true"
+      - "traefik.http.routers.prometheus-secure.tls.certresolver=cloudflare-dns"
+      - "traefik.http.routers.prometheus-secure.service=prometheus"
+      # - "traefik.http.services.prometheus.loadbalancer.server.scheme=https"
+      - "traefik.http.services.prometheus.loadbalancer.server.port=9090"
+      - "traefik.docker.network=t3_proxy"

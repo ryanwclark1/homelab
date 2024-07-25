@@ -10,7 +10,10 @@ services:
     networks:
       - t3_proxy
     ports:
-      - "3030:3030"
+      - mode: ingress
+        target: 3030
+        published: "3030"
+        protocol: tcp
     user: $PUID
     volumes:
       - $DOCKERDIR/appdata/grafana:/usr/local/etc/grafana
