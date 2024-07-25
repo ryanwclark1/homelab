@@ -43,7 +43,7 @@ services:
       - --global.sendAnonymousUsage=false
       ###### Log Configuration ######
       - --log=true
-      - --log.filePath=/logs/traefik.log
+      # - --log.filePath=/logs/traefik.log
       - --log.level=DEBUG # (Default: error) DEBUG, INFO, WARN, ERROR, FATAL, PANIC
       ###### Access Log Configuration ######
       - --accessLog=true
