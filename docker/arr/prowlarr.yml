@@ -10,10 +10,22 @@ services:
     networks:
       - t3_proxy
     ports:
-      - "9696:9696"
+      - mode: ingress
+        target: 9696
+        published: "9696"
+        protocol: tcp
     volumes:
-      - ${COMMON_CONFIG_PATH}/prowlarr:/config
-      - "/etc/localtime:/etc/localtime:ro"
+      - type: bind
+        source: /etc/localtime
+        target: /etc/localtime
+        read_only: true
+        bind:
+          create_host_path: true
+      - type: bind
+        source: ${COMMON_CONFIG_PATH}/prowlarr
+        target: /config
+        bind:
+          create_host_path: true
     environment:
       TZ: ${TZ:-Etc/UTC}
       PUID: ${PUID:-1000}
@@ -29,17 +41,7 @@ services:
       - "traefik.http.routers.prowlarr-secure.rule=Host(`prowlarr.$DOMAINNAME_HS`)"
       - "traefik.http.routers.prowlarr-secure.tls=true"
       - "traefik.http.routers.prowlarr-secure.tls.certresolver=cloudflare-dns"
-      # - "traefik.http.routers.prowlarr-secure.tls.domains[0].main=$DOMAINNAME_HS"
-      # - "traefik.http.routers.prowlarr-secure.tls.domains[0].sans=*.$DOMAINNAME_HS"
       - "traefik.http.routers.prowlarr-secure.service=prowlarr"
       # - "traefik.http.services.prowlarr-svc.loadbalancer.server.scheme=https"
       - "traefik.http.services.prowlarr.loadbalancer.server.port=9696"
       - "traefik.docker.network=t3_proxy"
-      # # HTTP Routers
-      # - "traefik.http.routers.prowlarr-rtr.entrypoints=websecure"
-      # - "traefik.http.routers.prowlarr-rtr.rule=Host(`prowlarr.$DOMAINNAME_HS`)"
-      # # Middlewares
-      # # - "traefik.http.routers.prowlarr-rtr.middlewares=chain-oauth@file"
-      # # HTTP Services
-      # - "traefik.http.routers.prowlarr-rtr.service=prowlarr-svc"
-      # - "traefik.http.services.prowlarr-svc.loadbalancer.server.port=9696"
