@@ -49,7 +49,7 @@ include:
   # CORE
   - arr/traefik.yml
   - arr/authentik.yml
-  # - arr/socket-proxy.yml
+  - arr/socket-proxy.yml
   # - arr/oauth.yml
   # - arr/authelia.yml
   # - arr/portainer.yml
@@ -60,11 +60,9 @@ include:
   # FRONTEND
   # - arr/autoindex.yml
   - arr/homepage.yml
-  # - arr/phpmyadmin.yml
   - arr/sitespeed.yml
   - arr/whoami.yml
   # DOWNLOADERS
-  # - arr/jdownloader.yml
   - arr/qbittorrent.yml
   # - arr/sabnzbd.yml
   # PVRS
@@ -96,10 +94,8 @@ include:
   # - arr/kasm.yml
   # - arr/it-tools.yml
   # UTILITIES
-  # - arr/firefox.yml
   # - arr/firefly.yml
   # FILE MANAGEMENT
-  # - arr/vscode.yml
   # - arr/makemkv.yml
   # - arr/mkvtoolnix.yml
   # NETWORK
