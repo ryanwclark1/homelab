@@ -1,0 +1,37 @@
+global:
+  scrape_interval: 60s # By default, scrape targets every 15 seconds.
+  evaluation_interval: 60s # Evaluate rules every 15 seconds. The default is every 1 minute.
+
+scrape_configs:
+  - job_name: 'prometheus'
+    honor_timestamps: true
+    scrape_interval: 5s
+    metrics_path: /metrics
+    scheme: http
+    follow_redirects: true
+    static_configs:
+      - targets: ['localhost:9090']
+
+  - job_name: 'lidarr'
+    static_configs:
+      - targets: ['lidarr-exporter:9709']
+        labels:
+          alias: 'lidarr'
+
+  - job_name: 'radarr'
+    static_configs:
+      - targets: ['radarr-exporter:9707']
+        labels:
+          alias: 'radarr'
+
+  - job_name: 'sonarr'
+    static_configs:
+      - targets: ['sonarr-exporter:9708']
+        labels:
+          alias: 'sonarr'
+
+  - job_name: 'traefik'
+    static_configs:
+      - targets: ['traefik:8082']
+        labels:
+          alias: 'traefik'
