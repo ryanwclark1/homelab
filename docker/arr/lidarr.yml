@@ -1,8 +1,7 @@
 services:
   # Lidarr - Music Management
-  # Set url_base in lidarr settings if using PathPrefix
   lidarr:
-    image: lscr.io/linuxserver/lidarr:latest
+    image: lscr.io/linuxserver/lidarr:${LIDARR_TAG:-latest}
     container_name: lidarr
     security_opt:
       - no-new-privileges:true
