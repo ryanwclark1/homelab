@@ -14,26 +14,43 @@ services:
         bind:
           create_host_path: true
       - type: bind
+        source: ${COMMON_DATA_PATH}
+        target: /storage
+        bind:
+          create_host_path: true
+      - type: bind
         source: ${COMMON_CONFIG_PATH}/stash/config
         target: /config
         bind:
           create_host_path: true
       - type: bind
-        source: ${COMMON_DATA_PATH}
-        target: /storage
+        source: ${COMMON_CONFIG_PATH}/stash/blobs
+        target: /blobs
         bind:
           create_host_path: true
-      - ${COMMON_CONFIG_PATH}/stash/metadata:/metadata
-      - ${COMMON_CONFIG_PATH}/stash/cache:/cache
-      - ${COMMON_CONFIG_PATH}/stash/generated:/generated
-      - ${COMMON_CONFIG_PATH}/stash/blobs:/blobs
+      - type: bind
+        source: ${COMMON_CONFIG_PATH}/stash/metadata
+        target: /metadata
+        bind:
+          create_host_path: true
+      - type: bind
+        source: ${COMMON_CONFIG_PATH}/stash/cache
+        target: /cache
+        bind:
+          create_host_path: true
+      - type: bind
+        source: ${COMMON_CONFIG_PATH}/stash/generated
+        target: /generated
+        bind:
+          create_host_path: true
     ports:
       - mode: ingress
         target: 9999
         published: "9999"
         protocol: tcp
     devices:
-      - /dev/dri/renderD128:/dev/dri/renderD128
+      # - /dev/dri/renderD128:/dev/dri/renderD128
+      - /dev/dri:/dev/dri
     environment:
       PUID: ${PUID:-1000}
       PGID: ${PGID:-1000}
