@@ -27,7 +27,7 @@ services:
         bind:
           create_host_path: true
       # - $DOCKERDIR/appdata/prometheus/data:/prometheus
-    user: ${PUID:-1000}:${PGID:-1000}
+    user: ${PUID:-1000}
     command:
       - '--config.file=/etc/prometheus/prometheus.yml'
       - '--storage.tsdb.path=/prometheus'

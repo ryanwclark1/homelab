@@ -14,7 +14,7 @@ services:
         target: 3030
         published: "3030"
         protocol: tcp
-    user: ${PUID:-1000}:${PGID:-1000}
+    user: ${PUID:-1000}
     volumes:
       - $DOCKERDIR/appdata/grafana:/usr/local/etc/grafana
     environment:
