@@ -39,7 +39,7 @@ services:
       - "traefik.enable=true"
       # HTTP Routers
       - "traefik.http.routers.prometheus-rtr.entrypoints=websecure"
-      - "traefik.http.routers.prometheus-rtr.rule=Host(`SUBDOMAIN-PLACEHOLDER.$DOMAINNAME_1`)"
+      # - "traefik.http.routers.prometheus-rtr.rule=Host(`SUBDOMAIN-PLACEHOLDER.$DOMAINNAME_1`)"
       # Middlewares
       - "traefik.http.routers.prometheus-rtr.middlewares=CHAIN-PLACEHOLDER@file"
       # HTTP Services
