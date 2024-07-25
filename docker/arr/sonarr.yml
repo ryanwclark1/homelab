@@ -1,6 +1,5 @@
 services:
   # Sonarr - TV Shows Management
-  # Set url_base in sonarr settings if using PathPrefix
   sonarr:
     image: lscr.io/linuxserver/sonarr:${SONARR_TAG:-latest}
     container_name: sonarr
@@ -11,31 +10,43 @@ services:
     networks:
       - t3_proxy
     ports:
-      - "8989:8989"
+      - mode: ingress
+        target: 8989
+        published: "8989"
+        protocol: tcp
     volumes:
-      - ${COMMON_CONFIG_PATH}/sonarr:/config
-      - ${COMMON_DATA_PATH}/tv:/data/tv
-      - ${COMMON_DATA_PATH}/downloads:/data/downloads
-      - /etc/localtime:/etc/localtime:ro
+      - type: bind
+        source: /etc/localtime
+        target: /etc/localtime
+        read_only: true
+        bind:
+          create_host_path: true
+      - type: bind
+        source: ${COMMON_CONFIG_PATH}/sonarr
+        target: /config
+        bind:
+          create_host_path: true
+      - type: bind
+        source: ${COMMON_DATA_PATH}
+        target: /storage
+        bind:
+          create_host_path: true
     environment:
       TZ: ${TZ:-Etc/UTC}
       PUID: ${PUID:-1000}
       PGID: ${PGID:-1000}
     labels:
       - "traefik.enable=true"
-      # HTTP Routers Auth Bypass
-      - "traefik.http.routers.sonarr-rtr-bypass.entrypoints=websecure"
-      - "traefik.http.routers.sonarr-rtr-bypass.rule=Host(`sonarr.$DOMAINNAME_HS`) && (Header(`X-Api-Key`, `$SONARR_API_KEY`) || Query(`apikey`, `$SONARR_API_KEY`))"
-      # - "traefik.http.routers.sonarr-rtr-bypass.rule=Host(`sonarr.$DOMAINNAME_HS`) && Header(`traefik-auth-bypass-key`, `$TRAEFIK_AUTH_BYPASS_KEY`)" # Bypass Auth for LunaSea on iOS
-      - "traefik.http.routers.sonarr-rtr-bypass.priority=100"
-      # HTTP Routers Auth
-      - "traefik.http.routers.sonarr-rtr.entrypoints=websecure"
-      - "traefik.http.routers.sonarr-rtr.rule=Host(`sonarr.$DOMAINNAME_HS`)"
-      - "traefik.http.routers.sonarr-rtr.priority=99"
-      # Middlewares
-      - "traefik.http.routers.sonarr-rtr-bypass.middlewares=chain-no-auth@file"
-      # - "traefik.http.routers.sonarr-rtr.middlewares=chain-oauth@file"
-      # HTTP Services
-      - "traefik.http.routers.sonarr-rtr.service=sonarr-svc"
-      - "traefik.http.routers.sonarr-rtr-bypass.service=sonarr-svc"
-      - "traefik.http.services.sonarr-svc.loadbalancer.server.port=8989"
+      - "traefik.http.routers.sonarr.entrypoints=web"
+      - "traefik.http.routers.sonarr.rule=Host(`sonarr.$DOMAINNAME_HS`)"
+      - "traefik.http.middlewares.sonarr-https-redirect.redirectscheme.scheme=https"
+      - "traefik.http.middlewares.sslheader.headers.customrequestheaders.X-Forwarded-Proto=https"
+      - "traefik.http.routers.sonarr.middlewares=sonarr-https-redirect"
+      - "traefik.http.routers.sonarr-secure.entrypoints=websecure"
+      - "traefik.http.routers.sonarr-secure.rule=Host(`sonarr.$DOMAINNAME_HS`)"
+      - "traefik.http.routers.sonarr-secure.tls=true"
+      - "traefik.http.routers.sonarr-secure.tls.certresolver=cloudflare-dns"
+      - "traefik.http.routers.sonarr-secure.service=sonarr"
+      # - "traefik.http.services.sonarr.loadbalancer.server.scheme=https"
+      - "traefik.http.services.sonarr.loadbalancer.server.port=8787"
+      - "traefik.docker.network=t3_proxy"
