@@ -1,0 +1,22 @@
+services:
+  # Bazarr Exporter - Bazarr metrics for Prometheus
+  bazarr-exporter:
+    image: ghcr.io/onedr0p/exportarr:latest
+    container_name: bazarr-exporter
+    security_opt:
+      - no-new-privileges:true
+    restart: "no"
+    profiles: ["all", "exporter"]
+    networks:
+      - t3_proxy
+    ports:
+      - mode: ingress
+        target: 9712
+        published: "9712"
+        protocol: tcp
+    environment:
+      PORT: 9712
+      URL: "http://bazarr:6767"
+      APIKEY: $BAZARR_API_KEY
+      ENABLE_ADDITIONAL_METRICS: TRUE
+    command: ["bazarr"]
