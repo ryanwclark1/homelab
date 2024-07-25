@@ -14,12 +14,25 @@ services:
         target: 3030
         published: "3030"
         protocol: tcp
-    user: ${PUID:-1000}
+    # user: ${PUID:-1000}
     volumes:
-      - $DOCKERDIR/appdata/grafana:/usr/local/etc/grafana
+      - type: volume
+        source: grafana_data
+        target: /var/lib/grafana
+        bind:
+          propagation: shared
+      - type: bind
+        source: $DOCKERDIR/appdata/grafana
+        target: $GF_PATHS_PROVISIONING
+        bind:
+          create_host_path: true
     environment:
       # https://grafana.com/docs/grafana/latest/setup-grafana/configure-grafana/#override-configuration-with-environment-variables
-      # GF_PATHS_PROVISIONING: /usr/local/etc/grafana
+      GF_PATHS_DATA: ${GF_PATHS_DATA:-/var/lib/grafana}
+      GF_PATHS_HOME: ${GF_PATHS_HOME:-/usr/share/grafana}
+      GF_PATHS_LOGS: ${GF_PATHS_LOGS:-/var/log/grafana}
+      GF_PATHS_PLUGINS: ${GF_PATHS_PLUGINS:-/var/lib/grafana/plugins}
+      GF_PATHS_PROVISIONING: ${GF_PATHS_PROVISIONING:-/etc/grafana/provisioning}
       GF_SERVER_PROTOCOL: ${GF_SERVER_PROTOCOL:-http}
       GF_SERVER_HTTP_ADDR: ${GF_SERVER_HTTP_ADDR:-0.0.0.0}
       GF_SERVER_HTTP_PORT: ${GF_SERVER_HTTP_PORT:-3030}
