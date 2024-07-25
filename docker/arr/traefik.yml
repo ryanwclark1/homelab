@@ -7,10 +7,12 @@ services:
       - no-new-privileges:true
     restart: unless-stopped
     profiles: ["core", "all"]
+    depends_on:
+      - socket-proxy
     networks:
       t3_proxy:
         # ipv4_address: ${MEDIA_SERVER_IP:-10.10.100.50} # You can specify a static IP
-      # socket_proxy:
+      socket_proxy:
     command: # CLI arguments
       - --api=true
       - --api.dashboard=true
@@ -50,8 +52,8 @@ services:
       - --accessLog.filters.statusCodes=204-299,400-499,500-599
       ###### Providers Configuration ######
       - --providers.docker=true
-      - --providers.docker.endpoint=unix:///var/run/docker.sock # Disable for Socket Proxy. Enable otherwise.
-      # - --providers.docker.endpoint=tcp://socket-proxy:2375 # Enable for Socket Proxy. Disable otherwise.
+      # - --providers.docker.endpoint=unix:///var/run/docker.sock # Disable for Socket Proxy. Enable otherwise.
+      - --providers.docker.endpoint=tcp://socket-proxy:2375 # Enable for Socket Proxy. Disable otherwise.
       - --providers.docker.exposedByDefault=false
       - --providers.docker.network=t3_proxy
       # - --providers.docker.swarmMode=false # Traefik v2 Swarm
@@ -93,7 +95,7 @@ services:
         mode: host
     volumes:
       - /etc/localtime:/etc/localtime:ro
-      - /var/run/docker.sock:/var/run/docker.sock:ro # Enable if not using Socket Proxy
+      # - /var/run/docker.sock:/var/run/docker.sock:ro # Enable if not using Socket Proxy
       # - ${COMMON_CONFIG_PATH}/traefik3/rules/$HOSTNAME:/rules # Dynamic File Provider directory
       - $DOCKERDIR/appdata/traefik3:/rules # Dynamic File Provider directory
       - ${COMMON_CONFIG_PATH}/traefik3/letsencrypt:/letsencrypt # Certs Directory
