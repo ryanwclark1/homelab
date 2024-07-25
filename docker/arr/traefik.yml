@@ -24,12 +24,12 @@ services:
       # - --entrypoints.web.http.redirections.entrypoint.permanent=true
       - --entrypoints.websecure.address=:443
       - --entrypoints.websecure.forwardedHeaders.trustedIPs=$CLOUDFLARE_IPS,$LOCAL_IPS
-      # - --entrypoints.websecure.http.tls=true
+      - --entrypoints.websecure.http.tls=true
       # - --entrypoints.websecure.http.tls.options=tls-opts@file
       # Add dns-cloudflare as default certresolver for all services. Also enables TLS and no need to specify on individual services
-      # - --entrypoints.websecure.http.tls.certresolver=dns-cloudflare
-      # - --entrypoints.websecure.http.tls.domains[0].main=$DOMAINNAME_HS
-      # - --entrypoints.websecure.http.tls.domains[0].sans=*.$DOMAINNAME_HS
+      - --entrypoints.websecure.http.tls.certresolver=dns-cloudflare
+      - --entrypoints.websecure.http.tls.domains[0].main=$DOMAINNAME_HS
+      - --entrypoints.websecure.http.tls.domains[0].sans=*.$DOMAINNAME_HS
       # - --entrypoints.websecure.http.tls.domains[1].main=$DOMAINNAME_1
       # - --entrypoints.websecure.http.tls.domains[1].sans=*.$DOMAINNAME_1
       # - --entrypoints.websecure.http.tls.domains[2].main=$DOMAINNAME_2 # Pulls main cert for third domain
