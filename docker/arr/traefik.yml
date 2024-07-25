@@ -7,12 +7,12 @@ services:
       - no-new-privileges:true
     restart: unless-stopped
     profiles: ["core", "all"]
-    # depends_on:
-      # - socket-proxy
+    depends_on:
+      - socket-proxy
     networks:
       t3_proxy:
         # ipv4_address: ${MEDIA_SERVER_IP:-10.10.100.50} # You can specify a static IP
-      # socket_proxy:
+      socket_proxy:
     command: # CLI arguments
       - --api=true
       - --api.dashboard=true
