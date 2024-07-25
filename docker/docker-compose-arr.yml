@@ -50,6 +50,7 @@ include:
   - arr/traefik.yml
   - arr/authentik.yml
   - arr/socket-proxy.yml
+  - arr/gotify.yml
   # - arr/oauth.yml
   # - arr/authelia.yml
   # - arr/portainer.yml
