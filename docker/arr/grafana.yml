@@ -82,3 +82,7 @@ services:
       # - "traefik.http.services.grafana.loadbalancer.server.scheme=https"
       - "traefik.http.services.grafana.loadbalancer.server.port=3030"
       - "traefik.docker.network=t3_proxy"
+
+volumes:
+  grafana_data:
+    driver: local
