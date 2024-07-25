@@ -10,7 +10,10 @@ services:
     networks:
       - t3_proxy
     ports:
-      - "6767:6767"
+      - mode: ingress
+        target: 6767
+        published: "6767"
+        protocol: tcp
     volumes:
       - ${COMMON_CONFIG_PATH}/bazarr:/config
       - ${COMMON_DATA_PATH}:/data/media
@@ -20,11 +23,16 @@ services:
       PGID: ${PGID:-1000}
     labels:
       - "traefik.enable=true"
-      # HTTP Routers Auth
-      - "traefik.http.routers.bazarr-rtr.entrypoints=websecure"
-      - "traefik.http.routers.bazarr-rtr.rule=Host(`bazarr.$DOMAINNAME_HS`)"
-      # Middlewares
-      # - "traefik.http.routers.bazarr-rtr.middlewares=chain-oauth@file"
-      # HTTP Services
-      - "traefik.http.routers.bazarr-rtr.service=bazarr-svc"
-      - "traefik.http.services.bazarr-svc.loadbalancer.server.port=6767"
+      - "traefik.http.routers.bazarr.entrypoints=web"
+      - "traefik.http.routers.bazarr.rule=Host(`bazarr.$DOMAINNAME_HS`)"
+      - "traefik.http.middlewares.bazarr-https-redirect.redirectscheme.scheme=https"
+      - "traefik.http.middlewares.sslheader.headers.customrequestheaders.X-Forwarded-Proto=https"
+      - "traefik.http.routers.bazarr.middlewares=bazarr-https-redirect"
+      - "traefik.http.routers.bazarr-secure.entrypoints=websecure"
+      - "traefik.http.routers.bazarr-secure.rule=Host(`bazarr.$DOMAINNAME_HS`)"
+      - "traefik.http.routers.bazarr-secure.tls=true"
+      - "traefik.http.routers.bazarr-secure.tls.certresolver=cloudflare-dns"
+      - "traefik.http.routers.bazarr-secure.service=bazarr"
+      # - "traefik.http.services.bazarr.loadbalancer.server.scheme=https"
+      - "traefik.http.services.bazarr.loadbalancer.server.port=6767"
+      - "traefik.docker.network=t3_proxy"
