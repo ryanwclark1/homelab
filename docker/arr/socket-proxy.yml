@@ -9,14 +9,22 @@ services:
     profiles: ["core", "all"]
     networks:
       socket_proxy:
-        ipv4_address: ${MEDIA_SERVER_IP:-10.10.101.50} # You can specify a static IP
+        ipv4_address: # You can specify a static IP
     # privileged: true # true for VM. False for unprivileged LXC container.
     ports:
     #  - "$ZEROTIER_IP_CLOUDSERVER:2375:2375" # Port 2375 should only ever get exposed to the internal network. When possible use this line.
     # I use the next line instead, as I want portainer to manage multiple docker endpoints within my home network.
-      - "2375:2375" # Do not expose this to the internet with port forwarding
+      # Do not expose this to the internet with port forwarding
+      - mode: ingress
+        target: 2375
+        published: "2375"
+        protocol: tcp
     volumes:
-      - "/var/run/docker.sock:/var/run/docker.sock"
+      - type: bind
+        source: /var/run/docker.sock
+        target: /var/run/docker.sock
+        bind:
+          create_host_path: true
     environment:
       - LOG_LEVEL=info # debug,info,notice,warning,err,crit,alert,emerg
       ## Variables match the URL prefix (i.e. AUTH blocks access to /auth/* parts of the API, etc.).
