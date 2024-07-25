@@ -1,8 +1,8 @@
 {
   "__inputs": [
     {
-      "name": "DS_RANCHER_MONITORING",
-      "label": "PROMETHEUS_DS",
+      "name": "DS_PROMETHEUS",
+      "label": "Prometheus",
       "description": "",
       "type": "datasource",
       "pluginId": "prometheus",
@@ -14,7 +14,7 @@
       "type": "grafana",
       "id": "grafana",
       "name": "Grafana",
-      "version": "7.1.0"
+      "version": "7.2.0"
     },
     {
       "type": "panel",
@@ -57,7 +57,7 @@
   "panels": [
     {
       "collapsed": false,
-      "datasource": "${DS_RANCHER_MONITORING}",
+      "datasource": "${DS_PROMETHEUS}",
       "gridPos": {
         "h": 1,
         "w": 24,
@@ -70,7 +70,7 @@
       "type": "row"
     },
     {
-      "datasource": "${DS_RANCHER_MONITORING}",
+      "datasource": "${DS_PROMETHEUS}",
       "description": "",
       "fieldConfig": {
         "defaults": {
@@ -110,7 +110,7 @@
         },
         "textMode": "auto"
       },
-      "pluginVersion": "7.1.0",
+      "pluginVersion": "7.2.0",
       "targets": [
         {
           "expr": "radrr_queue_total OR on() vector(0)",
@@ -134,7 +134,7 @@
       "type": "stat"
     },
     {
-      "datasource": "${DS_RANCHER_MONITORING}",
+      "datasource": "${DS_PROMETHEUS}",
       "description": "",
       "fieldConfig": {
         "defaults": {
@@ -174,7 +174,7 @@
         },
         "textMode": "auto"
       },
-      "pluginVersion": "7.1.0",
+      "pluginVersion": "7.2.0",
       "targets": [
         {
           "expr": "radarr_movie_missing_total",
@@ -203,7 +203,7 @@
     },
     {
       "collapsed": false,
-      "datasource": "${DS_RANCHER_MONITORING}",
+      "datasource": "${DS_PROMETHEUS}",
       "gridPos": {
         "h": 1,
         "w": 24,
@@ -216,7 +216,7 @@
       "type": "row"
     },
     {
-      "datasource": "${DS_RANCHER_MONITORING}",
+      "datasource": "${DS_PROMETHEUS}",
       "description": "",
       "fieldConfig": {
         "defaults": {
@@ -257,7 +257,7 @@
         },
         "textMode": "auto"
       },
-      "pluginVersion": "7.1.0",
+      "pluginVersion": "7.2.0",
       "targets": [
         {
           "expr": "radarr_movie_filesize_total",
@@ -280,7 +280,7 @@
         "label": "Others",
         "threshold": 0
       },
-      "datasource": "${DS_RANCHER_MONITORING}",
+      "datasource": "${DS_PROMETHEUS}",
       "fieldConfig": {
         "defaults": {
           "custom": {}
@@ -324,7 +324,7 @@
       "valueName": "current"
     },
     {
-      "datasource": "${DS_RANCHER_MONITORING}",
+      "datasource": "${DS_PROMETHEUS}",
       "description": "",
       "fieldConfig": {
         "defaults": {
@@ -365,7 +365,7 @@
         },
         "textMode": "auto"
       },
-      "pluginVersion": "7.1.0",
+      "pluginVersion": "7.2.0",
       "targets": [
         {
           "expr": "radarr_rootfolder_freespace_bytes",
@@ -406,7 +406,7 @@
     ]
   },
   "timezone": "",
-  "title": "Radarr v3",
+  "title": "Radarr Dashboard",
   "uid": "F2vfZUNGz",
   "version": 3
 }
