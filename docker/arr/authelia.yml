@@ -9,7 +9,6 @@ services:
     profiles: ["core", "all"]
     networks:
       - t3_proxy
-      - default
     # ports:
     #   - "9091:9091"
     volumes:

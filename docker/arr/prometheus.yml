@@ -5,7 +5,6 @@ services:
     container_name: prometheus
     networks:
       - t3_proxy
-      - default
     security_opt:
       - no-new-privileges:true
     restart: unless-stopped
