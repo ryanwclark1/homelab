@@ -117,7 +117,7 @@ services:
           create_host_path: true
       - type: bind
         source: ${COMMON_CONFIG_PATH}/traefik3/letsencrypt/acme.json
-        target: acme.json
+        target: /acme.json
         bind:
           create_host_path: true
     secrets:
