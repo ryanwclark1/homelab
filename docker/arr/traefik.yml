@@ -22,7 +22,7 @@ services:
       - --api.insecure=true
 
      ###### Certificate Resolvers Configuration ######
-      - --certificiateresolvers.cloudflare-dns=true
+      - --certificatesresolvers.cloudflare-dns=true
       - --certificatesresolvers.cloudflare-dns.acme.caserver=https://acme-staging-v02.api.letsencrypt.org/directory # LetsEncrypt Staging Server
       # - --certificatesresolvers.cloudflare-dns.acme.caserver=https://acme-v02.api.letsencrypt.org/directory
       - --certificatesresolvers.cloudflare-dns.acme.dnschallenge=true
