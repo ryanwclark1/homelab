@@ -14,6 +14,7 @@ services:
         # ipv4_address: ${MEDIA_SERVER_IP:-10.10.100.50} # You can specify a static IP
       socket_proxy:
     command: # CLI arguments
+      ###### API ######
       - --api=true
       - --api.dashboard=true
       - --api.debug=true
@@ -21,19 +22,9 @@ services:
       - --entrypoints.web.address=:80
       - --entrypoints.web.http.redirections.entrypoint.to=websecure
       - --entrypoints.web.http.redirections.entrypoint.scheme=https
-      # - --entrypoints.web.http.redirections.entrypoint.permanent=true
       - --entrypoints.websecure.address=:443
       - --entrypoints.websecure.forwardedHeaders.trustedIPs=$CLOUDFLARE_IPS,$LOCAL_IPS
-      - --entrypoints.websecure.http.tls=true
-      # - --entrypoints.websecure.http.tls.options=tls-opts@file
-      # Add dns-cloudflare as default certresolver for all services. Also enables TLS and no need to specify on individual services
-      - --entrypoints.websecure.http.tls.certresolver=cloudflare-dns
-      - --entrypoints.websecure.http.tls.domains[0].main=$DOMAINNAME_HS
-      - --entrypoints.websecure.http.tls.domains[0].sans=*.$DOMAINNAME_HS
-      # - --entrypoints.websecure.http.tls.domains[1].main=$DOMAINNAME_1
-      # - --entrypoints.websecure.http.tls.domains[1].sans=*.$DOMAINNAME_1
-      # - --entrypoints.websecure.http.tls.domains[2].main=$DOMAINNAME_2 # Pulls main cert for third domain
-      # - --entrypoints.websecure.http.tls.domains[2].sans=*.$DOMAINNAME_2 # Pulls wildcard cert for third domain
+      # - --entrypoints.websecure.http.tls=true
       - --entryPoints.metrics.address=:8082
       ###### Servers Transport ######
       - --serversTransport.insecureSkipVerify=true
@@ -43,7 +34,6 @@ services:
       - --global.sendAnonymousUsage=false
       ###### Log Configuration ######
       - --log=true
-      # - --log.filePath=/logs/traefik.log
       - --log.level=DEBUG # (Default: error) DEBUG, INFO, WARN, ERROR, FATAL, PANIC
       ###### Access Log Configuration ######
       - --accessLog=true
@@ -52,10 +42,10 @@ services:
       - --accessLog.filters.statusCodes=204-299,400-499,500-599
       ###### Providers Configuration ######
       - --providers.docker=true
-      # - --providers.docker.endpoint=unix:///var/run/docker.sock # Disable for Socket Proxy. Enable otherwise.
-      - --providers.docker.endpoint=tcp://socket-proxy:2375 # Enable for Socket Proxy. Disable otherwise.
+      - --providers.docker.endpoint=unix:///var/run/docker.sock # Disable for Socket Proxy. Enable otherwise.
+      # - --providers.docker.endpoint=tcp://socket-proxy:2375 # Enable for Socket Proxy. Disable otherwise.
       - --providers.docker.exposedByDefault=false
-      - --providers.docker.network=t3_proxy
+      # - --providers.docker.network=t3_proxy
       # - --providers.docker.swarmMode=false # Traefik v2 Swarm
       # - --providers.swarm.endpoint=tcp://127.0.0.1:2377 # Traefik v3 Swarm
       - --providers.file.directory=/rules # Load dynamic configuration from one or more .toml or .yml files in a directory
@@ -94,15 +84,26 @@ services:
         protocol: udp
         mode: host
     volumes:
-      - /etc/localtime:/etc/localtime:ro
-      - /var/run/docker.sock:/var/run/docker.sock:ro # Enable if not using Socket Proxy
-      # - ${COMMON_CONFIG_PATH}/traefik3/rules/$HOSTNAME:/rules # Dynamic File Provider directory
-      - $DOCKERDIR/appdata/traefik3:/rules # Dynamic File Provider directory
+      - type: bind
+        source: /var/run/docker.sock
+        target: /var/run/docker.sock
+        read_only: true
+        bind:
+          create_host_path: true
+      - type: bind
+        source: /etc/localtime
+        target: /etc/localtime
+        read_only: true
+        bind:
+          create_host_path: true
+      - type: bind
+        source: $DOCKERDIR/appdata/traefik3
+        target: /rules
+        bind:
+          create_host_path: true
       - ${COMMON_CONFIG_PATH}/traefik3/letsencrypt:/letsencrypt # Certs Directory
       # - ${COMMON_CONFIG_PATH}/traefik3/acme/acme.json:/acme.json # Certs File
       # - ${COMMON_CONFIG_PATH}/traefik3/acme/:/acme
-      # - $DOCKERDIR/logs/$HOSTNAME/traefik:/logs # Traefik logs
-      - ${COMMON_CONFIG_PATH}/logs/arr/traefik:/logs # Traefik logs
     secrets:
       - cf_dns_api_token
       - basic_auth_credentials
@@ -130,17 +131,13 @@ services:
       - "traefik.http.routers.traefik-secure.service=api@internal"
 
       # # Services - API
-      # - "traefik.http.routers.traefik-secure-rtr.service=api@internal"
       # # - "traefik.http.routers.traefik-secure-rtr.middlewares=test-auth"
-      # # - "traefik.http.middlewares.auth.basicauth.users=${HTPASSWD_FILE}"
       # # Healthcheck/ping
       # #- "traefik.http.routers.ping.rule=Host(`traefik.$DOMAINNAME_HS`) && Path(`/ping`)"
       # #- "traefik.http.routers.ping.tls=true"
       # #- "traefik.http.routers.ping.service=ping@internal"
       # # - traefik.http.routers.traefik-secure-rtr.tls.certresolver=cloudflare-dns"
       # # Middlewares
-      # # - "traefik.http.middlewares.traefik-secure-rtr.basicauth.usersfile=/run/secrets/basic_auth_credentials"
-      # #  - "traefik.http.middlewares.test-auth.basicauth.users=
       # # - "traefik.http.routers.traefik-secure-rtr.middlewares=chain-no-auth@file" # For No Authentication
       # # - "traefik.http.routers.traefik-secure-rtr.middlewares=chain-basic-auth@file" # For Basic HTTP Authentication
       # # - "traefik.http.routers.traefik-secure-rtr.middlewares=chain-oauth@file" # For Google OAuth
