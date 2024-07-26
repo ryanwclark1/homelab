@@ -16,6 +16,7 @@ services:
     command: # CLI arguments
       ###### API ######
       - --api=true
+      - --api.insecure=true
       - --api.dashboard=true
       - --api.debug=true
       ###### Entry Points ######
