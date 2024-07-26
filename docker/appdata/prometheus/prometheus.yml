@@ -41,3 +41,9 @@ scrape_configs:
       - targets: ['node-exporter:9100']
         labels:
           alias: 'node'
+
+  - job_name: 'flaresolverr'
+    static_configs:
+      - targets: ['flaresolverr:8191']
+        labels:
+          alias: 'flaresolverr'
