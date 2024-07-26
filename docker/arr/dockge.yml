@@ -14,7 +14,9 @@ services:
       # - socket_proxy
     volumes:
       - ${COMMON_CONFIG_PATH}/dockge:/app/data
-      - ${COMMON_CONFIG_PATH}/test:/opt/stacks
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /opt/stacks:/opt/stacks
+      # - ${COMMON_CONFIG_PATH}/test:/opt/stacks
     environment:
       - DOCKGE_STACKS_DIR=/opt/stacks
       # - DOCKER_HOST=tcp://socket-proxy:2375
