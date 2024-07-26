@@ -14,7 +14,7 @@ services:
       - "traefik.http.routers.whoami.entrypoints=web"
       - "traefik.http.routers.whoami.rule=Host(`whoami.$DOMAINNAME_HS`)"
       - "traefik.http.middlewares.whoami-https-redirect.redirectscheme.scheme=https"
-      - "traefik.http.middlewares.sslheader.headers.customrequestheaders.X-Forwarded-Proto=https"
+      # - "traefik.http.middlewares.sslheader.headers.customrequestheaders.X-Forwarded-Proto=https"
       - "traefik.http.routers.whoami.middlewares=whoami-https-redirect"
       - "traefik.http.routers.whoami-secure.entrypoints=websecure"
       - "traefik.http.routers.whoami-secure.rule=Host(`whoami.$DOMAINNAME_HS`)"
