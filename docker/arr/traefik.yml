@@ -21,8 +21,8 @@ services:
       - --api.debug=true
       ###### Entry Points ######
       - --entrypoints.web.address=:80
-      # - --entrypoints.web.http.redirections.entrypoint.to=websecure
-      # - --entrypoints.web.http.redirections.entrypoint.scheme=https
+      - --entrypoints.web.http.redirections.entrypoint.to=websecure
+      - --entrypoints.web.http.redirections.entrypoint.scheme=https
       - --entrypoints.websecure.address=:443
       - --entrypoints.websecure.forwardedHeaders.trustedIPs=$CLOUDFLARE_IPS,$LOCAL_IPS
       - --entrypoints.websecure.http.tls=true
@@ -56,7 +56,7 @@ services:
       - --certificatesresolvers.cloudflare-dns.acme.storage=/letsencrypt/acme.json
       - --certificatesresolvers.cloudflare-dns.acme.caserver=https://acme-staging-v02.api.letsencrypt.org/directory # LetsEncrypt Staging Server
       # - --certificatesresolvers.cloudflare-dns.acme.caserver=https://acme-v02.api.letsencrypt.org/directory
-      - --certificatesresolvers.cloudflare-dns.acme.dnschallenge=true"
+      - --certificatesresolvers.cloudflare-dns.acme.dnschallenge=true
       - --certificatesresolvers.cloudflare-dns.acme.dnschallenge.provider=cloudflare
       - --certificatesResolvers.cloudflare-dns.acme.dnsChallenge.resolvers=1.1.1.1:53,1.0.0.1:53
       - --certificatesResolvers.cloudflare-dns.acme.dnsChallenge.delayBeforeCheck=90 # To delay DNS check and reduce LE hitrate
@@ -102,9 +102,11 @@ services:
         target: /rules
         bind:
           create_host_path: true
-      - ${COMMON_CONFIG_PATH}/traefik3/letsencrypt:/letsencrypt # Certs Directory
-      # - ${COMMON_CONFIG_PATH}/traefik3/acme/acme.json:/acme.json # Certs File
-      # - ${COMMON_CONFIG_PATH}/traefik3/acme/:/acme
+      - type: bind
+        source: ${COMMON_CONFIG_PATH}/traefik3/letsencrypt/acme.json
+        target: /letsencrypt/acme.json
+        bind:
+          create_host_path: true
     secrets:
       - cf_dns_api_token
       - basic_auth_credentials
@@ -125,10 +127,10 @@ services:
       - "traefik.http.routers.traefik-secure.entrypoints=websecure"
       - "traefik.http.routers.traefik-secure.rule=Host(`traefik.$DOMAINNAME_HS`)"
       - "traefik.http.routers.traefik-secure.middlewares=traefik-auth"
-      # - "traefik.http.routers.traefik-secure.tls=true"
-      # - "traefik.http.routers.traefik-secure.tls.certresolver=cloudflare-dns"
-      # - "traefik.http.routers.traefik-secure.tls.domains[0].main=$DOMAINNAME_HS"
-      # - "traefik.http.routers.traefik-secure.tls.domains[0].sans=*.$DOMAINNAME_HS"
+      - "traefik.http.routers.traefik-secure.tls=true"
+      - "traefik.http.routers.traefik-secure.tls.certresolver=cloudflare"
+      - "traefik.http.routers.traefik-secure.tls.domains[0].main=$DOMAINNAME_HS"
+      - "traefik.http.routers.traefik-secure.tls.domains[0].sans=*.$DOMAINNAME_HS"
       - "traefik.http.routers.traefik-secure.service=api@internal"
 
       # # Services - API
