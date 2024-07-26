@@ -93,10 +93,10 @@ services:
         published: "443"
         protocol: tcp
         mode: host
-      - target: 8080
-        published: "8088"
-        protocol: tcp
-        mode: host
+      # - target: 8080
+      #   published: "8088"
+      #   protocol: tcp
+      #   mode: host
     volumes:
       - type: bind
         source: /var/run/docker.sock

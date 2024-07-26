@@ -39,7 +39,7 @@ services:
       DN_SONARR_0_URL: http://sonarr:8989
       DN_SONARR_0_API_KEY: $SONARR_API_KEY
       DN_QBIT_0_NAME: qbittorrent
-      DN_QBIT_0_URL: http://gluetun:8080
+      DN_QBIT_0_URL: http://gluetun:8089
       DN_QBIT_0_USER: $QBITTORRENT_USER
       DN_QBIT_0_PASS: $QBITTORRENT_PASSWORD
 
