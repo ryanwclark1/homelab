@@ -21,11 +21,11 @@ services:
       - --api.debug=true
       ###### Entry Points ######
       - --entrypoints.web.address=:80
-      - --entrypoints.web.http.redirections.entrypoint.to=websecure
-      - --entrypoints.web.http.redirections.entrypoint.scheme=https
+      # - --entrypoints.web.http.redirections.entrypoint.to=websecure
+      # - --entrypoints.web.http.redirections.entrypoint.scheme=https
       - --entrypoints.websecure.address=:443
       - --entrypoints.websecure.forwardedHeaders.trustedIPs=$CLOUDFLARE_IPS,$LOCAL_IPS
-      # - --entrypoints.websecure.http.tls=true
+      - --entrypoints.websecure.http.tls=true
       - --entryPoints.metrics.address=:8082
       ###### Servers Transport ######
       - --serversTransport.insecureSkipVerify=true
