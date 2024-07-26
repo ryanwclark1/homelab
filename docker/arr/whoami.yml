@@ -23,7 +23,7 @@ services:
       - "traefik.http.routers.whoami-secure.service=whoami"
       # - "traefik.http.services.whoami.loadbalancer.server.scheme=https"
       # - "traefik.http.services.whoami.loadbalancer.server.port=8989"
-      - "traefik.docker.network=t3_proxy"
+      # - "traefik.docker.network=t3_proxy"
 
       # - "traefik.enable=true"
       # # HTTP Routers
