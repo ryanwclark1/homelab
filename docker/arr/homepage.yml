@@ -9,7 +9,7 @@ services:
     profiles: ["apps", "all"]
     networks:
       - t3_proxy
-      - socket_proxy
+      # - socket_proxy
     ports:
       - mode: ingress
         target: 3000
