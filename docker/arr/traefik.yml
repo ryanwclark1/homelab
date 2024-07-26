@@ -125,10 +125,10 @@ services:
       - "traefik.http.routers.traefik-secure.entrypoints=websecure"
       - "traefik.http.routers.traefik-secure.rule=Host(`traefik.$DOMAINNAME_HS`)"
       - "traefik.http.routers.traefik-secure.middlewares=traefik-auth"
-      - "traefik.http.routers.traefik-secure.tls=true"
-      - "traefik.http.routers.traefik-secure.tls.certresolver=cloudflare-dns"
-      - "traefik.http.routers.traefik-secure.tls.domains[0].main=$DOMAINNAME_HS"
-      - "traefik.http.routers.traefik-secure.tls.domains[0].sans=*.$DOMAINNAME_HS"
+      # - "traefik.http.routers.traefik-secure.tls=true"
+      # - "traefik.http.routers.traefik-secure.tls.certresolver=cloudflare-dns"
+      # - "traefik.http.routers.traefik-secure.tls.domains[0].main=$DOMAINNAME_HS"
+      # - "traefik.http.routers.traefik-secure.tls.domains[0].sans=*.$DOMAINNAME_HS"
       - "traefik.http.routers.traefik-secure.service=api@internal"
 
       # # Services - API
