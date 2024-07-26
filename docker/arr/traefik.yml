@@ -62,25 +62,23 @@ services:
 
       ###### Providers Configuration ######
       - --providers.docker=true
+      - --providers.docker.allowemptyservices=false
       - --providers.docker.endpoint=unix:///var/run/docker.sock # Disable for Socket Proxy. Enable otherwise.
       # - --providers.docker.endpoint=tcp://socket-proxy:2375 # Enable for Socket Proxy. Disable otherwise.
-      - --providers.docker.exposedByDefault=false
+      - --providers.docker.exposedbydefault=true
+      - --providers.docker.httpclienttimeout=0
       - --providers.docker.network=t3_proxy
-      # - --providers.docker.swarmMode=false # Traefik v2 Swarm
-      # - --providers.swarm.endpoint=tcp://127.0.0.1:2377 # Traefik v3 Swarm
+      - --providers.docker.watch=true
+
       - --providers.file.directory=/rules # Load dynamic configuration from one or more .toml or .yml files in a directory
-      - --providers.file.watch=true # Only works on top level files in the rules folder
-
-
-
-
+      - --providers.file.watch=true
 
       ###### Metrics Configuration ######
       - --metrics.prometheus=true
-      - --metrics.prometheus.buckets=0.1,0.3,1.2,5.0
-      - --metrics.prometheus.addEntryPointsLabels=true
+      - --metrics.prometheus.addentrypointslabels=true
       - --metrics.prometheus.addrouterslabels=true
-      - --metrics.prometheus.addServicesLabels=true
+      - --metrics.prometheus.addserviceslabels=true
+      - --metrics.prometheus.buckets=0.1,0.3,1.2,5.0
       - --metrics.prometheus.entryPoint=metrics
     healthcheck:
      test: ["CMD", "traefik", "healthcheck", "--ping"]
