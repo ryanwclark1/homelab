@@ -16,7 +16,11 @@ services:
     devices:
       - /dev/net/tun
     ports:
-      - "${QBIT_WEBUI_PORT:-8080}:8080" # Exposing qBittorrent through Docker Host LAN IP
+      # Exposing qBittorrent through Docker Host LAN IP
+      - mode: ingress
+        target: 8080
+        published: "${QBIT_PORT:-8080}"
+        protocol: tcp
       - 6881:6881
       - 6881:6881/udp
     #   - 8888:8888/tcp # HTTP proxy
@@ -61,7 +65,7 @@ services:
       - "traefik.http.routers.qbit-gluetun-secure.tls=true"
       - "traefik.http.routers.qbit-gluetun-secure.service=qbit-gluetun"
       - "traefik.http.services.qbit-gluetun.loadbalancer.server.scheme=https"
-      - "traefik.http.services.qbit-gluetun.loadbalancer.server.port=8080" #${QBIT_WEBUI_PORT:-8080}
+      - "traefik.http.services.qbit-gluetun.loadbalancer.server.port=8080"
       - "traefik.docker.network=t3_proxy"
 
 

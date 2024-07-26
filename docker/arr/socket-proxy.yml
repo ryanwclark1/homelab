@@ -2,7 +2,7 @@ services:
   # Docker Socket Proxy - Security Enchanced Proxy for Docker Socket
   socket-proxy:
     container_name: socket-proxy
-    image: tecnativa/docker-socket-proxy
+    image: lscr.io/linuxserver/socket-proxy:latest
     security_opt:
       - no-new-privileges:true
     restart: unless-stopped
@@ -25,8 +25,9 @@ services:
         target: /var/run/docker.sock
         bind:
           create_host_path: true
+    tmpfs:
+      - /run
     environment:
-      LOG_LEVEL: info # debug,info,notice,warning,err,crit,alert,emerg
       ALLOW_START: ${SOCKET_PROXY_ALLOW_START:-0}
       ALLOW_STOP: ${SOCKET_PROXY_ALLOW_STOP:-0}
       ALLOW_RESTARTS: ${SOCKET_PROXY_ALLOW_RESTARTS:-0}
