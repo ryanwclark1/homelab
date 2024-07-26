@@ -132,6 +132,8 @@ services:
       - "traefik.http.routers.traefik-secure.tls.domains[0].main=$DOMAINNAME_HS"
       - "traefik.http.routers.traefik-secure.tls.domains[0].sans=*.$DOMAINNAME_HS"
       - "traefik.http.routers.traefik-secure.service=api@internal"
+      - "traefik.http.services.api@internal.loadbalancer.server.port=80"
+      - "traefik.docker.network=t3_proxy"
 
       # # Services - API
       # # - "traefik.http.routers.traefik-secure-rtr.middlewares=test-auth"
