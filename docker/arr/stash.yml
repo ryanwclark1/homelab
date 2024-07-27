@@ -49,8 +49,7 @@ services:
         published: "9999"
         protocol: tcp
     devices:
-      # - /dev/dri/renderD128:/dev/dri/renderD128
-      - /dev/dri:/dev/dri
+      - /dev/dri/renderD128:/dev/dri/renderD128
     environment:
       PUID: ${PUID:-1000}
       PGID: ${PGID:-1000}
