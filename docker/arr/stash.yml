@@ -50,6 +50,7 @@ services:
         protocol: tcp
     devices:
       - /dev/dri/renderD128:/dev/dri/renderD128
+    user: $PUID:$PGID
     environment:
       PUID: ${PUID:-1000}
       PGID: ${PGID:-1000}
