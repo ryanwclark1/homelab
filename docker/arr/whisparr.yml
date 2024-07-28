@@ -19,7 +19,7 @@ services:
       TZ: ${TZ:-Etc/UTC}
       UMASK_SET: ${UMASK_SET:-022}
       WHISPARR_API_KEY: ${WHISPARR_API_KEY}
-      WHISPARR_URL: ${WHISPARR_URL:-https://whisparr.$DOMAINNAME_HS}
+      WHISPARR_URL: ${WHISPARR_URL:-https://whisparr.$DOMAINNAME}
     volumes:
       - type: bind
         source: /etc/localtime
@@ -40,12 +40,12 @@ services:
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.whisparr.entrypoints=web"
-      - "traefik.http.routers.whisparr.rule=Host(`whisparr.$DOMAINNAME_HS`)"
+      - "traefik.http.routers.whisparr.rule=Host(`whisparr.$DOMAINNAME`)"
       - "traefik.http.middlewares.whisparr-https-redirect.redirectscheme.scheme=https"
       - "traefik.http.middlewares.sslheader.headers.customrequestheaders.X-Forwarded-Proto=https"
       - "traefik.http.routers.whisparr.middlewares=whisparr-https-redirect"
       - "traefik.http.routers.whisparr-secure.entrypoints=websecure"
-      - "traefik.http.routers.whisparr-secure.rule=Host(`whisparr.$DOMAINNAME_HS`)"
+      - "traefik.http.routers.whisparr-secure.rule=Host(`whisparr.$DOMAINNAME`)"
       - "traefik.http.routers.whisparr-secure.tls=true"
       - "traefik.http.routers.whisparr-secure.tls.certresolver=cloudflare-dns"
       - "traefik.http.routers.whisparr-secure.service=whisparr"

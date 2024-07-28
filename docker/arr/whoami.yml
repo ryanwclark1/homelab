@@ -12,12 +12,12 @@ services:
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.whoami.entrypoints=web"
-      - "traefik.http.routers.whoami.rule=Host(`whoami.$DOMAINNAME_HS`)"
+      - "traefik.http.routers.whoami.rule=Host(`whoami.$DOMAINNAME`)"
       - "traefik.http.middlewares.whoami-https-redirect.redirectscheme.scheme=https"
       - "traefik.http.middlewares.sslheader.headers.customrequestheaders.X-Forwarded-Proto=https"
       - "traefik.http.routers.whoami.middlewares=whoami-https-redirect"
       - "traefik.http.routers.whoami-secure.entrypoints=websecure"
-      - "traefik.http.routers.whoami-secure.rule=Host(`whoami.$DOMAINNAME_HS`)"
+      - "traefik.http.routers.whoami-secure.rule=Host(`whoami.$DOMAINNAME`)"
       - "traefik.http.routers.whoami-secure.tls=true"
       - "traefik.http.routers.whoami-secure.tls.certresolver=cloudflare-dns"
       - "traefik.http.routers.whoami-secure.service=whoami"
@@ -28,7 +28,7 @@ services:
       # - "traefik.enable=true"
       # # HTTP Routers
       # - "traefik.http.routers.whoami-rtr.entrypoints=websecure"
-      # - "traefik.http.routers.whoami-rtr.rule=Host(`whoami.$DOMAINNAME_HS`)"
+      # - "traefik.http.routers.whoami-rtr.rule=Host(`whoami.$DOMAINNAME`)"
       # # Middlewares
       # # - "traefik.http.routers.whoami-rtr.middlewares=chain-oauth@file"
       # # HTTP Services
