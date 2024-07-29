@@ -44,9 +44,9 @@ services:
       PUID: ${PUID:-1000}
       TZ: ${TZ:-Etc/UTC}
       # Wireguard
-      VPN_SERVICE_PROVIDER: ${VPN_SERVICE_PROVIDER:-nordvpn}
+      VPN_SERVICE_PROVIDER: ${VPN_PROVIDER:-nordvpn}
       VPN_TYPE: ${VPN_TYPE:-wireguard}
-      WIREGUARD_PRIVATE_KEY: ${NORD_KEY}
+      WIREGUARD_PRIVATE_KEY: ${VPN_KEY}
       # WIREGUARD_ADDRESSES: ${WIREGUARD_ADDRESSES:-10.14.0.2/16}
       SERVER_COUNTRIES: Netherlands
       # # OpenVPN
