@@ -1,7 +1,7 @@
 services:
   # Bazarr Exporter - Bazarr metrics for Prometheus
   bazarr-exporter:
-    image: ghcr.io/onedr0p/exportarr:latest
+    image: ghcr.io/onedr0p/exportarr:${EXPORTARR:-latest}
     container_name: bazarr-exporter
     security_opt:
       - no-new-privileges:true

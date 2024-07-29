@@ -2,7 +2,7 @@ services:
   # Node Exporter - Metrics to Prometheus
   node-exporter:
     container_name: node-exporter
-    image: prom/node-exporter:latest
+    image: prom/node-exporter:${NODE_EXPORTER_TAG:-latest}
     security_opt:
       - no-new-privileges:true
     restart: unless-stopped

@@ -1,6 +1,6 @@
 services:
   stash:
-    image: ghcr.io/hotio/stash:latest
+    image: ghcr.io/hotio/stash:${STASH_TAG:-latest}
     container_name: stash
     restart: "no"
     profiles: ["media", "apps", "all"]

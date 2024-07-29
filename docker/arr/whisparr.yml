@@ -1,6 +1,6 @@
 services:
   whisparr:
-    image: ghcr.io/hotio/whisparr:latest
+    image: ghcr.io/hotio/whisparr:${WHISPARR_TAG:-latest}
     container_name: whisparr
     security_opt:
       - no-new-privileges:true
@@ -17,8 +17,8 @@ services:
       PUID: ${PUID:-1000}
       PGID: ${PGID:-1000}
       TZ: ${TZ:-Etc/UTC}
-      UMASK_SET: ${UMASK_SET:-022}
-      WHISPARR_API_KEY: ${WHISPARR_API_KEY}
+      # UMASK_SET: ${UMASK_SET:-022}
+      # WHISPARR_API_KEY: ${WHISPARR_API_KEY}
       WHISPARR_URL: ${WHISPARR_URL:-https://whisparr.$DOMAINNAME}
     volumes:
       - type: bind
