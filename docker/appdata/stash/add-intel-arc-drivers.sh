@@ -1,3 +1,3 @@
-#!/command/with-contenv bash
+#!/command/with-contenv sh
 
 apk add --no-cache intel-media-driver
