@@ -43,6 +43,11 @@ services:
         target: /generated
         bind:
           create_host_path: true
+      - type: bind
+        source: $DOCKERDIR/appdata/stash/add-intel-arc-drivers.sh
+        target: /etc/cont-init.d/99-my-script
+        bind:
+          create_host_path: true
     ports:
       - mode: ingress
         target: 9999
