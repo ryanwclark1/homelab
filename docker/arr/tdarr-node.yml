@@ -4,7 +4,7 @@ services:
     image: ghcr.io/haveagitgat/tdarr_node:${TDARR_NODE_TAG:-latest}
     restart: unless-stopped
     profiles: ["media", "all"]
-    network_mode:
+    networks:
       - t3_proxy
     # ports:
     #   - mode: ingress
