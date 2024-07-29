@@ -55,6 +55,9 @@ include:
   # - arr/authelia.yml
   # - arr/portainer.yml
   - arr/dockge.yml
+  # Media
+  - arr/tdarr-server.yml
+  - arr/tdarr-node.yml
   # SECURITY
   # - arr/crowdsec.yml
   # - arr/traefik-bouncer.yml
