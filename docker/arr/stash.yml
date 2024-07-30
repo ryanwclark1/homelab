@@ -6,6 +6,10 @@ services:
     profiles: ["media", "apps", "all"]
     networks:
       - t3_proxy
+    security_opt:
+      - seccomp=unconfined
+    group_add:
+      - video
 
     ports:
       - mode: ingress
