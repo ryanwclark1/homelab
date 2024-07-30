@@ -10,7 +10,7 @@ services:
       - seccomp=unconfined
     group_add:
       - video
-      - sgx
+
       - render
 
     ports:
