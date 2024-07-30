@@ -20,8 +20,8 @@ services:
 
     environment:
       TZ: ${TZ:-Etc/UTC}
-      PUID: ${PUID:-1000}
-      PGID: ${PGID:-1000}
+      PUID: 0
+      PGID: 0
       STASH_HOST: ${STASH_HOST:-0.0.0.0}
       STASH_PORT: ${STASH_PORT:-9999}
       # STASH_EXTERNAL_HOST=stash.$DOMAINNAME
