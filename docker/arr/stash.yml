@@ -9,8 +9,8 @@ services:
     security_opt:
       - seccomp=unconfined
     group_add:
-      - video
-      - 104
+      - 44
+      - 106
 
     ports:
       - mode: ingress
