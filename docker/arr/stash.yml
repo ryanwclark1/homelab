@@ -10,8 +10,7 @@ services:
       - seccomp=unconfined
     group_add:
       - video
-
-      - render
+      - 104
 
     ports:
       - mode: ingress
