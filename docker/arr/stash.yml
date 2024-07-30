@@ -1,7 +1,6 @@
 services:
   stash:
-    image: stashapp/stash:${STASH_TAG:-latest}
-    # image: ghcr.io/hotio/stash:${STASH_TAG:-latest}
+    image: ghcr.io/hotio/stash:${STASH_TAG:-latest}
     container_name: stash
     restart: "no"
     profiles: ["media", "apps", "all"]
@@ -21,7 +20,7 @@ services:
           create_host_path: true
       - type: bind
         source: ${COMMON_CONFIG_PATH}/stash/config
-        target: /root/.stash
+        target: /config
         bind:
           create_host_path: true
       - type: bind
@@ -44,11 +43,11 @@ services:
         target: /generated
         bind:
           create_host_path: true
-      # - type: bind
-      #   source: $DOCKERDIR/appdata/stash/add-intel-arc-drivers.sh
-      #   target: /etc/cont-init.d/99-my-script
-      #   bind:
-      #     create_host_path: true
+      - type: bind
+        source: $DOCKERDIR/appdata/stash/add-intel-arc-drivers.sh
+        target: /etc/cont-init.d/99-my-script
+        bind:
+          create_host_path: true
     ports:
       - mode: ingress
         target: 9999
