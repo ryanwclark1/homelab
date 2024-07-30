@@ -11,6 +11,7 @@ services:
     group_add:
       - video
       - sgx
+      - render
 
     ports:
       - mode: ingress
