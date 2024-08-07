@@ -95,4 +95,5 @@ services:
 
 volumes:
   grafana_data:
-    driver: local
+    external: false
+    name: grafana_data
