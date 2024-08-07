@@ -21,6 +21,8 @@ x-common: &common
 include:
   - ./grafana.yml
   - ./prometheus.yml
+  - ./alertmanager.yml
+  - ./renderer.yml
 # services:
 # prometheus:
 #   image: prom/prometheus:${PROMETHEUS_TAG:-v2.53.1}
