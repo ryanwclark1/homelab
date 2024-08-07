@@ -3,10 +3,10 @@ services:
   grafana:
     image: grafana/grafana-oss:${GRAFANA_TAG:-11.1.1-ubuntu}
     container_name: grafana
-    security_opt:
-      - no-new-privileges:true
+    # security_opt:
+    #   - no-new-privileges:true
     restart: unless-stopped
-    profiles: ["apps", "exporter", "all"]
+    profiles: ["monitoring", "all"]
     networks:
       - t3_proxy
     ports:
@@ -66,6 +66,8 @@ services:
       # GF_LOG_MODE: ${GF_LOG_MODE:-"file"}
       GF_LOG_LEVEL: ${GF_LOG_LEVEL:-info}
       GF_PLUGINS_ENABLE_ALPHA: ${GF_PLUGINS_ENABLE_ALPHA:-true}
+      GF_RENDERING_SERVER_URL: ${GF_RENDERING_SERVER_URL:-http://renderer:8081/render}
+      GF_RENDERING_CALLBACK_URL: ${GF_RENDERING_SERVER_URL:-http://grafana:3000/}
       GF_INSTALL_PLUGINS: "grafana-clock-panel,grafana-simple-json-datasource,grafana-worldmap-panel,grafana-piechart-panel,cloudflare-app"
     labels:
       - "traefik.enable=true"
@@ -82,6 +84,11 @@ services:
       # - "traefik.http.services.grafana.loadbalancer.server.scheme=https"
       - "traefik.http.services.grafana.loadbalancer.server.port=3030"
       - "traefik.docker.network=t3_proxy"
+  logging:
+    driver: loki
+    options:
+      loki-url: "http://loki:3100/loki/api/v1/push"
+      loki-external-labels: "container_name={{.Name}}"
 
 volumes:
   grafana_data:

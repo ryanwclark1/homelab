@@ -84,7 +84,7 @@ include:
   - arr/stash.yml
   # MONITORING
   - arr/prometheus.yml
-  - arr/grafana.yml
+  # - arr/grafana.yml
   # - arr/uptime-kuma.yml
   # - arr/dozzle.yml
   # - arr/scrutiny.yml
