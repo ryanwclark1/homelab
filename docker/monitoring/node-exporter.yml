@@ -1,0 +1,32 @@
+services:
+  # Node Exporter - Metrics to Prometheus
+  node-exporter:
+    container_name: node-exporter
+    image: prom/node-exporter:${NODE_EXPORTER_TAG:-latest}
+    security_opt:
+      - no-new-privileges:true
+    profiles: ["exporter", "all"]
+    ports:
+      - mode: ingress
+        target: 9100
+        published: "9100"
+        protocol: tcp
+    volumes:
+      - /proc:/host/proc:ro
+      - /sys:/host/sys:ro
+      - /:/rootfs:ro
+    command:
+      - '--path.procfs=/host/proc'
+      - '--path.sysfs=/host/sys'
+      - --collector.filesystem.ignored-mount-points
+      - "^/(sys|proc|dev|host|etc|rootfs/var/lib/docker/containers|rootfs/var/lib/docker/overlay2|rootfs/run/docker/netns|rootfs/var/lib/docker/aufs)($$|/)"
+    restart: unless-stopped
+    networks:
+      - monitoring-services
+    logging:
+      driver: loki
+      options:
+        loki-url: "http://loki:3100/loki/api/v1/push"
+        loki-external-labels: "container_name={{.Name}}"
+    labels:
+      org.label-schema.group: "monitoring"

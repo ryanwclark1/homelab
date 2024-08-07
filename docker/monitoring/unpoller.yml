@@ -3,6 +3,11 @@ services:
     image: ghcr.io/unpoller/unpoller:${UP_POLLER_TAG:-latest}
     container_name: unpoller
     profiles: ["exporter", "all"]
+    ports:
+      - mode: ingress
+        target: 9130
+        published: "9130"
+        protocol: tcp
     environment:
       - UP_INFLUXDB_DISABLE=${UP_INFLUXDB_DISABLE:-true}
       - UP_LOKI_URL=${UP_LOKI_URL:-http://loki:3100}

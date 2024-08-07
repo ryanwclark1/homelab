@@ -11,7 +11,10 @@ services:
           create_host_path: true
       # - $DOCKERDIR/appdata/loki:/etc/loki
     ports:
-      - "3100:3100"
+      - mode: ingress
+        target: 3100
+        published: "3100"
+        protocol: tcp
     command: -config.file=/etc/loki/loki-config.yml
     restart: unless-stopped
     networks:

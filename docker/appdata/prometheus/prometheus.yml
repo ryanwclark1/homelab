@@ -26,11 +26,11 @@ scrape_configs:
     static_configs:
       - targets: ['localhost:9090']
 
-  # - job_name: 'cadvisor'
-  #   static_configs:
-  #     - targets: ['cadvisor:8080']
-  #       labels:
-  #         alias: 'cadvisor'
+  - job_name: 'cadvisor'
+    static_configs:
+      - targets: ['cadvisor:8080']
+        labels:
+          alias: 'cadvisor'
 
   # - job_name: 'lidarr'
   #   static_configs:
@@ -56,11 +56,11 @@ scrape_configs:
   #       labels:
   #         alias: 'traefik'
 
-  # - job_name: 'node-exporter-monitoring'
-  #   static_configs:
-  #     - targets: ['node-exporter:9100']
-  #       labels:
-  #         alias: 'node'
+  - job_name: 'node-exporter-monitoring'
+    static_configs:
+      - targets: ['node-exporter:9100']
+        labels:
+          alias: 'node'
 
   # - job_name: 'flaresolverr'
   #   static_configs:
@@ -68,30 +68,30 @@ scrape_configs:
   #       labels:
   #         alias: 'flaresolverr'
 
-  # - job_name: 'node-exporter-peter'
-  #   static_configs:
-  #     - targets: ['10.10.100.190:9100']
-  #       labels:
-  #         alias: 'node-exporter-peter'
+  - job_name: 'node-exporter-peter'
+    static_configs:
+      - targets: ['10.10.100.190:9100']
+        labels:
+          alias: 'node-exporter-peter'
 
-  # - job_name: 'graphite-exporter-proxmox'
-  #   static_configs:
-  #     - targets: ['graphite-exporter:9108']
-  #       labels:
-  #         alias: 'graphite-exporter-proxmox'
+  - job_name: 'graphite-exporter-proxmox'
+    static_configs:
+      - targets: ['graphite-exporter:9108']
+        labels:
+          alias: 'graphite-exporter-proxmox'
 
-  # - job_name: 'graphite-exporter-truenas'
-  #   static_configs:
-  #     - targets: ['graphite-exporter:9107']
-  #       labels:
-  #         alias: 'graphite-exporter-truenas'
+  - job_name: 'graphite-exporter-truenas'
+    static_configs:
+      - targets: ['graphite-exporter:9107']
+        labels:
+          alias: 'graphite-exporter-truenas'
 
-  # - job_name: 'unpoller'
-  #   static_configs:
-  #     - targets: ['unpoller:9130']
-  #       labels:
-  #         alias: 'unpoller'
-  #   scrape_interval: 30s
+  - job_name: 'unpoller'
+    static_configs:
+      - targets: ['unpoller:9130']
+        labels:
+          alias: 'unpoller'
+    scrape_interval: 30s
 
   # - job_name: 'tdarr-exporter'
   #   static_configs:

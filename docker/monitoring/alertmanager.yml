@@ -4,7 +4,10 @@ services:
     container_name: alertmanager
     profiles: ["monitoring", "exporter", "all"]
     ports:
-      - 9093:9093
+      - mode: ingress
+        target: 9030
+        published: "9030"
+        protocol: tcp
     volumes:
       - type: bind
         source: $DOCKERDIR/appdata/alertmanager/config.yml
