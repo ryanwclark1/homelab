@@ -2,6 +2,7 @@ services:
   pushgateway:
     image: prom/pushgateway:${PUSHGATEWAY_TAG:-v1.9.0}
     container_name: pushgateway
+    profiles: ["monitoring", "exporter", "all"]
     command:
       - "--web.enable-admin-api"
     expose:

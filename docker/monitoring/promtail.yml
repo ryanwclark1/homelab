@@ -2,9 +2,20 @@ services:
   promtail:
     image: grafana/promtail:main
     container_name: promtail
+    profiles: ["logging", "all"]
     volumes:
-      - /var/log:/var/log
-      - $DOCKERDIR/appdata/promtail:/etc/promtail
+      - type: bind
+        source: /var/log
+        target: /var/log
+        bind:
+          create_host_path: false
+      - type: bind
+        source: $DOCKERDIR/appdata/promtail
+        target: /etc/promtail
+        bind:
+          create_host_path: true
+      # - /var/log:/var/log
+      # - $DOCKERDIR/appdata/promtail:/etc/promtail
     command: "-config.file=/etc/promtail/promtail-config.yml"
     restart: unless-stopped
     networks:

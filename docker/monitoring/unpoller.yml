@@ -2,6 +2,7 @@ services:
   unpoller:
     image: ghcr.io/unpoller/unpoller:${UP_POLLER_TAG:-latest}
     container_name: unpoller
+    profiles: ["monitoring", "exporter", "all"]
     environment:
       - UP_INFLUXDB_DISABLE=${UP_INFLUXDB_DISABLE:-true}
       - UP_LOKI_URL=${UP_LOKI_URL:-http://loki:3100}
