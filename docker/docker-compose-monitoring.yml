@@ -28,6 +28,12 @@ include:
   - monitoring/alertmanager.yml
   - monitoring/cadvisor.yml
   - monitoring/grafana.yml
+  - monitoring/graphite-exporter-proxmox.yml
+  - monitoring/graphite-exporter-truenas.yml
+  - monitoring/loki.yml
   - monitoring/prometheus.yml
+  - monitoring/promtail.yml
+  - monitoring/pushgateway.yml
   - monitoring/renderer.yml
+  # - monitoring/tdarr-exporter.yml
   - monitoring/unpoller.yml

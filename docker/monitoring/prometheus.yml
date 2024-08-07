@@ -40,7 +40,7 @@ services:
       - "traefik.http.routers.prometheus-secure.service=prometheus"
       # - "traefik.http.services.prometheus.loadbalancer.server.scheme=https"
       - "traefik.http.services.prometheus.loadbalancer.server.port=9090"
-      - "traefik.docker.network=t3_proxy"
+      - "traefik.docker.network=monitoring-services"
     restart: unless-stopped
     networks:
       # - t3_proxy

@@ -1,8 +1,8 @@
 services:
   graphite-exporter-truenas:
     image: prom/graphite-exporter:${GRAPHITE_EXPORTER_TAG:-v0.15.1}
-    <<: *common
     container_name: graphite-exporter-truenas
+    profiles: ["exporter", "all"]
     volumes:
       - type: bind
         source: $DOCKERDIR/appdata/graphite-exporter/graphite_mapping_truenas.yml

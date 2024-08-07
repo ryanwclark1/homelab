@@ -2,7 +2,7 @@ services:
   tdarr-exporter:
     image: homeylab/tdarr-exporter:${TDARR_EXPORTER_TAG:-1.2.0}
     container_name: tdarr-exporter
-    profiles: ["monitoring", "exporter", "all"]
+    profiles: ["exporter", "all"]
     environment:
       - TDARR_URL=${TDARR_URL:-http://tdarr:8265}
       - LOG_LEVEL=${TDARR_LOG_LEVEL:-info}
