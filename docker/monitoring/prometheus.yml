@@ -3,11 +3,8 @@ services:
   prometheus:
     image: prom/prometheus:${PROMETHEUS_TAG:-v2.53.1}
     container_name: prometheus
-    networks:
-      - t3_proxy
     # security_opt:
     #   - no-new-privileges:true
-    restart: unless-stopped
     profiles: ["monitoring", "exporter", "all"]
     ports:
       - mode: ingress
@@ -37,6 +34,7 @@ services:
       - '--web.external-url=http://127.0.0.1:9090'
       - '--storage.tsdb.retention.time=12d'
     labels:
+      - "org.label-schema.group=monitoring"
       - "traefik.enable=true"
       - "traefik.http.routers.prometheus.entrypoints=web"
       - "traefik.http.routers.prometheus.rule=Host(`prometheus.$DOMAINNAME`)"
@@ -51,8 +49,16 @@ services:
       # - "traefik.http.services.prometheus.loadbalancer.server.scheme=https"
       - "traefik.http.services.prometheus.loadbalancer.server.port=9090"
       - "traefik.docker.network=t3_proxy"
-  logging:
-    driver: loki
-    options:
-      loki-url: "http://loki:3100/loki/api/v1/push"
-      loki-external-labels: "container_name={{.Name}}"
+    restart: unless-stopped
+    networks:
+      # - t3_proxy
+      - monitoring-services
+    logging:
+      driver: loki
+      options:
+        loki-url: "http://loki:3100/loki/api/v1/push"
+        loki-external-labels: "container_name={{.Name}}"
+
+volumes:
+  prometheus_data:
+    driver: local

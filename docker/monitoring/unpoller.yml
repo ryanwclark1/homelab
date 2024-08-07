@@ -1,0 +1,33 @@
+services:
+  unpoller:
+    image: ghcr.io/unpoller/unpoller:${POLLER_TAG:-latest}
+    container_name: unpoller
+    environment:
+      - UP_INFLUXDB_DISABLE=${INFLUXDB_DISABLE:-true}
+      - UP_LOKI_URL=${LOKI_URL:-http://loki:3100}
+      - UP_UNIFI_DYNAMIC=${UNIFI_DYNAMIC:-false}
+      - UP_UNIFI_DEFAULT_USER=${UNIFI_USER:-admin}
+      - UP_UNIFI_DEFAULT_PASS=${UNIFI_PASS:-password123}
+      - UP_UNIFI_DEFAULT_URL=${UNIFI_URL:-https://unifi:8443}
+      - UP_UNIFI_DEFAULT_SAVE_ALARMS=${UNIFI_SAVE_ALARMS:-true}
+      - UP_UNIFI_DEFAULT_SAVE_ANOMALIES=${UNIFI_SAVE_ANOMALIES:-true}
+      - UP_UNIFI_DEFAULT_SAVE_DPI=${UNIFI_SAVE_DPI:-true}
+      - UP_UNIFI_DEFAULT_SAVE_EVENTS=${UNIFI_SAVE_EVENTS:-true}
+      - UP_UNIFI_DEFAULT_SAVE_SITES=${UNIFI_SAVE_SITES:-true}
+      - UP_POLLER_DEBUG=${POLLER_DEBUG:-false}
+      - UP_POLLER_QUIET=${POLLER_QUIET:-true}
+      - UP_PROMETHEUS_DISABLE=${PROMETHEUS_DISABLE:-false}
+      - UP_PROMETHEUS_NAMESPACE=${PROMETHEUS_NAMESPACE:-unpoller}
+      - UP_PROMETHEUS_HTTP_LISTEN=${PROMETHEUS_HTTP_LISTEN:-0.0.0.0:9130}
+      - UP_PROMETHEUS_REPORT_ERRORS=${PROMETHEUS_REPORT_ERRORS:-false}
+      - UP_PROMETHEUS_BUFFER=${PROMETHEUS_BUFFER:-50}
+    restart: unless-stopped
+    networks:
+      - monitoring-services
+    logging:
+      driver: loki
+      options:
+        loki-url: "http://loki:3100/loki/api/v1/push"
+        loki-external-labels: "container_name={{.Name}}"
+    labels:
+      org.label-schema.group: "monitoring"

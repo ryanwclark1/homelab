@@ -1,0 +1,26 @@
+services:
+  graphite-exporter-proxmox:
+    image: prom/graphite-exporter:${GRAPHITE_EXPORTER_TAG:-v0.15.1}
+    container_name: graphite-exporter-proxmox
+    volumes:
+      - type: bind
+        source: ./graphite-exporter/graphite_mapping_proxmox.yml
+        target: /etc/graphite-exporter/graphite_mapping.yml
+    command:
+      - --graphite.mapping-config=/etc/graphite-exporter/graphite_mapping.yml
+      - --graphite.listen-address=:2003
+      - --log.level=info
+    ports:
+      - 9108:9108
+      - 2003:2003/tcp
+      - 2003:2003/udp
+    restart: unless-stopped
+    networks:
+      - monitoring-services
+    logging:
+      driver: loki
+      options:
+        loki-url: "http://loki:3100/loki/api/v1/push"
+        loki-external-labels: "container_name={{.Name}}"
+    labels:
+      org.label-schema.group: "monitoring"

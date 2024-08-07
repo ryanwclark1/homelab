@@ -1,0 +1,28 @@
+services:
+  cadvisor:
+    image: gcr.io/cadvisor/cadvisor:${CADVISOR_TAG:-v0.49.1}
+    container_name: cadvisor
+    privileged: true
+    command: --docker_only=true --store_container_labels=false
+    devices:
+      - /dev/kmsg:/dev/kmsg
+    volumes:
+      - /:/rootfs:ro
+      - /var/run:/var/run:rw
+      - /sys:/sys:ro
+      - /var/lib/docker/:/var/lib/docker:ro
+      - /dev/disk/:/dev/disk:ro
+      - /etc/machine-id:/etc/machine-id:ro
+      - /cgroup:/cgroup:ro
+    ports:
+      - 8080:8080
+  restart: unless-stopped
+  networks:
+    - monitoring-services
+  logging:
+    driver: loki
+    options:
+      loki-url: "http://loki:3100/loki/api/v1/push"
+      loki-external-labels: "container_name={{.Name}}"
+  labels:
+    org.label-schema.group: "monitoring"

@@ -1,0 +1,30 @@
+services:
+  alertmanager:
+    image: prom/alertmanager:${ALERTMANAGER_TAG:-v0.27.0}
+    container_name: alertmanager
+    ports:
+      - 9093:9093
+    volumes:
+      - type: bind
+        source: ./alertmanager/config.yml
+        target: /etc/alertmanager/config.yml
+    command:
+      - "--config.file=/etc/alertmanager/config.yml"
+      - "--storage.path=/alertmanager"
+      - "--web.external-url=http://127.0.0.1:9093"
+    deploy:
+      placement:
+        constraints:
+          - node.role==manager
+      restart_policy:
+        condition: on-failure
+  restart: unless-stopped
+  networks:
+    - monitoring-services
+  logging:
+    driver: loki
+    options:
+      loki-url: "http://loki:3100/loki/api/v1/push"
+      loki-external-labels: "container_name={{.Name}}"
+  labels:
+    org.label-schema.group: "monitoring"

@@ -5,10 +5,7 @@ services:
     container_name: grafana
     # security_opt:
     #   - no-new-privileges:true
-    restart: unless-stopped
     profiles: ["monitoring", "all"]
-    networks:
-      - t3_proxy
     ports:
       - mode: ingress
         target: 3000
@@ -70,6 +67,7 @@ services:
       GF_RENDERING_CALLBACK_URL: ${GF_RENDERING_SERVER_URL:-http://grafana:3000/}
       GF_INSTALL_PLUGINS: "grafana-clock-panel,grafana-simple-json-datasource,grafana-worldmap-panel,grafana-piechart-panel,cloudflare-app"
     labels:
+      - "org.label-schema.group=monitoring"
       - "traefik.enable=true"
       - "traefik.http.routers.grafana.entrypoints=web"
       - "traefik.http.routers.grafana.rule=Host(`grafana.$DOMAINNAME`)"
@@ -84,11 +82,16 @@ services:
       # - "traefik.http.services.grafana.loadbalancer.server.scheme=https"
       - "traefik.http.services.grafana.loadbalancer.server.port=3030"
       - "traefik.docker.network=t3_proxy"
+  restart: unless-stopped
+  networks:
+    - monitoring-services
   logging:
     driver: loki
     options:
       loki-url: "http://loki:3100/loki/api/v1/push"
       loki-external-labels: "container_name={{.Name}}"
+  # labels:
+  #   org.label-schema.group: "monitoring"
 
 volumes:
   grafana_data:

@@ -1,5 +1,11 @@
 name: monitoring
 
+networks:
+  monitoring-services:
+    # external: false
+    name: monitoring-services
+    # driver: bridge
+
 x-common: &common
   restart: unless-stopped
   networks:
@@ -12,236 +18,212 @@ x-common: &common
   labels:
     org.label-schema.group: "monitoring"
 
-services:
-  prometheus:
-    image: prom/prometheus:${PROMETHEUS_TAG:-v2.53.1}
-    <<: *common
-    container_name: prometheus
-    volumes:
-      - type: bind
-        source: ./prometheus/prometheus.yml
-        target: /etc/prometheus/prometheus.yml
-      - type: bind
-        source: ./prometheus/alert.rules
-        target: /etc/prometheus/alert.rules
-      - type: volume
-        source: prometheus_data
-        target: /prometheus
-    command:
-      - "--config.file=/etc/prometheus/prometheus.yml"
-      - "--storage.tsdb.path=/prometheus"
-      - "--web.console.libraries=/usr/share/prometheus/console_libraries"
-      - "--web.console.templates=/usr/share/prometheus/consoles"
-      - "--web.external-url=http://127.0.0.1:9090"
-      - "--storage.tsdb.retention.time=12d"
-    ports:
-      - 9090:9090
+include:
+  - ./grafana.yml
+  - ./prometheus.yml
+# services:
+# prometheus:
+#   image: prom/prometheus:${PROMETHEUS_TAG:-v2.53.1}
+#   <<: *common
+#   container_name: prometheus
+#   volumes:
+#     - type: bind
+#       source: ./prometheus/prometheus.yml
+#       target: /etc/prometheus/prometheus.yml
+#     - type: bind
+#       source: ./prometheus/alert.rules
+#       target: /etc/prometheus/alert.rules
+#     - type: volume
+#       source: prometheus_data
+#       target: /prometheus
+#   command:
+#     - "--config.file=/etc/prometheus/prometheus.yml"
+#     - "--storage.tsdb.path=/prometheus"
+#     - "--web.console.libraries=/usr/share/prometheus/console_libraries"
+#     - "--web.console.templates=/usr/share/prometheus/consoles"
+#     - "--web.external-url=http://127.0.0.1:9090"
+#     - "--storage.tsdb.retention.time=12d"
+#   ports:
+#     - 9090:9090
 
-  alertmanager:
-    image: prom/alertmanager:${ALERTMANAGER_TAG:-v0.27.0}
-    <<: *common
-    container_name: alertmanager
-    ports:
-      - 9093:9093
-    volumes:
-      - type: bind
-        source: ./alertmanager/config.yml
-        target: /etc/alertmanager/config.yml
-    command:
-      - "--config.file=/etc/alertmanager/config.yml"
-      - "--storage.path=/alertmanager"
-      - "--web.external-url=http://127.0.0.1:9093"
-    deploy:
-      placement:
-        constraints:
-          - node.role==manager
-      restart_policy:
-        condition: on-failure
+# alertmanager:
+#   image: prom/alertmanager:${ALERTMANAGER_TAG:-v0.27.0}
+#   <<: *common
+#   container_name: alertmanager
+#   ports:
+#     - 9093:9093
+#   volumes:
+#     - type: bind
+#       source: ./alertmanager/config.yml
+#       target: /etc/alertmanager/config.yml
+#   command:
+#     - "--config.file=/etc/alertmanager/config.yml"
+#     - "--storage.path=/alertmanager"
+#     - "--web.external-url=http://127.0.0.1:9093"
+#   deploy:
+#     placement:
+#       constraints:
+#         - node.role==manager
+#     restart_policy:
+#       condition: on-failure
 
-  pushgateway:
-    image: prom/pushgateway:${PUSHGATEWAY_TAG:-v1.9.0}
-    <<: *common
-    container_name: pushgateway
-    command:
-      - "--web.enable-admin-api"
-    expose:
-      - 9091
+# pushgateway:
+#   image: prom/pushgateway:${PUSHGATEWAY_TAG:-v1.9.0}
+#   <<: *common
+#   container_name: pushgateway
+#   command:
+#     - "--web.enable-admin-api"
+#   expose:
+#     - 9091
 
-  # nodeexporter:
-  #   image: prom/node-exporter:v1.8.1
-  #   <<: *common
-  #   container_name: nodeexporter
-  #   volumes:
-  #     - /proc:/host/proc:ro
-  #     - /sys:/host/sys:ro
-  #     - /:/rootfs:ro
-  #   command:
-  #     - '--path.procfs=/host/proc'
-  #     - '--path.rootfs=/rootfs'
-  #     - '--path.sysfs=/host/sys'
-  #     - '--collector.filesystem.mount-points-exclude=^/(sys|proc|dev|host|etc)($$|/)'
-  #   expose:
-  #     - 9100
+# nodeexporter:
+#   image: prom/node-exporter:v1.8.1
+#   <<: *common
+#   container_name: nodeexporter
+#   volumes:
+#     - /proc:/host/proc:ro
+#     - /sys:/host/sys:ro
+#     - /:/rootfs:ro
+#   command:
+#     - '--path.procfs=/host/proc'
+#     - '--path.rootfs=/rootfs'
+#     - '--path.sysfs=/host/sys'
+#     - '--collector.filesystem.mount-points-exclude=^/(sys|proc|dev|host|etc)($$|/)'
+#   expose:
+#     - 9100
 
-  cadvisor:
-    image: gcr.io/cadvisor/cadvisor:${CADVISOR_TAG:-v0.49.1}
-    <<: *common
-    container_name: cadvisor
-    privileged: true
-    command: --docker_only=true --store_container_labels=false
-    devices:
-      - /dev/kmsg:/dev/kmsg
-    volumes:
-      - /:/rootfs:ro
-      - /var/run:/var/run:rw
-      - /sys:/sys:ro
-      - /var/lib/docker/:/var/lib/docker:ro
-      - /dev/disk/:/dev/disk:ro
-      - /etc/machine-id:/etc/machine-id:ro
-      - /cgroup:/cgroup:ro
-    ports:
-      - 8080:8080
+# graphite-exporter-proxmox:
+#   image: prom/graphite-exporter:${GRAPHITE_EXPORTER_TAG:-v0.15.1}
+#   <<: *common
+#   container_name: graphite-exporter-proxmox
+#   volumes:
+#     - type: bind
+#       source: ./graphite-exporter/graphite_mapping_proxmox.yml
+#       target: /etc/graphite-exporter/graphite_mapping.yml
+#   command:
+#     - --graphite.mapping-config=/etc/graphite-exporter/graphite_mapping.yml
+#     - --graphite.listen-address=:2003
+#     - --log.level=info
+#   ports:
+#     - 9108:9108
+#     - 2003:2003/tcp
+#     - 2003:2003/udp
 
-  graphite-exporter-proxmox:
-    image: prom/graphite-exporter:${GRAPHITE_EXPORTER_TAG:-v0.15.1}
-    <<: *common
-    container_name: graphite-exporter-proxmox
-    volumes:
-      - type: bind
-        source: ./graphite-exporter/graphite_mapping_proxmox.yml
-        target: /etc/graphite-exporter/graphite_mapping.yml
-    command:
-      - --graphite.mapping-config=/etc/graphite-exporter/graphite_mapping.yml
-      - --graphite.listen-address=:2003
-      - --log.level=info
-    ports:
-      - 9108:9108
-      - 2003:2003/tcp
-      - 2003:2003/udp
+# graphite-exporter-truenas:
+#   image: prom/graphite-exporter:${GRAPHITE_EXPORTER_TAG:-v0.15.1}
+#   <<: *common
+#   container_name: graphite-exporter-truenas
+#   volumes:
+#     - type: bind
+#       source: ./graphite-exporter/graphite_mapping_truenas.yml
+#       target: /etc/graphite-exporter/graphite_mapping.yml
+#   command:
+#     - --graphite.mapping-config=/etc/graphite-exporter/graphite_mapping.yml
+#     - --graphite.listen-address=:2003
+#     - --log.level=info
+#   ports:
+#     - 9107:9108
+#     - 2002:2003/tcp
+#     - 2002:2003/udp
 
-  graphite-exporter-truenas:
-    image: prom/graphite-exporter:${GRAPHITE_EXPORTER_TAG:-v0.15.1}
-    <<: *common
-    container_name: graphite-exporter-truenas
-    volumes:
-      - type: bind
-        source: ./graphite-exporter/graphite_mapping_truenas.yml
-        target: /etc/graphite-exporter/graphite_mapping.yml
-    command:
-      - --graphite.mapping-config=/etc/graphite-exporter/graphite_mapping.yml
-      - --graphite.listen-address=:2003
-      - --log.level=info
-    ports:
-      - 9107:9108
-      - 2002:2003/tcp
-      - 2002:2003/udp
+# grafana:
+#   image: grafana/grafana:${GRAFANA_TAG:-11.1.0-ubuntu}
+#   <<: *common
+#   container_name: grafana
+#   ports:
+#     - 3000:3000
+#   environment:
+#     - GF_SECURITY_ADMIN_USER=${GF_ADMIN_USER:-admin}
+#     - GF_SECURITY_ADMIN_PASSWORD=${GF_ADMIN_PASSWORD:-password123}
+#     - GF_USERS_ALLOW_SIGN_UP=${GF_SIGN_UP:-false}
+#     - GF_RENDERING_SERVER_URL=http://renderer:8081/render
+#     - GF_RENDERING_CALLBACK_URL=http://grafana:3000/
+#     - GF_INSTALL_PLUGINS=grafana-clock-panel
+#   volumes:
+#     # - type: bind
+#     #   source: ./grafana/dashboards
+#     #   target: /var/lib/grafana/dashboards
+#     - type: bind
+#       source: ./grafana/provisioning/datasources
+#       target: /etc/grafana/provisioning/datasources
+#     - type: bind
+#       source: ./grafana/provisioning/dashboards
+#       target: /etc/grafana/provisioning/dashboards
+#     - type: volume
+#       source: grafana_data
+#       target: /var/lib/grafana
 
-  grafana:
-    image: grafana/grafana:${GRAFANA_TAG:-11.1.0-ubuntu}
-    <<: *common
-    container_name: grafana
-    ports:
-      - 3000:3000
-    environment:
-      - GF_SECURITY_ADMIN_USER=${GF_ADMIN_USER:-admin}
-      - GF_SECURITY_ADMIN_PASSWORD=${GF_ADMIN_PASSWORD:-password123}
-      - GF_USERS_ALLOW_SIGN_UP=${GF_SIGN_UP:-false}
-      - GF_RENDERING_SERVER_URL=http://renderer:8081/render
-      - GF_RENDERING_CALLBACK_URL=http://grafana:3000/
-      - GF_INSTALL_PLUGINS=grafana-clock-panel
-    volumes:
-      # - type: bind
-      #   source: ./grafana/dashboards
-      #   target: /var/lib/grafana/dashboards
-      - type: bind
-        source: ./grafana/provisioning/datasources
-        target: /etc/grafana/provisioning/datasources
-      - type: bind
-        source: ./grafana/provisioning/dashboards
-        target: /etc/grafana/provisioning/dashboards
-      - type: volume
-        source: grafana_data
-        target: /var/lib/grafana
+# renderer:
+#   image: grafana/grafana-image-renderer:${RENDERER_TAG:-3.11.0}
+#   <<: *common
+#   container_name: grafana-image-renderer
+#   ports:
+#     - "8081:8081"
+#   environment:
+#     - ENABLE_METRICS=false
+#   restart: unless-stopped
 
-  renderer:
-    image: grafana/grafana-image-renderer:${RENDERER_TAG:-3.11.0}
-    <<: *common
-    container_name: grafana-image-renderer
-    ports:
-      - "8081:8081"
-    environment:
-      - ENABLE_METRICS=false
-    restart: unless-stopped
+# tdarr-exporter:
+#   image: homeylab/tdarr-exporter:${TDARR_EXPORTER_TAG:-1.2.0}
+#   <<: *common
+#   container_name: tdarr-exporter
+#   environment:
+#     - TDARR_URL=${TDARR_URL:-http://tdarr:8265}
+#     - LOG_LEVEL=${TDARR_LOG_LEVEL:-info}
+#     - VERIFY_SSL=${TDARR_VERIFY_SSL:-false}
+#     - PROMETHEUS_PORT=${PROMETHEUS_PORT:-9110}
+#     - PROMETHEUS_PATH=${PROMETHEUS_PATH:-/metrics}
+#   ports:
+#     - ${PROMETHEUS_PORT}:${PROMETHEUS_PORT}
 
-  tdarr-exporter:
-    image: homeylab/tdarr-exporter:${TDARR_EXPORTER_TAG:-1.2.0}
-    <<: *common
-    container_name: tdarr-exporter
-    environment:
-      - TDARR_URL=${TDARR_URL:-http://tdarr:8265}
-      - LOG_LEVEL=${TDARR_LOG_LEVEL:-info}
-      - VERIFY_SSL=${TDARR_VERIFY_SSL:-false}
-      - PROMETHEUS_PORT=${PROMETHEUS_PORT:-9110}
-      - PROMETHEUS_PATH=${PROMETHEUS_PATH:-/metrics}
-    ports:
-      - ${PROMETHEUS_PORT}:${PROMETHEUS_PORT}
+# unpoller:
+#   image: ghcr.io/unpoller/unpoller:${POLLER_TAG:-latest}
+#   <<: *common
+#   container_name: unpoller
+#   environment:
+#     - UP_INFLUXDB_DISABLE=${INFLUXDB_DISABLE:-true}
+#     - UP_LOKI_URL=${LOKI_URL:-http://loki:3100}
+#     - UP_UNIFI_DYNAMIC=${UNIFI_DYNAMIC:-false}
+#     - UP_UNIFI_DEFAULT_USER=${UNIFI_USER:-admin}
+#     - UP_UNIFI_DEFAULT_PASS=${UNIFI_PASS:-password123}
+#     - UP_UNIFI_DEFAULT_URL=${UNIFI_URL:-https://unifi:8443}
+#     - UP_UNIFI_DEFAULT_SAVE_ALARMS=${UNIFI_SAVE_ALARMS:-true}
+#     - UP_UNIFI_DEFAULT_SAVE_ANOMALIES=${UNIFI_SAVE_ANOMALIES:-true}
+#     - UP_UNIFI_DEFAULT_SAVE_DPI=${UNIFI_SAVE_DPI:-true}
+#     - UP_UNIFI_DEFAULT_SAVE_EVENTS=${UNIFI_SAVE_EVENTS:-true}
+#     - UP_UNIFI_DEFAULT_SAVE_SITES=${UNIFI_SAVE_SITES:-true}
+#     - UP_POLLER_DEBUG=${POLLER_DEBUG:-false}
+#     - UP_POLLER_QUIET=${POLLER_QUIET:-true}
+#     - UP_PROMETHEUS_DISABLE=${PROMETHEUS_DISABLE:-false}
+#     - UP_PROMETHEUS_NAMESPACE=${PROMETHEUS_NAMESPACE:-unpoller}
+#     - UP_PROMETHEUS_HTTP_LISTEN=${PROMETHEUS_HTTP_LISTEN:-0.0.0.0:9130}
+#     - UP_PROMETHEUS_REPORT_ERRORS=${PROMETHEUS_REPORT_ERRORS:-false}
+#     - UP_PROMETHEUS_BUFFER=${PROMETHEUS_BUFFER:-50}
 
-  unpoller:
-    image: ghcr.io/unpoller/unpoller:${POLLER_TAG:-latest}
-    <<: *common
-    container_name: unpoller
-    environment:
-      - UP_INFLUXDB_DISABLE=${INFLUXDB_DISABLE:-true}
-      - UP_LOKI_URL=${LOKI_URL:-http://loki:3100}
-      - UP_UNIFI_DYNAMIC=${UNIFI_DYNAMIC:-false}
-      - UP_UNIFI_DEFAULT_USER=${UNIFI_USER:-admin}
-      - UP_UNIFI_DEFAULT_PASS=${UNIFI_PASS:-password123}
-      - UP_UNIFI_DEFAULT_URL=${UNIFI_URL:-https://unifi:8443}
-      - UP_UNIFI_DEFAULT_SAVE_ALARMS=${UNIFI_SAVE_ALARMS:-true}
-      - UP_UNIFI_DEFAULT_SAVE_ANOMALIES=${UNIFI_SAVE_ANOMALIES:-true}
-      - UP_UNIFI_DEFAULT_SAVE_DPI=${UNIFI_SAVE_DPI:-true}
-      - UP_UNIFI_DEFAULT_SAVE_EVENTS=${UNIFI_SAVE_EVENTS:-true}
-      - UP_UNIFI_DEFAULT_SAVE_SITES=${UNIFI_SAVE_SITES:-true}
-      - UP_POLLER_DEBUG=${POLLER_DEBUG:-false}
-      - UP_POLLER_QUIET=${POLLER_QUIET:-true}
-      - UP_PROMETHEUS_DISABLE=${PROMETHEUS_DISABLE:-false}
-      - UP_PROMETHEUS_NAMESPACE=${PROMETHEUS_NAMESPACE:-unpoller}
-      - UP_PROMETHEUS_HTTP_LISTEN=${PROMETHEUS_HTTP_LISTEN:-0.0.0.0:9130}
-      - UP_PROMETHEUS_REPORT_ERRORS=${PROMETHEUS_REPORT_ERRORS:-false}
-      - UP_PROMETHEUS_BUFFER=${PROMETHEUS_BUFFER:-50}
+# loki:
+#   image: grafana/loki:${LOKI_TAG:-2.4.0}
+#   <<: *common
+#   container_name: loki
+#   volumes:
+#     - ./loki:/etc/loki
+#   ports:
+#     - "3100:3100"
+#   command: -config.file=/etc/loki/loki-config.yml
 
-  loki:
-    image: grafana/loki:${LOKI_TAG:-2.4.0}
-    <<: *common
-    container_name: loki
-    volumes:
-      - ./loki:/etc/loki
-    ports:
-      - "3100:3100"
-    command: -config.file=/etc/loki/loki-config.yml
+# promtail:
+#   image: grafana/promtail:main
+#   <<: *common
+#   container_name: promtail
+#   volumes:
+#     - /var/log:/var/log
+#     - ./promtail:/etc/promtail
+#   command: -config.file=/etc/promtail/promtail-config.yml
 
-  promtail:
-    image: grafana/promtail:main
-    <<: *common
-    container_name: promtail
-    volumes:
-      - /var/log:/var/log
-      - ./promtail:/etc/promtail
-    command: -config.file=/etc/promtail/promtail-config.yml
+# volumes:
+#   prometheus_data:
+#     external: false
+#     name: prometheus_data
+#   grafana_data:
+#     external: false
+#     name: grafana_data
 
-volumes:
-  prometheus_data:
-    external: false
-    name: prometheus_data
-  grafana_data:
-    external: false
-    name: grafana_data
-
-networks:
-  monitoring-services:
-    # external: false
-    name: monitoring-services
-    # driver: bridge
-# include:
-#   - ./grafana.yml
-#   - ./prometheus.yml

@@ -1,0 +1,22 @@
+services:
+  tdarr-exporter:
+    image: homeylab/tdarr-exporter:${TDARR_EXPORTER_TAG:-1.2.0}
+    container_name: tdarr-exporter
+    environment:
+      - TDARR_URL=${TDARR_URL:-http://tdarr:8265}
+      - LOG_LEVEL=${TDARR_LOG_LEVEL:-info}
+      - VERIFY_SSL=${TDARR_VERIFY_SSL:-false}
+      - PROMETHEUS_PORT=${PROMETHEUS_PORT:-9110}
+      - PROMETHEUS_PATH=${PROMETHEUS_PATH:-/metrics}
+    # ports:
+    #   - ${PROMETHEUS_PORT}:${PROMETHEUS_PORT}
+    restart: unless-stopped
+    networks:
+      - monitoring-services
+    logging:
+      driver: loki
+      options:
+        loki-url: "http://loki:3100/loki/api/v1/push"
+        loki-external-labels: "container_name={{.Name}}"
+    labels:
+      org.label-schema.group: "monitoring"
