@@ -215,3 +215,7 @@ networks:
     # external: false
     name: monitoring-services
     # driver: bridge
+
+include:
+  - ./grafana.yml
+  - ./prometheus.yml
