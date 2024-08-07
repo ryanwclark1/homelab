@@ -58,16 +58,14 @@ services:
       restart_policy:
         condition: on-failure
 
-
   pushgateway:
     image: prom/pushgateway:${PUSHGATEWAY_TAG:v1.9.0}
     <<: *common
     container_name: pushgateway
     command:
-      - '--web.enable-admin-api'
+      - "--web.enable-admin-api"
     expose:
       - 9091
-
 
   # nodeexporter:
   #   image: prom/node-exporter:v1.8.1
@@ -152,9 +150,9 @@ services:
       - GF_RENDERING_CALLBACK_URL=http://grafana:3000/
       - GF_INSTALL_PLUGINS=grafana-clock-panel
     volumes:
-      - type: bind
-        source: ./grafana/dashboards
-        target: /var/lib/grafana/dashboards
+      # - type: bind
+      #   source: ./grafana/dashboards
+      #   target: /var/lib/grafana/dashboards
       - type: bind
         source: ./grafana/provisioning/datasources
         target: /etc/grafana/provisioning/datasources
