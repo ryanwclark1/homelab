@@ -3,21 +3,16 @@ services:
   grafana:
     image: grafana/grafana-oss:${GRAFANA_TAG:-11.1.1-ubuntu}
     container_name: grafana
-    # security_opt:
-    #   - no-new-privileges:true
     profiles: ["monitoring", "all"]
     ports:
       - mode: ingress
         target: 3000
         published: "3030"
         protocol: tcp
-    # user: ${PUID:-1000}
     volumes:
       - type: volume
         source: grafana_data
         target: /var/lib/grafana
-        bind:
-          propagation: shared
       - type: bind
         source: $DOCKERDIR/appdata/grafana/provisioning/dashboards
         target: ${GF_PATHS_PROVISIONING:-/etc/grafana/provisioning}/dashboards
@@ -95,8 +90,6 @@ services:
       options:
         loki-url: "http://loki:3100/loki/api/v1/push"
         loki-external-labels: "container_name={{.Name}}"
-    # labels:
-    #   org.label-schema.group: "monitoring"
 
 volumes:
   grafana_data:

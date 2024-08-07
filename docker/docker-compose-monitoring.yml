@@ -5,9 +5,8 @@ name: monitoring
 
 networks:
   monitoring-services:
-    # external: false
     name: monitoring-services
-    # driver: bridge
+    driver: bridge
 
 x-common: &common
   restart: unless-stopped
@@ -26,9 +25,9 @@ x-common: &common
 ########################### INCLUDE
 
 include:
-  - ./alertmanager.yml
-  - ./cadvisor.yml
-  - ./grafana.yml
-  - ./prometheus.yml
-  - ./renderer.yml
-  - ./unpoller.yml
+  - monitoring/alertmanager.yml
+  - monitoring/cadvisor.yml
+  - monitoring/grafana.yml
+  - monitoring/prometheus.yml
+  - monitoring/renderer.yml
+  - monitoring/unpoller.yml
