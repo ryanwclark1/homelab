@@ -3,8 +3,6 @@ services:
   node-exporter:
     container_name: node-exporter
     image: prom/node-exporter:${NODE_EXPORTER_TAG:-latest}
-    security_opt:
-      - no-new-privileges:true
     profiles: ["exporter", "all"]
     ports:
       - mode: ingress
@@ -18,6 +16,7 @@ services:
     command:
       - '--path.procfs=/host/proc'
       - '--path.sysfs=/host/sys'
+      - '--path.rootfs=/rootfs'
       - --collector.filesystem.ignored-mount-points
       - "^/(sys|proc|dev|host|etc|rootfs/var/lib/docker/containers|rootfs/var/lib/docker/overlay2|rootfs/run/docker/netns|rootfs/var/lib/docker/aufs)($$|/)"
     restart: unless-stopped

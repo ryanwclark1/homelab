@@ -4,12 +4,16 @@ services:
     container_name: cadvisor
     profiles: ["monitoring", "exporter", "all"]
     privileged: true
-    command: --docker_only=true --store_container_labels=false
+    command:
+      - "--docker_only=true"
+      - "--store_container_labels=true"
+      - "--housekeeping_interval=30s"
+      # - "--disable_metrics=accelerator,cpu_topology,disk,memory_numa,tcp,udp,percpu,sched,process,hugetlb,referenced_memory,resctrl,cpuset,advtcp,memory_numa"
     devices:
-      - /dev/kmsg:/dev/kmsg
+      - /dev/kmsg
     volumes:
       - /:/rootfs:ro
-      - /var/run:/var/run:rw
+      - /var/run:/var/run:ro
       - /sys:/sys:ro
       - /var/lib/docker/:/var/lib/docker:ro
       - /dev/disk/:/dev/disk:ro
