@@ -60,7 +60,8 @@ services:
 
 
   pushgateway:
-    image: prom/pushgateway:v1.9.0
+    image: prom/pushgateway:${PUSHGATEWAY_TAG:v1.9.0}
+    <<: *common
     container_name: pushgateway
     command:
       - '--web.enable-admin-api'
@@ -160,6 +161,9 @@ services:
       - type: bind
         source: ./grafana/provisioning/dashboards
         target: /etc/grafana/provisioning/dashboards
+      - type: volume
+        source: grafana_data
+        target: /var/lib/grafana
 
   renderer:
     image: grafana/grafana-image-renderer:${RENDERER_TAG:-3.11.0}
@@ -231,6 +235,9 @@ volumes:
   prometheus_data:
     external: false
     name: prometheus_data
+  grafana_data:
+    external: false
+    name: grafana_data
 
 networks:
   monitoring-services:
