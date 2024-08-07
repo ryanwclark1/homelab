@@ -47,7 +47,7 @@ secrets:
 
 include:
   # CORE
-  - arr/traefik.yml
+  - dns/traefik.yml
   # - arr/authentik.yml
   # - arr/socket-proxy.yml
   - arr/gotify.yml
@@ -64,8 +64,8 @@ include:
   # FRONTEND
   # - arr/autoindex.yml
   - arr/homepage.yml
-  - arr/sitespeed.yml
-  - arr/whoami.yml
+  - dns/sitespeed.yml
+  - dns/whoami.yml
   # DOWNLOADERS
   - arr/qbittorrent.yml
   # - arr/sabnzbd.yml
@@ -83,7 +83,7 @@ include:
   # - arr/picard.yml
   - arr/stash.yml
   # MONITORING
-  - arr/prometheus.yml
+  - monitoring/prometheus.yml
   # - arr/grafana.yml
   # - arr/uptime-kuma.yml
   # - arr/dozzle.yml
