@@ -2,10 +2,14 @@ services:
   renderer:
     image: grafana/grafana-image-renderer:${RENDERER_TAG:-3.11.0}
     container_name: grafana-image-renderer
+    profiles: ["monitoring", "all"]
     ports:
-      - "8081:8081"
+      - mode: ingress
+        target: 8081
+        published: "8081"
+        protocol: tcp
     environment:
-      - ENABLE_METRICS=false
+      ENABLE_METRICS: false
     restart: unless-stopped
     networks:
       - monitoring-services
