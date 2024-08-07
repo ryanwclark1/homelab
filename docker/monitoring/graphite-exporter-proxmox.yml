@@ -4,7 +4,7 @@ services:
     container_name: graphite-exporter-proxmox
     volumes:
       - type: bind
-        source: ./graphite-exporter/graphite_mapping_proxmox.yml
+        source: $DOCKERDIR/appdata/graphite-exporter/graphite_mapping_proxmox.yml
         target: /etc/graphite-exporter/graphite_mapping.yml
     command:
       - --graphite.mapping-config=/etc/graphite-exporter/graphite_mapping.yml

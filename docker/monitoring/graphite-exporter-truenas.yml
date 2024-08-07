@@ -5,7 +5,7 @@ services:
     container_name: graphite-exporter-truenas
     volumes:
       - type: bind
-        source: ./graphite-exporter/graphite_mapping_truenas.yml
+        source: $DOCKERDIR/appdata/graphite-exporter/graphite_mapping_truenas.yml
         target: /etc/graphite-exporter/graphite_mapping.yml
     command:
       - --graphite.mapping-config=/etc/graphite-exporter/graphite_mapping.yml

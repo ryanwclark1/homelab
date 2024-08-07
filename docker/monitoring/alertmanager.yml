@@ -7,7 +7,7 @@ services:
       - 9093:9093
     volumes:
       - type: bind
-        source: ./alertmanager/config.yml
+        source: $DOCKERDIR/appdata/alertmanager/config.yml
         target: /etc/alertmanager/config.yml
     command:
       - "--config.file=/etc/alertmanager/config.yml"

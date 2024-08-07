@@ -3,7 +3,7 @@ loki:
   <<: *common
   container_name: loki
   volumes:
-    - ./loki:/etc/loki
+    - $DOCKERDIR/appdata/loki:/etc/loki
   ports:
     - "3100:3100"
   command: -config.file=/etc/loki/loki-config.yml
