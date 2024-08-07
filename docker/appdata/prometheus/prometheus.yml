@@ -5,8 +5,8 @@ global:
 
   # Attach these labels to any time series or alerts when communicating with
   # external systems (federation, remote storage, Alertmanager).
-  # external_labels:
-      # monitor: 'homelab'
+  external_labels:
+      monitor: 'homelab'
 
 # Load and evaluate rules in this file every 'evaluation_interval' seconds.
 rule_files:
@@ -14,6 +14,8 @@ rule_files:
   # - "first.rules"
   # - "second.rules"
 
+# A scrape configuration containing exactly one endpoint to scrape:
+# Here it's Prometheus itself.
 scrape_configs:
   - job_name: 'prometheus'
     honor_timestamps: true

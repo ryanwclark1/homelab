@@ -19,10 +19,12 @@ x-common: &common
     org.label-schema.group: "monitoring"
 
 include:
+  - ./alertmanager.yml
+  - ./cadvisor.yml
   - ./grafana.yml
   - ./prometheus.yml
-  - ./alertmanager.yml
   - ./renderer.yml
+  - ./unpoller.yml
 # services:
 # prometheus:
 #   image: prom/prometheus:${PROMETHEUS_TAG:-v2.53.1}
