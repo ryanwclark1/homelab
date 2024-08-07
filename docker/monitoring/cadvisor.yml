@@ -16,13 +16,13 @@ services:
       - /cgroup:/cgroup:ro
     ports:
       - 8080:8080
-  restart: unless-stopped
-  networks:
-    - monitoring-services
-  logging:
-    driver: loki
-    options:
-      loki-url: "http://loki:3100/loki/api/v1/push"
-      loki-external-labels: "container_name={{.Name}}"
-  labels:
-    org.label-schema.group: "monitoring"
+    restart: unless-stopped
+    networks:
+      - monitoring-services
+    logging:
+      driver: loki
+      options:
+        loki-url: "http://loki:3100/loki/api/v1/push"
+        loki-external-labels: "container_name={{.Name}}"
+    labels:
+      org.label-schema.group: "monitoring"
