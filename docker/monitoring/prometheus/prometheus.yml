@@ -15,19 +15,6 @@ rule_files:
   # - "first.rules"
   # - "second.rules"
 
-# alert
-alerting:
-  alertmanagers:
-  - follow_redirects: true
-    enable_http2: true
-    http_headers: null
-    timeout: 10s
-    api_version: 'v2'
-    scheme: http
-    static_configs:
-    - targets:
-      - "alertmanager:9093"
-
 
 # A scrape configuration containing exactly one endpoint to scrape:
 # Here it's Prometheus itself.
@@ -47,11 +34,17 @@ scrape_configs:
         labels:
           alias: 'cadvisor'
 
-  - job_name: 'node-exporter'
+  # - job_name: 'nodeexporter'
+  #   static_configs:
+  #     - targets: ['nodeexporter:9100']
+  #       labels:
+  #         alias: 'nodeexporter-local'
+
+  - job_name: 'node-exporter-peter'
     static_configs:
       - targets: ['10.10.100.190:9100']
         labels:
-          alias: 'node-exporter'
+          alias: 'node-exporter-peter'
 
   - job_name: 'graphite-exporter-proxmox'
     static_configs:
@@ -77,3 +70,19 @@ scrape_configs:
       - targets: ['tdarr-exporter:9110']
         labels:
           alias: 'tdarr-exporter'
+
+# alert
+alerting:
+  alertmanagers:
+  - follow_redirects: true
+    enable_http2: true
+    http_headers: null
+    timeout: 10s
+    api_version: 'v2'
+    scheme: http
+    static_configs:
+    - targets:
+      - "alertmanager:9093"
+
+
+

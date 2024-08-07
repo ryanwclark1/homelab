@@ -9,6 +9,8 @@ x-common: &common
     options:
       loki-url: "http://loki:3100/loki/api/v1/push"
       loki-external-labels: "container_name={{.Name}}"
+  labels:
+    org.label-schema.group: "monitoring"
 
 services:
   prometheus:
@@ -19,6 +21,9 @@ services:
       - type: bind
         source: ./prometheus/prometheus.yml
         target: /etc/prometheus/prometheus.yml
+      - type: bind
+        source: ./prometheus/alert.rules
+        target: /etc/prometheus/alert.rules
       - type: volume
         source: prometheus_data
         target: /prometheus
@@ -32,24 +37,52 @@ services:
     ports:
       - 9090:9090
 
-  # alertmanager:
-  #   image: prom/alertmanager:${ALERTMANAGER_TAG:-v0.27.0}
+  alertmanager:
+    image: prom/alertmanager:${ALERTMANAGER_TAG:-v0.27.0}
+    <<: *common
+    container_name: alertmanager
+    ports:
+      - 9093:9093
+    volumes:
+      - type: bind
+        source: ./alertmanager/config.yml
+        target: /etc/alertmanager/config.yml
+    command:
+      - "--config.file=/etc/alertmanager/config.yml"
+      - "--storage.path=/alertmanager"
+      - "--web.external-url=http://127.0.0.1:9093"
+    deploy:
+      placement:
+        constraints:
+          - node.role==manager
+      restart_policy:
+        condition: on-failure
+
+
+  pushgateway:
+    image: prom/pushgateway:v1.9.0
+    container_name: pushgateway
+    command:
+      - '--web.enable-admin-api'
+    expose:
+      - 9091
+
+
+  # nodeexporter:
+  #   image: prom/node-exporter:v1.8.1
   #   <<: *common
-  #   container_name: alertmanager
-  #   ports:
-  #     - 9093:9093
-  #   # volumes:
-  #   #   - "./alertmanager/:/etc/alertmanager/"
+  #   container_name: nodeexporter
+  #   volumes:
+  #     - /proc:/host/proc:ro
+  #     - /sys:/host/sys:ro
+  #     - /:/rootfs:ro
   #   command:
-  #     # - "--config.file=/etc/alertmanager/config.yml"
-  #     - "--storage.path=/alertmanager"
-  #     - "--web.external-url=http://127.0.0.1:9093"
-  #   deploy:
-  #     placement:
-  #       constraints:
-  #         - node.role==manager
-  #     restart_policy:
-  #       condition: on-failure
+  #     - '--path.procfs=/host/proc'
+  #     - '--path.rootfs=/rootfs'
+  #     - '--path.sysfs=/host/sys'
+  #     - '--collector.filesystem.mount-points-exclude=^/(sys|proc|dev|host|etc)($$|/)'
+  #   expose:
+  #     - 9100
 
   cadvisor:
     image: gcr.io/cadvisor/cadvisor:${CADVISOR_TAG:-v0.49.1}
@@ -58,7 +91,7 @@ services:
     privileged: true
     command: --docker_only=true --store_container_labels=false
     devices:
-      - /dev/kmsg
+      - /dev/kmsg:/dev/kmsg
     volumes:
       - /:/rootfs:ro
       - /var/run:/var/run:rw
@@ -66,6 +99,7 @@ services:
       - /var/lib/docker/:/var/lib/docker:ro
       - /dev/disk/:/dev/disk:ro
       - /etc/machine-id:/etc/machine-id:ro
+      - /cgroup:/cgroup:ro
     ports:
       - 8080:8080
 
@@ -151,9 +185,9 @@ services:
       - ${PROMETHEUS_PORT}:${PROMETHEUS_PORT}
 
   unpoller:
-    container_name: unpoller
     image: ghcr.io/unpoller/unpoller:${POLLER_TAG:-latest}
     <<: *common
+    container_name: unpoller
     environment:
       - UP_INFLUXDB_DISABLE=${INFLUXDB_DISABLE:-true}
       - UP_LOKI_URL=${LOKI_URL:-http://loki:3100}
