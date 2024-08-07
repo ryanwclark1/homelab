@@ -6,8 +6,8 @@ services:
       - TDARR_URL=${TDARR_URL:-http://tdarr:8265}
       - LOG_LEVEL=${TDARR_LOG_LEVEL:-info}
       - VERIFY_SSL=${TDARR_VERIFY_SSL:-false}
-      - PROMETHEUS_PORT=${PROMETHEUS_PORT:-9110}
-      - PROMETHEUS_PATH=${PROMETHEUS_PATH:-/metrics}
+      - PROMETHEUS_PORT=${TDARR_PROMETHEUS_PORT:-9110}
+      - PROMETHEUS_PATH=${TDARR_PROMETHEUS_PATH:-/metrics}
     # ports:
     #   - ${PROMETHEUS_PORT}:${PROMETHEUS_PORT}
     restart: unless-stopped
