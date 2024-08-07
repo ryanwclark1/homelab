@@ -59,7 +59,7 @@ services:
         condition: on-failure
 
   pushgateway:
-    image: prom/pushgateway:${PUSHGATEWAY_TAG:v1.9.0}
+    image: prom/pushgateway:${PUSHGATEWAY_TAG:-v1.9.0}
     <<: *common
     container_name: pushgateway
     command:
