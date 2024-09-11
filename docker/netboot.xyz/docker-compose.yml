@@ -14,7 +14,7 @@ services:
       - WEB_APP_PORT=3000 #optional
     volumes:
       - type: bind
-        source: /mnt/conf/netbootxyz
+        source: /etc/netbootxyz
         target: /config
       - type: bind
         source: /mnt/iso/template/iso
