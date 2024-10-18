@@ -17,11 +17,14 @@ services:
         read_only: true
         bind:
           create_host_path: true
-      - type: bind
-        source: ${COMMON_CONFIG_PATH}/qbittorrent
+      # - type: bind
+      #   source: ${COMMON_CONFIG_PATH}/qbittorrent
+      #   target: /config
+      #   bind:
+      #     create_host_path: true
+      - type: volume
+        source: config_data
         target: /config
-        bind:
-          create_host_path: true
       - type: bind
         source: ${COMMON_DATA_PATH}
         target: /storage
@@ -42,3 +45,8 @@ services:
       retries: 1
     labels: # Traefik labels added via glueten
       - "deunhealth.restart.on.unhealthy=true"
+
+volumes:
+  config_data:
+    external: false
+    name: config_data
