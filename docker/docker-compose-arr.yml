@@ -21,6 +21,9 @@ networks:
     ipam:
       config:
         - subnet: 10.10.201.0/24
+  monitoring-services:
+    name: monitoring-services
+    driver: bridge
 
 ########################### SECRETS
 secrets:
