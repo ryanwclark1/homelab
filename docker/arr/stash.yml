@@ -1,39 +1,21 @@
 services:
   stash:
-    container_name: stash
     image: ghcr.io/hotio/stash:${STASH_TAG:-latest}
-    restart: "no"
+    container_name: stash
+    security_opt:
+      - seccomp=unconfined
+    restart: unless-stopped
     profiles: ["media", "player", "apps", "all"]
     networks:
       - arr_net
-    security_opt:
-      - seccomp=unconfined
     group_add:
       - 44
       - 106
-
     ports:
       - mode: ingress
         target: 9999
         published: "9999"
         protocol: tcp
-
-    environment:
-      TZ: ${TZ:-Etc/UTC}
-      # PUID: 1
-      # PGID: 1
-      STASH_HOST: ${STASH_HOST:-0.0.0.0}
-      STASH_PORT: ${STASH_PORT:-9999}
-      # STASH_EXTERNAL_HOST=stash.$DOMAINNAME
-      STASH_STASH: /data/
-      STASH_GENERATED: /generated/
-      STASH_METADATA: /metadata/
-      STASH_CACHE: /cache/
-
-    devices:
-    # - /dev/fb0:/dev/fb0
-    - /dev/dri:/dev/dri
-
     volumes:
       - type: bind
         source: /etc/localtime
@@ -76,9 +58,23 @@ services:
         target: /etc/cont-init.d/99-my-script
         bind:
           create_host_path: true
+    environment:
+      TZ: ${TZ:-Etc/UTC}
+      # PUID: 1
+      # PGID: 1
+      PUID: ${PUID:-1000}
+      PGID: ${PGID:-1000}
+      STASH_HOST: ${STASH_HOST:-0.0.0.0}
+      STASH_PORT: ${STASH_PORT:-9999}
+      # STASH_EXTERNAL_HOST=stash.$DOMAINNAME
+      STASH_STASH: /data/
+      STASH_GENERATED: /generated/
+      STASH_METADATA: /metadata/
+      STASH_CACHE: /cache/
 
+    devices:
+    - /dev/dri:/dev/dri
     # user: $PUID:$PGID
-
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.stash.entrypoints=web"
