@@ -32,7 +32,7 @@ services:
 
       devices:
       # - /dev/fb0:/dev/fb0
-      - /dev/dri:/dev/dri
+      - "/dev/dri:/dev/dri"
 
     volumes:
       - type: bind
