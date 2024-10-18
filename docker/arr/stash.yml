@@ -30,9 +30,9 @@ services:
       STASH_METADATA: /metadata/
       STASH_CACHE: /cache/
 
-      devices:
-      # - /dev/fb0:/dev/fb0
-      - "/dev/dri:/dev/dri"
+    devices:
+    # - /dev/fb0:/dev/fb0
+    - /dev/dri:/dev/dri
 
     volumes:
       - type: bind
