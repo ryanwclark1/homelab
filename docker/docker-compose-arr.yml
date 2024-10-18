@@ -54,7 +54,6 @@ include:
   # - arr/authentik.yml
   # - arr/socket-proxy.yml
   - arr/gotify.yml
-  - arr/dockge.yml
   # Media
   - arr/tdarr-server.yml
   - arr/tdarr-node.yml
@@ -65,24 +64,23 @@ include:
   # DOWNLOADERS
   - arr/qbittorrent.yml
   # PVRS
-  - arr/sonarr.yml
+  - arr/flaresolverr.yml
+  - arr/lidarr.yml
   - arr/radarr.yml
   - arr/readarr.yml
-  - arr/lidarr.yml
+  - arr/sonarr.yml
   - arr/whisparr.yml
-  - arr/flaresolverr.yml
   # COMPLEMENTARY APPS
-  - arr/prowlarr.yml
   - arr/bazarr.yml
+  - arr/prowlarr.yml
   - arr/stash.yml
   # MONITORING
   - monitoring/prometheus.yml
   # - arr/grafana.yml
-  - arr/radarr-exporter.yml
-  - arr/sonarr-exporter.yml
   - arr/lidarr-exporter.yml
   - arr/prowlarr-exporter.yml
-  # - arr/sabnzbd-exporter.yml
+  - arr/radarr-exporter.yml
+  - arr/sonarr-exporter.yml
   - arr/node-exporter.yml
   # NETWORK
   - arr/gluetun.yml
