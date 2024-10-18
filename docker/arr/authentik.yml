@@ -6,7 +6,6 @@ services:
     restart: unless-stopped
     profiles: ["core", "all"]
     healthcheck:
-      # test: ["CMD-SHELL", "pg_isready -d $${POSTGRES_DB} -U $${POSTGRES_USER}"]
       test: ["CMD-SHELL", "pg_isready -d $${AUTHENTIK_PG_DB} -U $${AUTHENTIK_PG_USER}"]
       start_period: 20s
       interval: 30s

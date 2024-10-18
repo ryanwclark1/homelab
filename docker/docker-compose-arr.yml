@@ -50,28 +50,20 @@ secrets:
 
 include:
   # CORE
-  - dns/traefik.yml
+  - network/traefik.yml
   # - arr/authentik.yml
   # - arr/socket-proxy.yml
   - arr/gotify.yml
-  # - arr/oauth.yml
-  # - arr/authelia.yml
-  # - arr/portainer.yml
   - arr/dockge.yml
   # Media
   - arr/tdarr-server.yml
   - arr/tdarr-node.yml
-  # SECURITY
-  # - arr/crowdsec.yml
-  # - arr/traefik-bouncer.yml
   # FRONTEND
-  # - arr/autoindex.yml
   - arr/homepage.yml
-  - dns/sitespeed.yml
-  - dns/whoami.yml
+  - network/sitespeed.yml
+  - network/whoami.yml
   # DOWNLOADERS
   - arr/qbittorrent.yml
-  # - arr/sabnzbd.yml
   # PVRS
   - arr/sonarr.yml
   - arr/radarr.yml
@@ -81,33 +73,17 @@ include:
   - arr/flaresolverr.yml
   # COMPLEMENTARY APPS
   - arr/prowlarr.yml
-  # - arr/notifiarr.yml
   - arr/bazarr.yml
-  # - arr/picard.yml
   - arr/stash.yml
   # MONITORING
   - monitoring/prometheus.yml
   # - arr/grafana.yml
-  # - arr/uptime-kuma.yml
-  # - arr/dozzle.yml
-  # - arr/scrutiny.yml
   - arr/radarr-exporter.yml
   - arr/sonarr-exporter.yml
   - arr/lidarr-exporter.yml
   - arr/prowlarr-exporter.yml
   # - arr/sabnzbd-exporter.yml
   - arr/node-exporter.yml
-  # ADMIN
-  # - arr/guacamole.yml
-  # - arr/kasm.yml
-  # - arr/it-tools.yml
-  # UTILITIES
-  # - arr/firefly.yml
-  # FILE MANAGEMENT
-  # - arr/makemkv.yml
-  # - arr/mkvtoolnix.yml
   # NETWORK
   - arr/gluetun.yml
-  # MAINTENANCE
-  # - arr/docker-gc.yml
-  # - arr/deunhealth.yml
+

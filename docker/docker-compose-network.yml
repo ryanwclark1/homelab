@@ -1,9 +1,3 @@
-# Here are my 5 Docker Hosts:
-# - Home Server (hs) - Proxmox LXC with Ubuntu Server 22.04
-# - Media / Database Server (mds) - Proxmox LXC with Ubuntu Server 22.04
-# - Web Server (ws) - Digital Ocean VPS with Ubuntu Server 22.04
-# - Synology (ds918) - Synology DS918+
-# - DNS / AdBlock Server (dns) - Raspberry Pi 4B with Raspberry Pi OS
 
 ########################### THIS COMPOSE FILE
 # - DNS / AdBlock Server (dns) - Raspberry Pi 4B with Raspberry Pi OS
@@ -44,19 +38,19 @@ include:
   # PREFIX dns = DNS / AdBlock Server
 
   # CORE
-  - compose/$HOSTNAME/socket-proxy.yml
-  - compose/$HOSTNAME/traefik.yml
-  # - compose/$HOSTNAME/oauth.yml
+  - network/socket-proxy.yml
+  - network/traefik.yml
+  # - network/oauth.yml
   # AD-BLOCKING
-  #- compose/$HOSTNAME/adguardhome.yml
-  #- compose/$HOSTNAME/adguardhome-sync.yml
+  #- network/adguardhome.yml
+  #- network/adguardhome-sync.yml
   # DNS RESOLVER
-  #- compose/$HOSTNAME/unbound.yml
+  #- network/unbound.yml
   # VPN
-  # - compose/$HOSTNAME/wg-easy.yml
+  # - network/wg-easy.yml
   # MONITORING
-  # - compose/$HOSTNAME/glances.yml
+  # - network/glances.yml
   # MAINTENANCE
-  # - compose/$HOSTNAME/docker-gc.yml # not available for arm
-  - compose/$HOSTNAME/ddns-updater.yml
-  # - compose/$HOSTNAME/certdumper.yml
+  # - network/docker-gc.yml # not available for arm
+  - network/ddns-updater.yml
+  # - network/certdumper.yml

@@ -1,0 +1,33 @@
+services:
+  jellyfin:
+    container_name: jellyfin
+    image: jellyfin/jellyfin:10.9.4
+    volumes:
+      - ${COMMON_CONFIG_PATH}/jellyfin/config:/config
+      - ${COMMON_CONFIG_PATH}/jellyfin/cache:/cache
+      - ${COMMON_DATA_PATH}/downloads:/downloads
+      - type: bind
+        source: ${COMMON_DATA_PATH}
+        target: /media
+      # - type: bind
+      #   source: ${COMMON_DATA_PATH}/downloads
+      #   target: /downloads
+    # Host mode requred in order to use DLNA
+    network_mode: host
+    devices:
+      - /dev/dri/renderD128:/dev/dri/renderD128
+    extra_hosts:
+      - 'host.docker.internal:host-gateway'
+
+  jellyseerr:
+    image: fallenbagel/jellyseerr:latest
+    container_name: jellyseerr
+    hostname: jellyseerr
+    environment:
+      - LOG_LEVEL=debug
+    ports:
+      - 5055:5055
+    volumes:
+      - ${COMMON_CONFIG_PATH}/jellyseerr:/app/config
+    networks:
+      - mediarr

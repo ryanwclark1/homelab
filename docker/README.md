@@ -16,3 +16,42 @@ f you were to check the contents of the .htpasswd file, you would see something 
 
 bob123:$apr1$FaPCZHMe$jYiw5.9UevKx25pBH4AsT/
 nancy456:$apr1$mrCHcVhc$oNdJeRcWKPk2z8dlzQI0x/
+
+
+# arrs
+bazarr
+flaresolverr
+lidarr
+prowlarr
+radarr
+readarr
+sonarr
+whisparr
+
+# media
+bazarr
+flaresolverr
+lidarr
+prowlarr
+radarr
+readarr
+sonarr
+stash
+tdarr-node
+tdarr-server
+whisparr
+
+# core
+authentik
+gluetun
+gotify
+socket-proxy
+authelia
+oauth
+crowdsec
+traefik-bouncer
+traefik
+
+# downloads
+gluetun
+qbittorrent

@@ -18,7 +18,7 @@ services:
       serverIP: ${TDARR_SERVER_IP:-0.0.0.0}
       serverPort: ${TDARR_SERVER_PORT:-8266}
       inContainer: true
-      ffmpegVersion: 6
+      ffmpegVersion: 7
       nodeName: ${TDARR_NODE_NAME:-MyExternalNode}
 
     devices:

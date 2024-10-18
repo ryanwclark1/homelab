@@ -1,3 +1,4 @@
+# Do we need or want UMASK_SET=002 in environment?
 services:
   tdarr-server:
     container_name: tdarr-server
@@ -24,7 +25,7 @@ services:
       webUIPort: ${TDARR_UI_PORT:-8265}
       internalNode: true
       inContainer: true
-      ffmpegVersion: 6
+      ffmpegVersion: 7
       nodeName: ${TDARR_SERVER_NAME:-MyInternalNode}
     volumes:
       - type: volume
