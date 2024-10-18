@@ -31,7 +31,6 @@ services:
         target: /storage
         bind:
           create_host_path: true
-      # - ${COMMON_DATA_PATH}:/data
     environment:
       TZ: ${TZ:-Etc/UTC}
       PUID: ${PUID:-1000}

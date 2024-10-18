@@ -1,4 +1,5 @@
 services:
+  # Whiparr - Whisparr managment
   whisparr:
     image: ghcr.io/hotio/whisparr:${WHISPARR_TAG:-latest}
     container_name: whisparr
@@ -13,13 +14,6 @@ services:
         target: 6969
         published: "6969"
         protocol: tcp
-    environment:
-      PUID: ${PUID:-1000}
-      PGID: ${PGID:-1000}
-      TZ: ${TZ:-Etc/UTC}
-      # UMASK_SET: ${UMASK_SET:-022}
-      # WHISPARR_API_KEY: ${WHISPARR_API_KEY}
-      WHISPARR_URL: ${WHISPARR_URL:-https://whisparr.$DOMAINNAME}
     volumes:
       - type: bind
         source: /etc/localtime
@@ -37,6 +31,13 @@ services:
         target: /storage
         bind:
           create_host_path: true
+    environment:
+      PUID: ${PUID:-1000}
+      PGID: ${PGID:-1000}
+      TZ: ${TZ:-Etc/UTC}
+      # UMASK_SET: ${UMASK_SET:-022}
+      # WHISPARR_API_KEY: ${WHISPARR_API_KEY}
+      WHISPARR_URL: ${WHISPARR_URL:-https://whisparr.$DOMAINNAME}
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.whisparr.entrypoints=web"
