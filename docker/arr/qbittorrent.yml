@@ -17,14 +17,14 @@ services:
         read_only: true
         bind:
           create_host_path: true
-      # - type: bind
-      #   source: ${COMMON_CONFIG_PATH}/qbittorrent
-      #   target: /config
-      #   bind:
-      #     create_host_path: true
-      - type: volume
-        source: config_data
+      - type: bind
+        source: ${COMMON_CONFIG_PATH}/qbittorrent
         target: /config
+        bind:
+          create_host_path: true
+      # - type: volume
+      #   source: config_data
+      #   target: /config
       - type: bind
         source: ${COMMON_DATA_PATH}
         target: /storage
