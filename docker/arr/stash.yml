@@ -3,7 +3,7 @@ services:
     container_name: stash
     image: ghcr.io/hotio/stash:${STASH_TAG:-latest}
     restart: "no"
-    profiles: ["media", "apps", "all"]
+    profiles: ["media", "player", "apps", "all"]
     networks:
       - t3_proxy
     security_opt:
