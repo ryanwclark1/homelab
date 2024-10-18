@@ -43,7 +43,7 @@ services:
       - "traefik.docker.network=monitoring-services"
     restart: unless-stopped
     networks:
-      # - t3_proxy
+      # - arr_net
       - monitoring-services
     logging:
       driver: loki

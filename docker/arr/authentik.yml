@@ -18,7 +18,7 @@ services:
       POSTGRES_USER: ${AUTHENTIK_PG_USER:-authentik}
       POSTGRES_DB: ${AUTHENTIK_PG_DB:-authentik}
     networks:
-      t3_proxy:
+      arr_net:
 
   redis:
     container_name: redis
@@ -35,7 +35,7 @@ services:
     volumes:
       - redis_data:/data
     networks:
-      t3_proxy:
+      arr_net:
 
   authentik-server:
     image: ${AUTHENTIK_IMAGE:-ghcr.io/goauthentik/server}:${AUTHENTIK_TAG:-2024.6.1}
@@ -65,7 +65,7 @@ services:
       - postgresql
       - redis
     networks:
-      t3_proxy:
+      arr_net:
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.authentik.entrypoints=web"
@@ -82,7 +82,7 @@ services:
       - "traefik.http.routers.authentik-secure.service=authentik"
       # - "traefik.http.services.authentik-svc.loadbalancer.server.scheme=https"
       - "traefik.http.services.authentik.loadbalancer.server.port=9000"
-      - "traefik.docker.network=t3_proxy"
+      - "traefik.docker.network=arr_net"
 
   authentik-worker:
     image: ${AUTHENTIK_IMAGE:-ghcr.io/goauthentik/server}:${AUTHENTIK_TAG:-2024.6.1}
@@ -113,7 +113,7 @@ services:
       - postgresql
       - redis
     networks:
-      t3_proxy:
+      arr_net:
 
 volumes:
   postgres_data:

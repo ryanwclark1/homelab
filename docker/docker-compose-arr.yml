@@ -15,8 +15,8 @@ networks:
   #   ipam:
   #     config:
   #       - subnet: 10.10.100.0/24
-  t3_proxy:
-    name: t3_proxy
+  arr_net:
+    name: arr_net
     driver: bridge
     ipam:
       config:
@@ -84,4 +84,3 @@ include:
   - arr/node-exporter.yml
   # NETWORK
   - arr/gluetun.yml
-

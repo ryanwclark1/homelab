@@ -5,7 +5,7 @@ services:
     restart: unless-stopped
     profiles: ["media","arrs", "all"]
     networks:
-      - t3_proxy
+      - arr_net
     ports:
       - mode: ingress
         target: 8191

@@ -8,7 +8,7 @@ services:
     restart: "no"
     profiles: ["media","arrs", "all"]
     networks:
-      - t3_proxy
+      - arr_net
     ports:
       - mode: ingress
         target: 8686
@@ -49,4 +49,4 @@ services:
       - "traefik.http.routers.lidarr-secure.service=lidarr"
       # - "traefik.http.services.lidarr.loadbalancer.server.scheme=https"
       - "traefik.http.services.lidarr.loadbalancer.server.port=8686"
-      - "traefik.docker.network=t3_proxy"
+      - "traefik.docker.network=arr_net"

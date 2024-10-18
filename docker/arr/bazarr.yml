@@ -8,7 +8,7 @@ services:
     restart: "no"
     profiles: ["media", "arrs", "all"]
     networks:
-      - t3_proxy
+      - arr_net
     ports:
       - mode: ingress
         target: 6767
@@ -35,4 +35,4 @@ services:
       - "traefik.http.routers.bazarr-secure.service=bazarr"
       # - "traefik.http.services.bazarr.loadbalancer.server.scheme=https"
       - "traefik.http.services.bazarr.loadbalancer.server.port=6767"
-      - "traefik.docker.network=t3_proxy"
+      - "traefik.docker.network=arr_net"

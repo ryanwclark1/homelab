@@ -8,7 +8,7 @@ services:
     restart: unless-stopped
     profiles: ["apps", "all"]
     networks:
-      - t3_proxy
+      - arr_net
     volumes:
       - ${COMMON_CONFIG_PATH}/ssd/sitespeed:/var/lib/nginx/html:ro # Location you want to index
     labels:

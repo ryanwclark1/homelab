@@ -8,7 +8,7 @@ services:
     restart: "no"
     profiles: ["all", "exporter"]
     networks:
-      - t3_proxy
+      - arr_net
     ports:
       - mode: ingress
         target: 9711

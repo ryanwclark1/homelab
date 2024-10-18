@@ -10,7 +10,7 @@ services:
     restart: unless-stopped
     profiles: ["core", "vpn", "all", "downloads"]
     networks:
-      - t3_proxy
+      - arr_net
     cap_add:
       - NET_ADMIN
     devices:
@@ -65,7 +65,7 @@ services:
       - "traefik.http.routers.qbit-gluetun-secure.service=qbit-gluetun"
       - "traefik.http.services.qbit-gluetun.loadbalancer.server.scheme=https"
       - "traefik.http.services.qbit-gluetun.loadbalancer.server.port=8080"
-      - "traefik.docker.network=t3_proxy"
+      - "traefik.docker.network=arr_net"
 
 
       # HTTP Routers

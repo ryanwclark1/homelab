@@ -5,7 +5,7 @@ services:
     restart: "no"
     profiles: ["media", "player", "apps", "all"]
     networks:
-      - t3_proxy
+      - arr_net
     security_opt:
       - seccomp=unconfined
     group_add:
@@ -20,8 +20,8 @@ services:
 
     environment:
       TZ: ${TZ:-Etc/UTC}
-      PUID: 1
-      PGID: 1
+      # PUID: 1
+      # PGID: 1
       STASH_HOST: ${STASH_HOST:-0.0.0.0}
       STASH_PORT: ${STASH_PORT:-9999}
       # STASH_EXTERNAL_HOST=stash.$DOMAINNAME
@@ -30,9 +30,9 @@ services:
       STASH_METADATA: /metadata/
       STASH_CACHE: /cache/
 
-      # devices:
+      devices:
       # - /dev/fb0:/dev/fb0
-      # - /dev/dri:/dev/dri
+      - /dev/dri:/dev/dri
 
     volumes:
       - type: bind
@@ -48,7 +48,7 @@ services:
           create_host_path: true
       - type: bind
         source: ${COMMON_CONFIG_PATH}/stash/config
-        target: /config
+        target: /root/.stash
         bind:
           create_host_path: true
       - type: bind
@@ -93,7 +93,7 @@ services:
       - "traefik.http.routers.stash-secure.service=stash"
       # - "traefik.http.services.stash-svc.loadbalancer.server.scheme=https"
       - "traefik.http.services.stash.loadbalancer.server.port=9999"
-      - "traefik.docker.network=t3_proxy"
+      - "traefik.docker.network=arr_net"
 
 
       # - "traefik.enable=true"

@@ -8,8 +8,8 @@ services:
     restart: "no"
     profiles: ["media","arrs", "all"]
     networks:
-      - t3_proxy
-      # t3_proxy:
+      - arr_net
+      # arr_net:
       #   ipv4_address: ${MEDIA_SERVER_IP:-10.10.100.50} # You can specify a static IP
     ports:
       - "5454:5454"

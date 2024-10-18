@@ -5,7 +5,7 @@ services:
     restart: unless-stopped
     profiles: ["core", "all"]
     networks:
-      - t3_proxy
+      - arr_net
     ports:
       - mode: ingress
         target: 80
@@ -60,4 +60,4 @@ services:
       - "traefik.http.routers.gotify-secure.service=gotify"
       # - "traefik.http.services.gotify-svc.loadbalancer.server.scheme=https"
       - "traefik.http.services.gotify.loadbalancer.server.port=80"
-      - "traefik.docker.network=t3_proxy"
+      - "traefik.docker.network=arr_net"
