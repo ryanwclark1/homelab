@@ -1,5 +1,7 @@
 
-
+#TODO:
+- [ ] Add port variables to service yml files
+- [ ] Research conditional statements related to graphics card
 
 To retrieve your Global API key:
 Log in to the Cloudflare dashboard and go to User Profile > API Tokens.
