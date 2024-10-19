@@ -2,8 +2,8 @@ services:
   stash:
     image: ghcr.io/hotio/stash:${STASH_TAG:-latest}
     container_name: stash
-    security_opt:
-      - seccomp=unconfined
+    # security_opt:
+    #   - seccomp=unconfined
     restart: unless-stopped
     profiles: ["media", "player", "apps", "all"]
     networks:
