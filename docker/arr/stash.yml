@@ -74,7 +74,7 @@ services:
 
     devices:
     - /dev/dri:/dev/dri
-    user: $PUID:$PGID
+    # user: $PUID:$PGID
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.stash.entrypoints=web"
