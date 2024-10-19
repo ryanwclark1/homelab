@@ -1,9 +1,9 @@
 services:
   stash:
-    image: ghcr.io/hotio/stash:${STASH_TAG:-latest}
+    image: stashapp/stash:${STASH_TAG:-latest}
     container_name: stash
-    # security_opt:
-    #   - seccomp=unconfined
+    security_opt:
+      - seccomp=unconfined
     restart: unless-stopped
     profiles: ["media", "player", "apps", "all"]
     networks:
@@ -60,8 +60,8 @@ services:
           create_host_path: true
     environment:
       TZ: ${TZ:-Etc/UTC}
-      PUID: 1
-      PGID: 1
+      # PUID: 1
+      # PGID: 1
       # PUID: ${PUID:-1000}
       # PGID: ${PGID:-1000}
       STASH_HOST: ${STASH_HOST:-0.0.0.0}
@@ -72,9 +72,9 @@ services:
       STASH_METADATA: /metadata/
       STASH_CACHE: /cache/
 
-    # devices:
-    # - /dev/dri:/dev/dri
-    # user: $PUID:$PGID
+    devices:
+    - /dev/dri:/dev/dri
+    user: $PUID:$PGID
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.stash.entrypoints=web"
