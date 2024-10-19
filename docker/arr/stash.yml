@@ -72,8 +72,8 @@ services:
       STASH_METADATA: /metadata/
       STASH_CACHE: /cache/
 
-    devices:
-    - /dev/dri:/dev/dri
+    # devices:
+    # - /dev/dri:/dev/dri
     # user: $PUID:$PGID
     labels:
       - "traefik.enable=true"
