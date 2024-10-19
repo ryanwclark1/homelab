@@ -62,8 +62,8 @@ services:
       TZ: ${TZ:-Etc/UTC}
       # PUID: 1
       # PGID: 1
-      PUID: ${PUID:-1000}
-      PGID: ${PGID:-1000}
+      # PUID: ${PUID:-1000}
+      # PGID: ${PGID:-1000}
       STASH_HOST: ${STASH_HOST:-0.0.0.0}
       STASH_PORT: ${STASH_PORT:-9999}
       # STASH_EXTERNAL_HOST=stash.$DOMAINNAME
