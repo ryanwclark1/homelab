@@ -60,8 +60,8 @@ services:
           create_host_path: true
     environment:
       TZ: ${TZ:-Etc/UTC}
-      PUID: 1
-      PGID: 1
+      # PUID: 1
+      # PGID: 1
       # PUID: ${PUID:-1000}
       # PGID: ${PGID:-1000}
       STASH_HOST: ${STASH_HOST:-0.0.0.0}
