@@ -55,7 +55,7 @@ services:
           create_host_path: true
       - type: bind
         source: ${COMMON_CONFIG_PATH}/stash/config/config.yml
-        target: /root/stash/config.yml
+        target: /root/.stash/config.yml:rw
         bind:
           create_host_path: true
       - type: bind
