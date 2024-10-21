@@ -54,6 +54,11 @@ services:
         bind:
           create_host_path: true
       - type: bind
+        source: ${COMMON_CONFIG_PATH}/stash/config/config.yml
+        target: /root/stash/config.yml
+        bind:
+          create_host_path: true
+      - type: bind
         source: $DOCKERDIR/appdata/stash/add-intel-arc-drivers.sh
         target: /etc/cont-init.d/99-my-script
         bind:
