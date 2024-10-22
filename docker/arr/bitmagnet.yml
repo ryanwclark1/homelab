@@ -1,0 +1,59 @@
+services:
+  bitmagnet:
+    image: ghcr.io/bitmagnet-io/bitmagnet:latest
+    container_name: bitmagnet
+    ports:
+      # API and WebUI port:
+      - "3333:3333"
+      # BitTorrent ports:
+      - "3334:3334/tcp"
+      - "3334:3334/udp"
+    restart: unless-stopped
+    profiles: ["media","arrs", "all"]
+    environment:
+      POSTGRES_HOST: ${BITMAG_PG_HOST:-bitmag-postgres}
+      POSTGRES_NAME: ${BITMAG_PG_NAME:-bitmagnet}
+      POSTGRES_USER: ${BITMAG_PG_USER:-postgres}
+      POSTGRES_PASSWORD: ${BITMAG_PG_PASSWORD:-postgres}
+      TMDB_API_KEY: ${TMDB_API_KEY:-tmdb1234567890}
+      TMDB_ENABLED: ${TMDB_ENABLED:-true}
+      DHT_CRAWLER_SAVE_FILES_THRESHOLD: ${DHT_CRAWLER_SAVE_FILES_THRESHOLD:-100}
+      DHT_CRAWLER_SAVE_PIECES: ${DHT_CRAWLER_SAVE_PIECES:-false}
+      LOG_LEVEL: ${BITMAG_LOG_LEVEL:-info}
+      LOG_DEVELOPMENT: ${BITMAG_LOG_DEVELOPMENT:-false}
+      LOG_JSON: ${BITMAG_LOG_JSON:-false}
+      LOG_FILE_ROTATOR_ENABLED: ${BITMAG_LOG_FILE_ROTATOR_ENABLED:-false}
+      HTTP_SERVER_OPTIONS: ${BITMAG_HTTP_SERVER_OPTIONS:-"*"}
+      DHT_CRAWLER_SCALING_FACTOR: ${DHT_CRAWLER_SCALING_FACTOR:-10}
+      PROCESSOR_CONCURRENCY: ${PROCESSOR_CONCURRENCY:-1}
+    command:
+      - worker
+      - run
+      - --keys=http_server
+      - --keys=queue_server
+      # disable the next line to run without DHT crawler
+      - --keys=dht_crawler
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  postgres:
+    image: postgres:16-alpine
+    container_name: bitmagnet-postgres
+    volumes:
+      - ./data/postgres:/var/lib/postgresql/data
+    #    ports:
+    #      - "5432:5432" Expose this port if you'd like to dig around in the database
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${BITMAG_PG_USER:-postgres}
+      POSTGRES_PASSWORD: ${BITMAG_PG_PASSWORD:-postgres}
+      POSTGRES_DB: ${BITMAG_PG_NAME:-bitmagnet}
+      PGUSER: ${BITMAG_PG_USER:-postgres}
+    shm_size: 1g
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - pg_isready
+      start_period: 20s
+      interval: 10s
