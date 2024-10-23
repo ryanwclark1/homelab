@@ -58,9 +58,14 @@ services:
         read_only: true
         bind:
           create_host_path: true
-      - type: bind
+      - type: volume
         source: gluetun_config_data
         target: /config
+        bind:
+          create_host_path: true
+      - type: bind
+        source: ../gluetun_auth_config.toml
+        target: /gluetun/auth/config.toml
         bind:
           create_host_path: true
     environment:
@@ -88,7 +93,7 @@ services:
       DNS_UPDATE_PERIOD: ${GLUETUN_DNS_UPDATE_PERIOD:-24h}
       DNS_ADDRESS: ${GLUETUN_DNS_ADDRESS:-127.0.0.1}
       DNS_KEEP_NAMESERVER: ${GLUETUN_DNS_KEEP_NAMESERVER:-off}
-      HTTP_CONTROL_SERVER_LOG: ${GLUETUN_HTTP_CONTROL_SERVER_LOG:-off}
+      HTTP_CONTROL_SERVER_LOG: ${GLUETUN_HTTP_CONTROL_SERVER_LOG:-on}
       HTTP_CONTROL_SERVER_ADDRESS: ${GLUETUN_HTTP_CONTROL_SERVER_ADDRESS:-":8000"}
       HTTP_CONTROL_SERVER_AUTH_CONFIG_FILEPATH: ${GLUETUN_HTTP_CONTROL_SERVER_AUTH_CONFIG_FILEPATH:-/gluetun/auth/config.toml}
       UPDATER_PERIOD: ${GLUETUN_UPDATER_PERIOD:-0}
