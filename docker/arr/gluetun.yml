@@ -10,7 +10,7 @@ services:
     restart: unless-stopped
     profiles: ["core", "vpn", "all", "downloads"]
     extra_hosts:
-      - "postgres:10.10.201.32"
+      - "postgres:192.168.55.11"
     networks:
       - arr_net
     cap_add:
