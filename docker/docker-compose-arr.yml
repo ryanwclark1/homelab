@@ -21,6 +21,7 @@ networks:
     ipam:
       config:
         - subnet: 10.10.201.0/24
+          gateway: 10.10.210.1
   monitoring-services:
     name: monitoring-services
     driver: bridge
