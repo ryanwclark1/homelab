@@ -66,8 +66,6 @@ services:
       - type: bind
         source: ./secrets/gluetun_auth_config.toml
         target: /gluetun/auth/config.toml
-        bind:
-          create_host_path: true
     environment:
       PGID: ${PGID:-1000}
       PUID: ${PUID:-1000}
