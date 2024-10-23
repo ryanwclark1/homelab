@@ -20,7 +20,7 @@ services:
     # volumes:
     #   - /path/to/data/home:/etc/semaphore # config.json location
   postgres:
-    image: postgres:16
+    image: postgres:16-alpine
     hostname: postgres
     volumes:
       - semaphore-postgres:/var/lib/postgresql/data
