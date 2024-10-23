@@ -8,11 +8,15 @@ services:
       # BitTorrent ports:
       - "3334:3334/tcp"
       - "3334:3334/udp"
+    volumes:
+      - ./config:/root/.config/bitmagnet
+      # Mount data folder (currently only used for logs when file rotation is enabled):
+      - ./data/bitmagnet:/root/.local/share/bitmagnet
     restart: unless-stopped
     profiles: ["media","arrs", "all"]
     environment:
       POSTGRES_HOST: ${BITMAG_PG_HOST:-postgres}
-      POSTGRES_NAME: ${BITMAG_PG_NAME:-bitmagnet}
+      # POSTGRES_NAME: ${BITMAG_PG_NAME:-bitmagnet}
       POSTGRES_USER: ${BITMAG_PG_USER:-postgres}
       POSTGRES_PASSWORD: ${BITMAG_PG_PASSWORD:-postgres}
       TMDB_API_KEY: ${TMDB_API_KEY:-tmdb1234567890}
@@ -47,10 +51,10 @@ services:
     #      - "5432:5432" Expose this port if you'd like to dig around in the database
     restart: unless-stopped
     environment:
-      POSTGRES_USER: ${BITMAG_PG_USER:-postgres}
+      # POSTGRES_USER: ${BITMAG_PG_USER:-postgres}
       POSTGRES_PASSWORD: ${BITMAG_PG_PASSWORD:-postgres}
       POSTGRES_DB: ${BITMAG_PG_NAME:-bitmagnet}
-      # PGUSER: ${BITMAG_PG_USER:-postgres}
+      PGUSER: ${BITMAG_PG_USER:-postgres}
     shm_size: 1g
     healthcheck:
       test:
