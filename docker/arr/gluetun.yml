@@ -63,7 +63,7 @@ services:
         target: /config
         bind:
           create_host_path: true
-      - type: bind
+      - type: volume
         source: ./secrets/gluetun_auth_config.toml
         target: /gluetun/auth/config.toml
     environment:
