@@ -9,9 +9,15 @@ services:
       - "3334:3334/tcp"
       - "3334:3334/udp"
     volumes:
-      - ./config:/root/.config/bitmagnet
+      - type: volume
+        source: bitmag_config_data
+        target: /root/.config/bitmagnet
+      # - ./config:/root/.config/bitmagnet
       # Mount data folder (currently only used for logs when file rotation is enabled):
-      - ./data/bitmagnet:/root/.local/share/bitmagnet
+      - type: volume
+        source: bitmag_log_data
+        target: /root/.local/share/bitmagnet
+      # - ./data/bitmagnet:/root/.local/share/bitmagnet
     restart: unless-stopped
     profiles: ["media","arrs", "all"]
     environment:
@@ -40,6 +46,8 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
+    networks:
+      - arr_net
 
   postgres:
     image: postgres:16-alpine
@@ -62,3 +70,13 @@ services:
         - pg_isready
       start_period: 20s
       interval: 10s
+    networks:
+      - arr_net
+
+volumes:
+  bitmag_config_data:
+    external: false
+    name: bitmag_config_data
+  bitmag_log_data:
+    external: false
+    name: bitmag_log_data
