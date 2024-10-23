@@ -72,7 +72,7 @@ services:
     networks:
       arr_net:
         ipv4_address:
-          10.10.210.32
+          10.10.201.32
 
 
 volumes:
