@@ -1,8 +1,6 @@
 ########################### NETWORKS
 # You may customize the network subnets (10.10.x.0/24) below as you please.
 networks:
-  default:
-    driver: bridge
   socket_proxy:
     name: socket_proxy
     driver: bridge
