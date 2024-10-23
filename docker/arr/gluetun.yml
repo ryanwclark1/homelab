@@ -61,7 +61,11 @@ services:
       - type: volume
         source: gluetun_config_data
         target: /config
-      - ./secrets/gluetun_auth_config.toml:/gluetun/auth/config.toml
+      - type: bind
+        source: ../secrets/gluetun_auth_config.toml
+        target: /gluetun/auth/config.toml
+        read_only: true
+      # - ../secrets/gluetun_auth_config.toml:/gluetun/auth/config.toml
     environment:
       PGID: ${PGID:-1000}
       PUID: ${PUID:-1000}
