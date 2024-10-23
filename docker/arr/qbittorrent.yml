@@ -23,7 +23,7 @@ services:
         bind:
           create_host_path: true
       # - type: volume
-      #   source: config_data
+      #   source: qbit_config_data
       #   target: /config
       - type: bind
         source: ${COMMON_DATA_PATH}
@@ -47,6 +47,6 @@ services:
       - "deunhealth.restart.on.unhealthy=true"
 
 volumes:
-  config_data:
+  qbit_config_data:
     external: false
-    name: config_data
+    name: qbit_config_data

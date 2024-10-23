@@ -22,10 +22,10 @@ services:
       - VNC_LISTENING_PORT=5900
       - VNC_PASSWORD=${VNC_PASSWORD:-password}
     volumes:
-      - config_data:/config:rw
+      - czkawka_config_data:/config:rw
       - /mnt/rclark:/storage:rw
 
 volumes:
-  config_data:
+  czkawka_config_data:
     external: false
-    name: config_data
+    name: czkawka_config_data

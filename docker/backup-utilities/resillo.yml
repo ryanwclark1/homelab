@@ -8,7 +8,7 @@ services:
       - PGID=${PGID:-1000}
       - TZ=${TZ:-Etc/UTC}
     volumes:
-      - config_data:/config
+      - resillio_config_data:/config
       - downloads_data:/downloads
       - /mnt/family_sync:/sync
     ports:
@@ -17,9 +17,9 @@ services:
     restart: unless-stopped
 
 volumes:
-  config_data:
+  resillio_config_data:
     external: false
-    name: config_data
+    name: resillio_config_data
   downloads_data:
     external: false
     name: downloads_data
