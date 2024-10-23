@@ -17,12 +17,12 @@ services:
       - NET_ADMIN
     devices:
       - /dev/net/tun
-    healthcheck:
-      test: ["CMD", "/gluetun-entrypoint", "healthcheck"]
-      interval: 5s
-      timeout: 5s
-      start_period: 10s
-      retries: 1
+    # healthcheck:
+    #   test: ["CMD", "/gluetun-entrypoint", "healthcheck"]
+    #   interval: 5s
+    #   timeout: 5s
+    #   start_period: 10s
+    #   retries: 1
     ports:
       # Exposing qBittorrent through Docker Host LAN IP
       - mode: ingress

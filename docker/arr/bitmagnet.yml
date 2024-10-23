@@ -33,15 +33,18 @@ services:
     command:
       - worker
       - run
-      - --keys=http_server
-      - --keys=queue_server
+     # Run all workers:
+      - --all
+      # Or enable individual workers:
+      # - --keys=http_server
+      # - --keys=queue_server
       # disable the next line to run without DHT crawler
-      - --keys=dht_crawler
+      # - --keys=dht_crawler
     depends_on:
       postgres:
         condition: service_healthy
       gluetun:
-        condition: service_healthy
+        condition: service_started
     network_mode: "container:gluetun"
     # labels: # Traefik labels added via glueten
 
