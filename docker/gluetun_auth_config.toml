@@ -3,6 +3,6 @@ name = "test"
 # Define a list of routes with the syntax "Http-Method /path"
 # routes = ["GET /v1/openvpn/portforwarded"]
 # Define an authentication method with its parameters
-auth = "basic"
+auth = "none"
 username = "admin"
 password = "password123"
