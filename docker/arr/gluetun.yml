@@ -64,7 +64,7 @@ services:
         bind:
           create_host_path: true
       - type: bind
-        source: ../gluetun_auth_config.toml
+        source: ./secrets/gluetun_auth_config.toml
         target: /gluetun/auth/config.toml
         bind:
           create_host_path: true
