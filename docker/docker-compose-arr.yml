@@ -1,18 +1,6 @@
 ########################### NETWORKS
 # You may customize the network subnets (10.10.x.0/24) below as you please.
 networks:
-  socket_proxy:
-    name: socket_proxy
-    driver: bridge
-    ipam:
-      config:
-        - subnet: 10.10.200.0/24
-  # t2_proxy:
-  #   name: t2_proxy
-  #   driver: bridge
-  #   ipam:
-  #     config:
-  #       - subnet: 10.10.100.0/24
   arr_net:
     name: arr_net
     driver: bridge
