@@ -72,8 +72,8 @@ services:
       VPN_TYPE: ${GLUETUN_VPN_TYPE:-wireguard}
       VPN_SERVICE_PROVIDER: ${GLUETUN_VPN_PROVIDER:-nordvpn}
       WIREGUARD_PRIVATE_KEY: ${VPN_KEY}
-      SERVER_COUNTRIES: Netherlands
-      STORAGE_FILEPATH: /gluetun/servers.json
+      SERVER_COUNTRIES: ${GLUETUN_SERVER_COUNTRIES:-Netherlands}
+      # STORAGE_FILEPATH: /gluetun/servers.json
       DOT: ${GLUETUN_DOT:-on}
       DOT_PROVIDERS: ${GLUETUN_DOT_PROVIDERS:-cloudflare}
       DOT_PRIVATE_ADDRESS: ${GLUETUN_DOT_PRIVATE_ADDRESS:-127.0.0.1/8,10.0.0.0/8,172.16.0.0/12,192.168.0.0/16,169.254.0.0/16,::1/128,fc00::/7,fe80::/10,::ffff:7f00:1/104,::ffff:a00:0/104,::ffff:a9fe:0/112,::ffff:ac10:0/108,::ffff:c0a8:0/112}
@@ -115,7 +115,7 @@ services:
       - "traefik.http.services.qbit-gluetun.loadbalancer.server.scheme=https"
       - "traefik.http.services.qbit-gluetun.loadbalancer.server.port=8080"
       - "traefik.docker.network=arr_net"
-volume:
+volumes:
   gluetun_config_data:
     external: false
     name: gluetun_config_data
