@@ -4,5 +4,5 @@ name = "test"
 # routes = ["GET /v1/openvpn/portforwarded"]
 # Define an authentication method with its parameters
 auth = "basic"
-# username = "myusername"
-# password = "mypassword"
+username = "admin"
+password = "password123"
