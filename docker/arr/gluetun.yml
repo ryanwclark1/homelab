@@ -26,6 +26,20 @@ services:
     #   - 8888:8888/tcp # HTTP proxy
     #   - 8388:8388/tcp # Shadowsocks
     #   - 8388:8388/udp # Shadowsocks
+      # BitMagnet API and WebUI port:
+      - mode: ingress
+        target: "${BITMAG_PORT:-3333}"
+        published: "${BITMAG_PORT:-3333}"
+        protocol: tcp
+      # BitMagnet BitTorrent ports:
+      - mode: ingress
+        target: "${BITMAG_BT_PORT:-3334}"
+        published: "${BITMAG_BT_PORT:-3334}"
+        protocol: tcp
+      - mode: ingress
+        target: "${BITMAG_BT_PORT:-3334}"
+        published: "${BITMAG_BT_PORT:-3334}"
+        protocol: udp
     volumes:
       - type: bind
         source: /etc/localtime

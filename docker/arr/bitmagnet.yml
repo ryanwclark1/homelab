@@ -2,12 +2,6 @@ services:
   bitmagnet:
     image: ghcr.io/bitmagnet-io/bitmagnet:latest
     container_name: bitmagnet
-    ports:
-      # API and WebUI port:
-      - "3333:3333"
-      # BitTorrent ports:
-      - "3334:3334/tcp"
-      - "3334:3334/udp"
     volumes:
       - type: volume
         source: bitmag_config_data
@@ -46,8 +40,9 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
-    networks:
-      - arr_net
+      gluetun:
+    network_mode: "container:gluetun"
+    # labels: # Traefik labels added via glueten
 
   postgres:
     image: postgres:16-alpine
@@ -72,6 +67,7 @@ services:
       interval: 10s
     networks:
       - arr_net
+
 
 volumes:
   bitmag_config_data:
