@@ -13,7 +13,7 @@ services:
         target: /root/.local/share/bitmagnet
       # - ./data/bitmagnet:/root/.local/share/bitmagnet
     restart: unless-stopped
-    profiles: ["media","arrs", "all"]
+    profiles: ["downloads", "all"]
     environment:
       POSTGRES_HOST: ${BITMAG_PG_HOST:-postgres}
       # POSTGRES_NAME: ${BITMAG_PG_NAME:-bitmagnet}
@@ -46,7 +46,7 @@ services:
   postgres:
     image: postgres:16-alpine
     container_name: bitmagnet-postgres
-    profiles: ["media","arrs", "all"]
+    profiles: ["downloads", "all"]
     volumes:
       - ./data/postgres:/var/lib/postgresql/data
     #    ports:
