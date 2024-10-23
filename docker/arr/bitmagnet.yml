@@ -41,6 +41,7 @@ services:
       postgres:
         condition: service_healthy
       gluetun:
+        condition: service_healthy
     network_mode: "container:gluetun"
     # labels: # Traefik labels added via glueten
 
