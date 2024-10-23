@@ -38,10 +38,8 @@ services:
       # disable the next line to run without DHT crawler
       - --keys=dht_crawler
     depends_on:
-      postgres:
-        condition: service_healthy
-      gluetun:
-        condition: service_healthy
+      - postgres
+      - gluetun
     network_mode: "container:gluetun"
     # labels: # Traefik labels added via glueten
 
