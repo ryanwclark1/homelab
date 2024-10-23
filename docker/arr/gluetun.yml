@@ -31,8 +31,8 @@ services:
         protocol: tcp
       - 6881:6881
       - 6881:6881/udp
-      - node: ingress
-        target: 800
+      - mode: ingress
+        target: 8000
         published: 8001
         protocol: tcp
     #   - 8888:8888/tcp # HTTP proxy
