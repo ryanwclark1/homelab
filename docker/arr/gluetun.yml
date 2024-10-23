@@ -9,6 +9,8 @@ services:
       - no-new-privileges:true
     restart: unless-stopped
     profiles: ["core", "vpn", "all", "downloads"]
+    extra_hosts:
+      - "postgres:10.10.201.32"
     networks:
       - arr_net
     cap_add:
@@ -29,6 +31,10 @@ services:
         protocol: tcp
       - 6881:6881
       - 6881:6881/udp
+      - node: ingress
+        target: 800
+        published: 8001
+        protocol: tcp
     #   - 8888:8888/tcp # HTTP proxy
     #   - 8388:8388/tcp # Shadowsocks
     #   - 8388:8388/udp # Shadowsocks
@@ -73,6 +79,8 @@ services:
       # VPN_TYPE: openvpn
       # OPENVPN_USER: $NORDVPN_USERNAME
       # OPENVPN_PASSWORD: $NORDVPN_PASSWORD
+      DOT: ${GLUETUN_DOT:-"on"}
+      # HTTP_CONTROL_SERVER_ADDRESS: ${GLUETUN_HTTP_CONTROL_SERVER_ADDRESS:-8001}
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.qbit-gluetun.entrypoints=web"
