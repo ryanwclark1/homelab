@@ -1,0 +1,10 @@
+services:
+  python:
+    image: python:${PYTHON_TAG:-3.12-bookworm}
+    container_name: python
+    restart: unless-stopped
+    profiles: ["apps", "downloads", "all"]
+    depends_on:
+      gluetun:
+        condition: service_healthy
+    network_mode: "container:gluetun"

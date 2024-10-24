@@ -4,10 +4,14 @@ name = "test"
 # The path are in the root /v1/openvpn/ for both wireguard and openvpn
 routes = [
   "GET /v1/openvpn/status",
+  "PUT /v1/openvpn/status",
   "GET /v1/openvpn/portforwarded",
   "GET /v1/openvpn/settings",
   "GET /v1/dns/status",
-  "GET /v1/updater/status"
+  "PUT /v1/dns/status",
+  "GET /v1/updater/status",
+  "PUT /v1/updater/status",
+  "GET /v1/publicip/ip"
 ]
 # Define an authentication method with its parameters
 auth = "none"
