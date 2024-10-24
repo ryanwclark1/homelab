@@ -73,4 +73,4 @@ include:
   # NETWORK
   - arr/gluetun.yml
   # OTHER
-  - arr/python.yml
+  # - arr/python.yml
