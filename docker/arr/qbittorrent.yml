@@ -23,16 +23,11 @@ services:
         target: /config
         bind:
           create_host_path: true
-      # - type: volume
-      #   source: qbit_config_data
-      #   target: /config
       - type: bind
         source: ${COMMON_DATA_PATH}
         target: /storage
         bind:
           create_host_path: true
-      # - ${COMMON_CONFIG_PATH}/qbittorrent:/config
-      # - ${COMMON_DATA_PATH}/downloads:/data/downloads # Ensure that downloads folder is set to /data/downloads in qBittorrent
     environment:
       TZ: ${TZ:-Etc/UTC}
       PUID: ${PUID:-1000}
@@ -45,7 +40,6 @@ services:
       timeout: 10s
       retries: 1
     # labels: # Traefik labels added via glueten
-
 volumes:
   qbit_config_data:
     external: false
