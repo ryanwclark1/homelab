@@ -8,4 +8,3 @@ services:
       gluetun:
         condition: service_healthy
     network_mode: "container:gluetun"
-    command: sh
