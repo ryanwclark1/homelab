@@ -72,3 +72,5 @@ include:
   - arr/node-exporter.yml
   # NETWORK
   - arr/gluetun.yml
+  # OTHER
+  - arr/python.yml
