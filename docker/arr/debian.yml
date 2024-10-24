@@ -1,7 +1,7 @@
 services:
-  python:
-    image: python:${PYTHON_TAG:-3.12-bookworm}
-    container_name: python
+  debian:
+    image: debian:${DEBIAN_TAG:-bookworm}
+    container_name: debian
     restart: unless-stopped
     profiles: ["apps", "downloads", "all"]
     depends_on:
