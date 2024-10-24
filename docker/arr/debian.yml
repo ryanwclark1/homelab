@@ -8,6 +8,8 @@ services:
       gluetun:
         condition: service_healthy
     network_mode: "container:gluetun"
+    stdin_open: true
+    tty: true
     volumes:
       - type: bind
         source: /etc/localtime
