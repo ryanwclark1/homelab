@@ -5,7 +5,7 @@ services:
     container_name: qbittorrent
     security_opt:
       - no-new-privileges:true
-    restart: unless-stopped
+    restart: always
     profiles: ["apps", "downloads", "all"]
     depends_on:
       gluetun:
@@ -44,8 +44,7 @@ services:
       interval: 1m
       timeout: 10s
       retries: 1
-    labels: # Traefik labels added via glueten
-      - "deunhealth.restart.on.unhealthy=true"
+    # labels: # Traefik labels added via glueten
 
 volumes:
   qbit_config_data:
