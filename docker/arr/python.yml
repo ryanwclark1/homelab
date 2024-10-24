@@ -8,3 +8,5 @@ services:
       gluetun:
         condition: service_healthy
     network_mode: "container:gluetun"
+    exec:
+      command: ["bin/bash"]
