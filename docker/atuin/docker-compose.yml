@@ -1,6 +1,6 @@
 services:
   tailscale:
-    image: tailscale/tailscale:{$TAILSCALE_TAG:-latest}
+    image: tailscale/tailscale:latest #{$TAILSCALE_TAG:-latest}
     hostname: tailscale
     environment:
       - TS_AUTHKEY=${TAILSCALE_AUTHKEY}
