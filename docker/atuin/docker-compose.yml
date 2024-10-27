@@ -1,10 +1,31 @@
 services:
+  tailscale:
+    image: tailscale/tailscale:{$TAILSCALE_TAG:-latest}
+    hostname: tailscale
+    environment:
+      - TS_AUTHKEY=${TAILSCALE_AUTHKEY}
+      - TS_EXTRA_ARGS=--advertise-tags=tag:container
+      - TS_STATE_DIR=/var/lib/tailscale
+      - TS_USERSPACE=false
+    volumes:
+      - tailscale-data:/var/lib/tailscale
+      - /dev/net/tun:/dev/net/tun
+    cap_add:
+      - net_admin
+      - sys_module
+    restart: unless-stopped
+  # nginx:
+  #   image: nginx
+  #   depends_on:
+  #     - tailscale-nginx
+  #   network_mode: service:tailscale-nginx
+
   atuin:
     restart: always
     image: ghcr.io/atuinsh/atuin:${ATUIN_TAG:-v18.3.0}
     command: server start
     volumes:
-      - config-data:/config
+      - atuin-config-data:/config
     links:
       - postgresql:db
     ports:
@@ -44,5 +65,7 @@ volumes:
     driver: local
   pgdumps:
     driver: local
-  config-data:
+  atuin-config-data:
+    driver: local
+  tailscale-data:
     driver: local
