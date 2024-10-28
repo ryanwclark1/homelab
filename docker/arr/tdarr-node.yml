@@ -3,7 +3,7 @@ services:
     container_name: tdarr-node
     image: ghcr.io/haveagitgat/tdarr_node:${TDARR_NODE_TAG:-latest}
     restart: unless-stopped
-    profiles: ["media", "all", "tdarrnode"]
+    profiles: ["media", "all", "tdarr", "tdarrnode"]
     network_mode: service:tdarr-server
 
     environment:

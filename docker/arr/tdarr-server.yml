@@ -4,7 +4,7 @@ services:
     container_name: tdarr-server
     image: ghcr.io/haveagitgat/tdarr:${TDARR_SERVER_TAG:-latest}
     restart: unless-stopped
-    profiles: ["media", "tdarrserver", "all"]
+    profiles: ["media", "tdarrserver", "tdarr", "all"]
     network_mode: bridge
     ports:
       - mode: ingress
