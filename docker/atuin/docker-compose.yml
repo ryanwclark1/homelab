@@ -30,7 +30,7 @@ services:
         source: ~/.config/atuin  # atuin-config-data
         target: /config
     links:
-      - postgresql:db
+      - postgres:db
     depends_on:
       postgres:
         condition: service_healthy
@@ -40,7 +40,7 @@ services:
     ports:
       - mode: ingress
         target: 8888
-        published: "8888"
+        published: 8888
         protocol: tcp
     environment:
       ATUIN_HOST: ${ATUIN_HOST:-0.0.0.0}
@@ -70,7 +70,7 @@ services:
     env_file:
       - .env
     environment:
-      POSTGRES_HOST: postgresql
+      POSTGRES_HOST: postgres
       POSTGRES_DB: ${ATUIN_DB_NAME}
       POSTGRES_USER: ${ATUIN_DB_USERNAME}
       POSTGRES_PASSWORD: ${ATUIN_DB_PASSWORD}
@@ -79,7 +79,8 @@ services:
     volumes:
       - pgdumps:/db_dumps
     depends_on:
-      - postgresql
+      postgres:
+        condition: service_healthy
 
 volumes:
   pgdata:
