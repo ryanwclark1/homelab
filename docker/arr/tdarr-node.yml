@@ -4,13 +4,8 @@ services:
     image: ghcr.io/haveagitgat/tdarr_node:${TDARR_NODE_TAG:-latest}
     restart: unless-stopped
     profiles: ["media", "all", "tdarrnode"]
-    networks:
-      - arr_net
-    # ports:
-    #   - mode: ingress
-    #     target: 8268
-    #     published: 8268
-    #     protocol: tcp
+    network_mode: service:tdarr-server
+
     environment:
       TZ: ${TZ:-Etc/UTC}
       PUID: ${PUID:-1000}
@@ -49,6 +44,3 @@ volumes:
   tdarr_logs:
     external: false
     name: tdarr_logs
-  # transcode_cache:
-  #   external: false
-  #   name: transcode_cache

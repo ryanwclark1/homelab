@@ -5,8 +5,7 @@ services:
     image: ghcr.io/haveagitgat/tdarr:${TDARR_SERVER_TAG:-latest}
     restart: unless-stopped
     profiles: ["media", "tdarrserver", "all"]
-    networks:
-      - arr_net
+    network_mode: bridge
     ports:
       - mode: ingress
         target: 8265
@@ -16,6 +15,7 @@ services:
         target: 8266
         published: 8266
         protocol: tcp
+
     environment:
       TZ: ${TZ:-Etc/UTC}
       PUID: ${PUID:-1000}
@@ -27,6 +27,10 @@ services:
       inContainer: true
       ffmpegVersion: 7
       nodeName: ${TDARR_SERVER_NAME:-MyInternalNode}
+
+    devices:
+      - /dev/dri:/dev/dri
+
     volumes:
       - type: volume
         source: tdarr_server_data
