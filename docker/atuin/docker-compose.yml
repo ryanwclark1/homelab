@@ -1,6 +1,6 @@
 services:
   tailscale:
-    image: tailscale/tailscale:latest #{$TAILSCALE_TAG:-latest}
+    image: tailscale/tailscale:${TAILSCALE_TAG:-latest}
     hostname: tailscale
     environment:
       - TS_AUTHKEY=${TAILSCALE_AUTHKEY}
@@ -26,17 +26,29 @@ services:
     image: ghcr.io/atuinsh/atuin:${ATUIN_TAG:-v18.3.0}
     command: server start
     volumes:
-      - atuin-config-data:/config
+      - type: volume
+        source: ~/.config/atuin  # atuin-config-data
+        target: /config
     links:
       - postgresql:db
+    depends_on:
+      postgres:
+        condition: service_healthy
+      tailscale:
+        condition: service_started
+
     ports:
-      - 8888:8888
+      - mode: ingress
+        target: 8888
+        published: "8888"
+        protocol: tcp
     environment:
       ATUIN_HOST: ${ATUIN_HOST:-0.0.0.0}
       ATUIN_OPEN_REGISTRATION: "true"
       ATUIN_DB_URI: postgres://$ATUIN_DB_USERNAME:$ATUIN_DB_PASSWORD@db/$ATUIN_DB_NAME
       RUST_LOG: info,atuin_server=debug
-  postgresql:
+
+  postgresq:
     image: postgres:16
     restart: unless-stopped
     volumes: # Don't remove permanent storage for index database files!
@@ -45,6 +57,13 @@ services:
       POSTGRES_USER: ${ATUIN_DB_USERNAME}
       POSTGRES_PASSWORD: ${ATUIN_DB_PASSWORD}
       POSTGRES_DB: ${ATUIN_DB_NAME}
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - pg_isready
+      start_period: 20s
+      interval: 10s
+
   backup:
     container_name: atuin_db_dumper
     image: prodrigestivill/postgres-backup-local
@@ -61,6 +80,7 @@ services:
       - pgdumps:/db_dumps
     depends_on:
       - postgresql
+
 volumes:
   pgdata:
     driver: local
