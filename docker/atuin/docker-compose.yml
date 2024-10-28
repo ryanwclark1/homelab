@@ -48,7 +48,7 @@ services:
       ATUIN_DB_URI: postgres://$ATUIN_DB_USERNAME:$ATUIN_DB_PASSWORD@db/$ATUIN_DB_NAME
       RUST_LOG: info,atuin_server=debug
 
-  postgresq:
+  postgres:
     image: postgres:16
     restart: unless-stopped
     volumes: # Don't remove permanent storage for index database files!
