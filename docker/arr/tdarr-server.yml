@@ -29,7 +29,7 @@ services:
       nodeName: ${TDARR_SERVER_NAME:-MyInternalNode}
 
     group_add:
-      - render
+      - 106
 
     devices:
       - /dev/dri:/dev/dri

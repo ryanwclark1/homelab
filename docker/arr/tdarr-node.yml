@@ -17,7 +17,7 @@ services:
       nodeName: ${TDARR_NODE_NAME:-MyExternalNode}
 
     group_add:
-      - render
+      - 106
 
     devices:
       - /dev/dri:/dev/dri
