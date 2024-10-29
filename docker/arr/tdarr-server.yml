@@ -28,6 +28,9 @@ services:
       ffmpegVersion: 7
       nodeName: ${TDARR_SERVER_NAME:-MyInternalNode}
 
+    group_add:
+      - render
+
     devices:
       - /dev/dri:/dev/dri
 
