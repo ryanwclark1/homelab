@@ -5,7 +5,6 @@ services:
     restart: unless-stopped
     profiles: ["media", "all", "tdarr", "tdarrnode"]
     network_mode: service:tdarr-server
-    user: "106:106"
     environment:
       TZ: ${TZ:-Etc/UTC}
       # PUID: 1000
