@@ -9,15 +9,15 @@ services:
     environment:
       TZ: ${TZ:-Etc/UTC}
       PUID: 1000
-      PGID: 1000;106
+      PGID: 1000
       serverIP: ${TDARR_SERVER_IP:-0.0.0.0}
       serverPort: ${TDARR_SERVER_PORT:-8266}
       inContainer: true
       ffmpegVersion: 7
       nodeName: ${TDARR_NODE_NAME:-MyExternalNode}
 
-    group_add:
-      - 106
+    # group_add:
+    #   - 106
 
     devices:
       - /dev/dri:/dev/dri
