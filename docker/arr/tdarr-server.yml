@@ -30,8 +30,8 @@ services:
       ffmpegVersion: 7
       nodeName: ${TDARR_SERVER_NAME:-MyInternalNode}
 
-    group_add:
-      - 106
+    # group_add:
+    #   - 106
 
     devices:
       - /dev/dri:/dev/dri
