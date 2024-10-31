@@ -31,7 +31,7 @@ services:
       nodeName: ${TDARR_SERVER_NAME:-MyInternalNode}
 
     # group_add:
-    #   - 106
+    #   - 107
 
     devices:
       - /dev/dri:/dev/dri
