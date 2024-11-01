@@ -73,4 +73,4 @@ include:
   # NETWORK
   - arr/gluetun.yml
   # OTHER
-  # - arr/debian.yml
+  - arr/debian.yml
