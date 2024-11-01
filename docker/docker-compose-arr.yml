@@ -57,7 +57,7 @@ include:
   - arr/readarr.yml
   - arr/sonarr.yml
   - arr/whisparr.yml
-  - arr/bitmagnet.yml
+  # - arr/bitmagnet.yml
   # COMPLEMENTARY APPS
   - arr/bazarr.yml
   - arr/prowlarr.yml
