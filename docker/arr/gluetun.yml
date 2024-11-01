@@ -18,10 +18,10 @@ services:
       - /dev/net/tun
     healthcheck:
       test: ["CMD", "/gluetun-entrypoint", "healthcheck"]
-      interval: 5s
-      timeout: 5s
-      start_period: 10s
-      retries: 1
+      interval: 10s
+      timeout: 10s
+      start_period: 30s
+      retries: 3
     ports:
       # Exposing qBittorrent through Docker Host LAN IP
       - mode: ingress
