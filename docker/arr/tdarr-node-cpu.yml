@@ -53,4 +53,4 @@ volumes:
     name: tdarr_logs
   tdarr_cache:
     external: false
-    name: tdarr_logs
+    name: tdarr_cache
