@@ -1,6 +1,6 @@
 # Do we need or want UMASK_SET=002 in environment?
 services:
-  tdarr-server:
+  tdarr-server-cpu:
     container_name: tdarr-server-cpu
     image: ghcr.io/haveagitgat/tdarr:${TDARR_SERVER_TAG:-latest}
     restart: unless-stopped
