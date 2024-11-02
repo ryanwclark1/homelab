@@ -39,7 +39,7 @@ services:
         create_host_path: true
     restart: 'unless-stopped'
     # Optional - alternative address used for autodiscovery
-    environment:
+    # environment:
       # - JELLYFIN_PublishedServerUrl=http://jellyfin.$DOMAINNAME
     # Optional - may be necessary for docker healthcheck to pass if running in host network mode
     # extra_hosts:
