@@ -44,6 +44,8 @@ include:
   # Media
   - arr/tdarr-server.yml
   - arr/tdarr-node.yml
+  - arr/tdarr-server-cpu.yml
+  - arr/tdarr-node-cpu.yml
   # FRONTEND
   - arr/homepage.yml
   - network/sitespeed.yml

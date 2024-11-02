@@ -1,0 +1,76 @@
+# Do we need or want UMASK_SET=002 in environment?
+services:
+  tdarr-server:
+    container_name: tdarr-server-cpu
+    image: ghcr.io/haveagitgat/tdarr:${TDARR_SERVER_TAG:-latest}
+    restart: unless-stopped
+    profiles: ["media", "tdarrservercpu", "tdarrcpu", "all"]
+    networks:
+      - arr_net
+    ports:
+      - mode: ingress
+        target: 8265
+        published: 8265
+        protocol: tcp
+      - mode: ingress
+        target: 8266
+        published: 8266
+        protocol: tcp
+
+    environment:
+      TZ: ${TZ:-Etc/UTC}
+      PUID: 1000
+      PGID: 1000
+      serverIP: ${TDARR_SERVER_IP:-0.0.0.0}
+      serverPort: ${TDARR_SERVER_PORT:-8266}
+      webUIPort: ${TDARR_UI_PORT:-8265}
+      inContainer: true
+      nodeName: ${TDARR_SERVER_NAME:-MyInternalNode}
+
+    group_add:
+      - 107 # Run `stat -c '%g' /dev/dri/renderD128` to get the group ID of the dri device
+
+    devices:
+      - /dev/dri:/dev/dri
+
+    volumes:
+      - type: bind
+        source: /etc/localtime
+        target: /etc/localtime
+        read_only: true
+      - type: bind
+        source: ${COMMON_CONFIG_PATH}/tdarr/servercpu
+        target: /app/server
+        bind:
+          create_host_path: true
+      - type: bind
+        source: ${COMMON_CONFIG_PATH}/tdarr/configcpu
+        target: /app/configs
+        bind:
+          create_host_path: true
+      - type: bind
+        source: ${COMMON_CONFIG_PATH}/tdarr/logscpu
+        target: /app/logs
+        bind:
+          create_host_path: true
+      - type: bind
+        source: ${COMMON_CONFIG_PATH}/tdarr/cachecpu
+        target: /cache
+        bind:
+          create_host_path: true
+      - type: bind
+        source: ${COMMON_DATA_PATH}
+        target: /storage
+        bind:
+          create_host_path: true
+
+volumes:
+  tdarr_server_data:
+    external: false
+    name: tdarr_server_data
+  tdarr_configs:
+    external: false
+    name: tdarr_configs
+  tdarr_logs:
+    external: false
+    name: tdarr_logs
