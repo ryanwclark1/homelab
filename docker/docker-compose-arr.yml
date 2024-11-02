@@ -73,4 +73,6 @@ include:
   # NETWORK
   - arr/gluetun.yml
   # OTHER
+  - arr/jellyfin.yml
+  # OTHER
   - arr/debian.yml
