@@ -1,6 +1,6 @@
 services:
   jellyfin:
-    image: jellyfin/jellyfin
+    image: jellyfin/jellyfin:${JELLYFIN_TAG:-10}
     container_name: jellyfin
     profiles: ["jellyfin", "all"]
     # user: uid:gid
@@ -27,6 +27,9 @@ services:
       target: /cache
       bind:
         create_host_path: true
+    - type: volume
+      source: jellyfin_cache
+      target: /cache
     - type: bind
       source: ${COMMON_DATA_PATH}/movies
       target: /storage/movies
@@ -44,3 +47,7 @@ services:
     # Optional - may be necessary for docker healthcheck to pass if running in host network mode
     # extra_hosts:
     #   - 'host.docker.internal:host-gateway'
+volumes:
+  jellyfin_cache:
+    external: false
+    name: jellyfin_cache
