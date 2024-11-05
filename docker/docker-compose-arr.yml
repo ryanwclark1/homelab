@@ -76,5 +76,6 @@ include:
   - arr/gluetun.yml
   # OTHER
   - arr/jellyfin.yml
+  - arr/jellyseerr.yml
   # OTHER
   - arr/debian.yml
