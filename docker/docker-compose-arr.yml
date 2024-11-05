@@ -77,5 +77,6 @@ include:
   # OTHER
   - arr/jellyfin.yml
   - arr/jellyseerr.yml
+  - arr/tvheadend.yml
   # OTHER
   - arr/debian.yml

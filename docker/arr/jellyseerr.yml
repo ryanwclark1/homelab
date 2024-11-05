@@ -17,7 +17,7 @@ services:
       bind:
         create_host_path: true
     - type: bind
-      source: ${COMMON_CONFIG_PATH}/jellyfin/config
+      source: ${COMMON_CONFIG_PATH}/jellyseerr
       target: /config
       bind:
         create_host_path: true

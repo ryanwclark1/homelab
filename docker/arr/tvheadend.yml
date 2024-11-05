@@ -21,7 +21,7 @@ services:
         create_host_path: true
     - type: bind
       source: ${COMMON_DATA_PATH}/recordings
-      target: /storage/recordings
+      target: /recordings
       bind:
         create_host_path: true
     ports:
