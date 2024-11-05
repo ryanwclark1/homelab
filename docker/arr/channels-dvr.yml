@@ -1,29 +1,30 @@
-channels-dvr:
-  image: fancybits/channels-dvr:${CHANNELS_DVR_TAG:-latest}
-  container_name: channels-dvr
-  network_mode: host
-  ports:
-    - mode: ingress
-      target: ${CHANNELS_DVR_PORT:-8089}
-      published: ${CHANNELS_DVR_PORT:-8089}
-      protocol: tcp
-  restart: unless-stopped
-  devices:
-    - /dev/dri:/dev/dri
-  volumes:
-    - type: bind
-      source: /etc/localtime
-      target: /etc/localtime
-      read_only: true
-      bind:
-        create_host_path: true
-    - type: bind
-      source: ${COMMON_CONFIG_PATH}/channels-dvr
-      target: /channels-dvr
-      bind:
-        create_host_path: true
-    - type: bind
-      source: ${COMMON_DATA_PATH}/recordings
-      target: /shares/DVR
-      bind:
-        create_host_path: true
+services:
+  channels-dvr:
+    image: fancybits/channels-dvr:${CHANNELS_DVR_TAG:-latest}
+    container_name: channels-dvr
+    network_mode: host
+    ports:
+      - mode: ingress
+        target: ${CHANNELS_DVR_PORT:-8089}
+        published: ${CHANNELS_DVR_PORT:-8089}
+        protocol: tcp
+    restart: unless-stopped
+    devices:
+      - /dev/dri:/dev/dri
+    volumes:
+      - type: bind
+        source: /etc/localtime
+        target: /etc/localtime
+        read_only: true
+        bind:
+          create_host_path: true
+      - type: bind
+        source: ${COMMON_CONFIG_PATH}/channels-dvr
+        target: /channels-dvr
+        bind:
+          create_host_path: true
+      - type: bind
+        source: ${COMMON_DATA_PATH}/recordings
+        target: /shares/DVR
+        bind:
+          create_host_path: true
