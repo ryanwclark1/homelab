@@ -47,7 +47,7 @@ services:
     # Optional - may be necessary for docker healthcheck to pass if running in host network mode
     # extra_hosts:
     #   - 'host.docker.internal:host-gateway'
-labels:
+    labels:
       - 'traefik.enable=true'
       ## HTTP Router
       #### Entry point where Jellyfin is accessible via
