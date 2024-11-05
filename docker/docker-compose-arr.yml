@@ -78,5 +78,6 @@ include:
   - arr/jellyfin.yml
   - arr/jellyseerr.yml
   - arr/tvheadend.yml
+  - arr/channels-dvr.yml
   # OTHER
   - arr/debian.yml
