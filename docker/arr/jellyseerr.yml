@@ -1,4 +1,4 @@
-service:
+services:
   jellyseerr:
     image: fallenbagel/jellyseerr:latest
     container_name: jellyseerr
