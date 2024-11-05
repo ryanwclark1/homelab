@@ -1,0 +1,39 @@
+services:
+  tvheadend:
+    image: lscr.io/linuxserver/tvheadend:${TVHEADEND_TAG:-latest}
+    container_name: tvheadend
+    environment:
+      TZ: ${TZ:-Etc/UTC}
+      PUID: ${PUID:-1000}
+      PGID: ${PGID:-1000}
+      # RUN_OPTS:  #optional
+    volumes:
+    - type: bind
+      source: /etc/localtime
+      target: /etc/localtime
+      read_only: true
+      bind:
+        create_host_path: true
+    - type: bind
+      source: ${COMMON_CONFIG_PATH}/tvheadend
+      target: /config
+      bind:
+        create_host_path: true
+    - type: bind
+      source: ${COMMON_DATA_PATH}/recordings
+      target: /storage/recordings
+      bind:
+        create_host_path: true
+    ports:
+      - mode: ingress
+        target: ${TVHEADEND_WEB_PORT:-9981}
+        published: ${TVHEADEND_WEB_PORT:-9981}
+        protocol: tcp
+      - mode: ingress
+        target: ${TVHEADEND_HTSP_PORT:-9982}  #HTSP server port
+        published: ${TVHEADEND_HTSP_PORT:-9982} #HTSP server port
+        protocol: tcp
+    devices:
+      - /dev/dri:/dev/dri #optional
+      # - /dev/dvb:/dev/dvb #optional
+    restart: unless-stopped

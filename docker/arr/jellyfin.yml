@@ -10,6 +10,13 @@ services:
 
     devices:
       - /dev/dri:/dev/dri
+    environment:
+      TZ: ${TZ:-Etc/UTC}
+    # ports: # You will need to uncomment if you aren't running through a proxy
+      # - 8096:8096
+      # - 8920:8920 #optional
+      # - 7359:7359/udp #optional
+      # - 1900:1900/udp #optional
     volumes:
     - type: bind
       source: /etc/localtime
@@ -20,11 +27,6 @@ services:
     - type: bind
       source: ${COMMON_CONFIG_PATH}/jellyfin/config
       target: /config
-      bind:
-        create_host_path: true
-    - type: bind
-      source: ${COMMON_CONFIG_PATH}/jellyfin/cache
-      target: /cache
       bind:
         create_host_path: true
     - type: volume
@@ -40,6 +42,16 @@ services:
       target: /storage/tv
       bind:
         create_host_path: true
+    - type: bind
+      source: ${COMMON_DATA_PATH}/music
+      target: /storage/music
+      bind:
+        create_host_path: true
+    - type: bind
+      source: ${COMMON_DATA_PATH}/recordings
+      target: /storage/recordings
+      bind:
+        create_host_path: true
     restart: unless-stopped
     # Optional - alternative address used for autodiscovery
     # environment:
@@ -47,6 +59,8 @@ services:
     # Optional - may be necessary for docker healthcheck to pass if running in host network mode
     # extra_hosts:
     #   - 'host.docker.internal:host-gateway'
+
+    # https://jellyfin.org/docs/general/networking/traefik2/
     labels:
       - 'traefik.enable=true'
       ## HTTP Router
