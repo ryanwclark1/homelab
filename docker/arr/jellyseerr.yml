@@ -1,0 +1,25 @@
+service:
+  jellyseerr:
+    image: fallenbagel/jellyseerr:latest
+    container_name: jellyseerr
+    profiles: ["jellyfin", "all"]
+    environment:
+      - LOG_LEVEL=${JELLYSEERR_LOG_LEVEL:-debug}
+      - TZ=${TZ:-Etc/UTC}
+      -
+      - PORT=${JELLYSEERR_PORT:-5055} #optional
+    ports:
+      - ${JELLYSEERR_PORT:-5055}:${JELLYSEERR_PORT:-5055}
+    volumes:
+    - type: bind
+      source: /etc/localtime
+      target: /etc/localtime
+      read_only: true
+      bind:
+        create_host_path: true
+    - type: bind
+      source: ${COMMON_CONFIG_PATH}/jellyfin/config
+      target: /config
+      bind:
+        create_host_path: true
+    restart: unless-stopped
