@@ -6,7 +6,6 @@ services:
     environment:
       - LOG_LEVEL=${JELLYSEERR_LOG_LEVEL:-debug}
       - TZ=${TZ:-Etc/UTC}
-      -
       - PORT=${JELLYSEERR_PORT:-5055} #optional
     ports:
       - ${JELLYSEERR_PORT:-5055}:${JELLYSEERR_PORT:-5055}
