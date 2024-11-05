@@ -1,0 +1,20 @@
+services:
+  # cAdvisor - Container Metrics to Prometheus
+  cadvisor:
+    container_name: cadvisor
+    image: gcr.io/cadvisor/cadvisor:${CADVISOR_TAG:-latest}
+    privileged: true
+    restart: unless-stopped
+    profiles: ["apps", "all", "exporter"]
+    networks:
+      - arr_net
+    ports:
+      - 8080:8080
+    volumes:
+      - /:/rootfs:ro
+      - /var/run:/var/run:ro
+      - /sys:/sys:ro
+      - /var/lib/docker/:/var/lib/docker:ro
+      - /dev/disk/:/dev/disk:ro
+    devices:
+      - /dev/kmsg
