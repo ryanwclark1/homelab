@@ -18,7 +18,7 @@ services:
         create_host_path: true
     - type: bind
       source: ${COMMON_CONFIG_PATH}/jellyseerr
-      target: /config
+      target: /app/config
       bind:
         create_host_path: true
     restart: unless-stopped

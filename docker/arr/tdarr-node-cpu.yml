@@ -45,12 +45,6 @@ services:
           create_host_path: true
 
 volumes:
-  tdarr_configs:
-    external: false
-    name: tdarr_configs
-  tdarr_logs:
-    external: false
-    name: tdarr_logs
   tdarr_cache:
     external: false
     name: tdarr_cache

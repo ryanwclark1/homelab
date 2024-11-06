@@ -2,6 +2,7 @@ services:
   tvheadend:
     image: lscr.io/linuxserver/tvheadend:${TVHEADEND_TAG:-latest}
     container_name: tvheadend
+    profiles: ["jellyfin", "all"]
     environment:
       TZ: ${TZ:-Etc/UTC}
       PUID: ${PUID:-1000}
