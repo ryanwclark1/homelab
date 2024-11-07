@@ -1,0 +1,41 @@
+services:
+  calibre:
+    image: lscr.io/linuxserver/calibre:${CALIBRE_TAG:-latest}
+    container_name: calibre
+    security_opt:
+      - seccomp:unconfined #optional
+    profiles: ["media", "arrs", "all"]
+    networks:
+      - arr_net
+    environment:
+      PGID: ${PGID:-1000}
+      PUID: ${PUID:-1000}
+      TZ: ${TZ:-Etc/UTC}
+      # PASSWORD: #optional
+      # CLI_ARGS: #optional
+    volumes:
+      - type: bind
+        source: /etc/localtime
+        target: /etc/localtime
+        read_only: true
+        bind:
+          create_host_path: true
+      - type: bind
+        source: ${COMMON_CONFIG_PATH}/calibre
+        target: /config
+        bind:
+          create_host_path: true
+    ports:
+      - mode: ingress
+        target: 8080
+        published: ${CALIBRE_VNC_WEB_PORT:-8080}
+        protocol: tcp
+      - mode: ingress
+        target: 8181
+        published: ${CALIBRE_VNC_HTTPS_PORT:-8181}
+        protocol: tcp
+      - mode: ingress
+        target: 8081
+        published: ${CALIBRE_VNC_WEB_PORT:-8081}
+        protocol: tcp
+    restart: unless-stopped

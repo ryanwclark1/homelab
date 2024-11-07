@@ -9,7 +9,7 @@ services:
     ports:
       - mode: ingress
         target: 8191
-        published: "8191"
+        published: 8191
         protocol: tcp
     environment:
       LOG_LEVEL: ${FLARESOLVERR_LOG_LEVEL:-info}
