@@ -7,7 +7,7 @@ services:
     environment:
       USER_ID: ${PUID:-1000}
       GROUP_ID: ${PGID:-1000}
-      UMASK: 022
+      UMASK: ${UMASK:-022}
       LANG: ${LANG:-en_US.UTF-8}
       TZ: ${TZ:-Etc/UTC}
       KEEP_APP_RUNNING: 1
