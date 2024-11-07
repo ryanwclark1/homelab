@@ -25,13 +25,13 @@ services:
     ports:
       # Exposing qBittorrent through Docker Host LAN IP
       - mode: ingress
-        target: "${QBIT_PORT:-8080}"
-        published: "${QBIT_PORT:-8080}"
+        target: 8080
+        published: "${QBIT_PORT:-8088}"
         protocol: tcp
       - 6881:6881
       - 6881:6881/udp
       - mode: ingress
-        target: "${GLUETUN_HTTP_CONTROL_PORT:-8000}"
+        target: 8000
         published: "${GLUETUN_HTTP_CONTROL_PORT:-8000}"
         protocol: tcp
     #   - 8888:8888/tcp # HTTP proxy
