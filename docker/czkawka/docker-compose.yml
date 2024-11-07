@@ -1,29 +1,30 @@
 services:
   czkawka:
-    image: jlesage/czkawka
+    image: jlesage/czkawka:${CZKAWKA_TAG:-latest}
     ports:
       - 5800:5800
       - 5900:5900
     environment:
-      - USER_ID=1000
-      - GROUP_ID=1000
-      - UMASK=022
-      - LANG=en_US.UTF-8
-      - TZ=${TZ:-Etc/UTC}
-      - KEEP_APP_RUNNING=1
+      USER_ID: ${PUID:-1000}
+      GROUP_ID: ${PGID:-1000}
+      UMASK: 022
+      LANG: ${LANG:-en_US.UTF-8}
+      TZ: ${TZ:-Etc/UTC}
+      KEEP_APP_RUNNING: 1
       # - APP_NICENESS=-20
-      - CONTAINER_DEBUG=0
-      - DARK_MODE=1
-      - SECURE_CONNECTION=1
+      CONTAINER_DEBUG: 0
+      DARK_MODE: 1
+      SECURE_CONNECTION: 1
       # - WEB_AUTHENTICATION=1
       # - WEB_AUTHENTICATION_USERNAME=${USERNAME:-admin}
       # - WEB_AUTHENTICATION_PASSWORD=${PASSWORD:-password}
-      - WEB_LISTENING_PORT=5800
-      - VNC_LISTENING_PORT=5900
-      - VNC_PASSWORD=${VNC_PASSWORD:-password}
+      WEB_LISTENING_PORT: ${CZKAWKA_WEB_PORT:-5800}
+      VNC_LISTENING_PORT: ${CZKAWKA_VNC_PORT:-5900}
+      VNC_PASSWORD: ${VNC_PASSWORD:-password}
     volumes:
       - czkawka_config_data:/config:rw
-      - /mnt/rclark:/storage:rw
+      - /mnt/rclark:/storage/rclark:rw
+      - /mnt/share:/storage/share:rw
 
 volumes:
   czkawka_config_data:
