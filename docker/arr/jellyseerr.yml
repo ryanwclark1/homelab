@@ -22,3 +22,5 @@ services:
       bind:
         create_host_path: true
     restart: unless-stopped
+    # networks:
+    #   - mediarr

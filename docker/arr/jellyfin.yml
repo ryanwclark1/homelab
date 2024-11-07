@@ -4,7 +4,7 @@ services:
     container_name: jellyfin
     profiles: ["jellyfin", "all"]
     # user: uid:gid
-    network_mode: 'host'
+    network_mode: host
     group_add:
       - 107  # Run `stat -c '%g' /dev/dri/renderD128` to get the group ID of the dri device
 
