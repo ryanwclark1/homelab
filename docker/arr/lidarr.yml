@@ -12,7 +12,7 @@ services:
     ports:
       - mode: ingress
         target: 8686
-        published: "8686"
+        published: ${LIDARR_PORT:-8686}
         protocol: tcp
     volumes:
       - type: bind

@@ -14,7 +14,7 @@ services:
     ports:
       - mode: ingress
         target: 9999
-        published: "9999"
+        published: ${STASH_PORT:-9999}
         protocol: tcp
     volumes:
       - type: bind

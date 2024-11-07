@@ -12,7 +12,7 @@ services:
     ports:
       - mode: ingress
         target: 8787
-        published: "8787"
+        published: ${READARR_PORT:-8787}
         protocol: tcp
     volumes:
       - type: bind

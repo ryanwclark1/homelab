@@ -12,7 +12,7 @@ services:
     ports:
       - mode: ingress
         target: 8989
-        published: "8989"
+        published: ${SONARR_PORT:-8989}
         protocol: tcp
     volumes:
       - type: bind

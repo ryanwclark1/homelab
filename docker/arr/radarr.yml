@@ -12,7 +12,7 @@ services:
     ports:
       - mode: ingress
         target: 7878
-        published: "7878"
+        published: ${RADARR_PORT:-7878}
         protocol: tcp
     volumes:
       - type: bind
