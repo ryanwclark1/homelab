@@ -26,9 +26,6 @@ services:
         target: /config
         bind:
           create_host_path: true
-      # - type: volume
-      #   source: prowlarr_config
-      #   target: /config
     environment:
       TZ: ${TZ:-Etc/UTC}
       PUID: ${PUID:-1000}
@@ -48,6 +45,3 @@ services:
       # - "traefik.http.services.prowlarr-svc.loadbalancer.server.scheme=https"
       - "traefik.http.services.prowlarr.loadbalancer.server.port=9696"
       - "traefik.docker.network=arr_net"
-# volumes:
-#   prowlarr_config:
-#     driver: local

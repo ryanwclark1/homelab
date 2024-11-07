@@ -28,7 +28,7 @@ services:
     ports:
       - mode: ingress
         target: 8080
-        published: ${CALIBRE_VNC_WEB_PORT:-8080}
+        published: ${CALIBRE_VNC_WEB_PORT:-8088}
         protocol: tcp
       - mode: ingress
         target: 8181
