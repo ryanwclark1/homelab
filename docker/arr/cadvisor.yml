@@ -9,7 +9,10 @@ services:
     networks:
       - arr_net
     ports:
-      - 8080:8080
+      - mode: ingress
+        target: 8080
+        published: ${CADVISOR_PORT:-8085}
+        protocol: tcp
     volumes:
       - /:/rootfs:ro
       - /var/run:/var/run:ro
