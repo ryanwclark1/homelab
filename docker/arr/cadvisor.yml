@@ -5,7 +5,7 @@ services:
     image: gcr.io/cadvisor/cadvisor:${CADVISOR_TAG:-latest}
     privileged: true
     restart: unless-stopped
-    profiles: ["apps", "all", "exporter"]
+    profiles: ["apps", "all", "cadvisor"]
     networks:
       - arr_net
     ports:
