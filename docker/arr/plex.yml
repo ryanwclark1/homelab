@@ -36,4 +36,9 @@ services:
       target: /storage/tv
       bind:
         create_host_path: true
+    - type: bind
+      source: ${COMMON_DATA_PATH}/music
+      target: /storage/music
+      bind:
+        create_host_path: true
     restart: unless-stopped
