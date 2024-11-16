@@ -1,0 +1,39 @@
+services:
+  plex:
+    image: lscr.io/linuxserver/plex:${PLEX_TAG:-latest}
+    container_name: plex
+    profiles: ["plex", "all"]
+    network_mode: host
+    environment:
+      - PUID=${PUID:-1000}
+      - PGID=${PGID:-1000}
+      - TZ=${TZ:-Etc/UTC}
+      - VERSION=docker
+      - PLEX_CLAIM=${PLEX_CLAIM}
+    group_add:
+      - 107  # Run `stat -c '%g' /dev/dri/renderD128` to get the group ID of the dri device
+    devices:
+      - /dev/dri:/dev/dri
+    volumes:
+    - type: bind
+      source: /etc/localtime
+      target: /etc/localtime
+      read_only: true
+      bind:
+        create_host_path: true
+    - type: bind
+      source: ${COMMON_CONFIG_PATH}/plex/config
+      target: /config
+      bind:
+        create_host_path: true
+    - type: bind
+      source: ${COMMON_DATA_PATH}/movies
+      target: /storage/movies
+      bind:
+        create_host_path: true
+    - type: bind
+      source: ${COMMON_DATA_PATH}/tv
+      target: /storage/tv
+      bind:
+        create_host_path: true
+    restart: unless-stopped

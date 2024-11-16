@@ -77,7 +77,5 @@ include:
   - arr/gluetun.yml
   # OTHER
   - arr/jellyfin.yml
-  - arr/jellyseerr.yml
-  - arr/tvheadend.yml
-  - arr/channels-dvr.yml
-
+  # OTHER
+  - arr/debian.yml
