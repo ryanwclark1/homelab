@@ -9,7 +9,7 @@ services:
       - PGID=107
       - TZ=${TZ:-Etc/UTC}
       - VERSION=docker
-      - PLEX_CLAIM=${PLEX_CLAIM}
+      - PLEX_CLAIM=${PLEX_CLAIM:-1234}
     group_add:
       - 107  # Run `stat -c '%g' /dev/dri/renderD128` to get the group ID of the dri device
     devices:
