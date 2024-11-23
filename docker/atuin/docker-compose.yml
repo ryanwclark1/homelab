@@ -26,11 +26,7 @@ services:
     image: ghcr.io/atuinsh/atuin:${ATUIN_TAG:-latest`}
     command: server start
     volumes:
-      - type: bind
-        source: ~/.config/atuin  # atuin-config-data
-        target: /config
-        bind:
-          create_host_path: true
+      - atuin-config-data:/config
     links:
       - postgres:db
     depends_on:
