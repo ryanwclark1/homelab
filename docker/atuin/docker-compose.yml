@@ -24,16 +24,17 @@ services:
   atuin:
     restart: always
     image: ghcr.io/atuinsh/atuin:${ATUIN_TAG:-latest`}
+    container_name: atuin
     command: server start
     volumes:
       - atuin-config-data:/config
     links:
       - postgres:db
-    depends_on:
-      postgres:
-        condition: service_healthy
-      tailscale:
-        condition: service_started
+    # depends_on:
+      # postgres:
+      #   condition: service_healthy
+      # tailscale:
+      #   condition: service_started
 
     ports:
       - mode: ingress
@@ -48,7 +49,9 @@ services:
 
   postgres:
     image: postgres:16
+    container_name: atuin_db
     restart: unless-stopped
+    user: postgres
     volumes: # Don't remove permanent storage for index database files!
       - pgdata:/var/lib/postgresql/data/
     environment:
@@ -56,9 +59,7 @@ services:
       POSTGRES_PASSWORD: ${ATUIN_DB_PASSWORD:-password123}
       POSTGRES_DB: ${ATUIN_DB_NAME:-atuin}
     healthcheck:
-      test:
-        - CMD-SHELL
-        - pg_isready
+      test: ["CMD-SHELL", "pg_isready -d ${ATUIN_DB_NAME} -U postgres"]
       start_period: 20s
       interval: 10s
 
