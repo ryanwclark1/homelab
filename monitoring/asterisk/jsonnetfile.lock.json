@@ -1,0 +1,16 @@
+{
+  "version": 1,
+  "dependencies": [
+    {
+      "source": {
+        "git": {
+          "remote": "https://github.com/grafana/jsonnet-libs.git",
+          "subdir": "asterisk-mixin"
+        }
+      },
+      "version": "e13a89c9d775bc253a559df9bb693be07b5ef65e",
+      "sum": "6rUo8yq/lFkslwfszorHAanbP1njjM5z7eHBYb42w6g="
+    }
+  ],
+  "legacyImports": false
+}
