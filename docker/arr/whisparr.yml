@@ -1,7 +1,7 @@
 services:
   # Whiparr - Whisparr managment
   whisparr:
-    image: ghcr.io/hotio/whisparr:${WHISPARR_TAG:-latest}
+    image: ghcr.io/hotio/whisparr:${WHISPARR_TAG:-v3}
     container_name: whisparr
     security_opt:
       - no-new-privileges:true
