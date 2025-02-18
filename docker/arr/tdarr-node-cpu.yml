@@ -30,19 +30,14 @@ services:
         target: /app/logs
         bind:
           create_host_path: true
-      # - type: bind
-      #   source: ${COMMON_CONFIG_PATH}/tdarr/cachecpu
-      #   target: /cache
-      #   bind:
-      #     create_host_path: true
-      - type: volume
-        source: tdarr_cache
-        target: /cache
       - type: bind
         source: ${COMMON_DATA_PATH}
         target: /storage
         bind:
           create_host_path: true
+      - type: volume
+        source: tdarr_cache
+        target: /cache
 
 volumes:
   tdarr_cache:

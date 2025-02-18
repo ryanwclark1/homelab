@@ -37,20 +37,15 @@ services:
         bind:
           create_host_path: true
       - type: bind
-        source: ${COMMON_CONFIG_PATH}/tdarr/cache
-        target: /cache
-        bind:
-          create_host_path: true
-      - type: bind
         source: ${COMMON_DATA_PATH}
         target: /storage
         bind:
           create_host_path: true
+      - type: volume
+        source: tdarr_cache
+        target: /cache
 
 volumes:
-  tdarr_configs:
+  tdarr_cache:
     external: false
-    name: tdarr_configs
-  tdarr_logs:
-    external: false
-    name: tdarr_logs
+    name: tdarr_cache

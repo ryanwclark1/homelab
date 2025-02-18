@@ -48,29 +48,15 @@ services:
         bind:
           create_host_path: true
       - type: bind
-        source: ${COMMON_CONFIG_PATH}/tdarr/cachecpu
-        target: /cache
+        source: ${COMMON_DATA_PATH}
+        target: /storage
         bind:
           create_host_path: true
       - type: volume
         source: tdarr_cache
         target: /cache
-      - type: bind
-        source: ${COMMON_DATA_PATH}
-        target: /storage
-        bind:
-          create_host_path: true
 
 volumes:
-  tdarr_server_data:
-    external: false
-    name: tdarr_server_data
-  tdarr_configs:
-    external: false
-    name: tdarr_configs
-  tdarr_logs:
-    external: false
-    name: tdarr_logs
   tdarr_cache:
     external: false
     name: tdarr_cache
