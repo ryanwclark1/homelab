@@ -2,9 +2,10 @@ services:
   tailscale:
     image: tailscale/tailscale:${TAILSCALE_TAG:-latest}
     hostname: tailscale
+    container_name: tailscale
     privileged: true
     environment:
-      - TS_AUTHKEY=${TAILSCALE_AUTHKEY}
+      - TS_AUTHKEY=${TS_AUTHKEY}
       - TS_EXTRA_ARGS=--advertise-tags=tag:container
       - TS_STATE_DIR=/var/lib/tailscale
       - TS_USERSPACE=false
@@ -27,7 +28,6 @@ services:
       - atuin-config-data:/config
     links:
       - postgres:db
-
     ports:
       - mode: ingress
         target: 8888
