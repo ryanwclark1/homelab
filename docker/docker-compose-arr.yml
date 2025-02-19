@@ -79,4 +79,3 @@ include:
   - arr/jellyfin.yml
   - arr/plex.yml
   # OTHER
-  - arr/debian.yml
