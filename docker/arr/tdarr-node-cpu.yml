@@ -35,11 +35,8 @@ services:
         target: /storage
         bind:
           create_host_path: true
-      - type: volume
-        source: tdarr_cache
+      - type: bind
+        source: /tmp
         target: /cache
-
-volumes:
-  tdarr_cache:
-    external: false
-    name: tdarr_cache
+        bind:
+          create_host_path: true
