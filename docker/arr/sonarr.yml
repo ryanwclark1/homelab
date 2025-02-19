@@ -22,7 +22,7 @@ services:
         bind:
           create_host_path: true
       - type: bind
-        source: ${COMMON_CONFIG_PATH}/sonarr
+        source: ~/sonarr
         target: /config
         bind:
           create_host_path: true
