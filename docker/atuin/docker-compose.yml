@@ -2,6 +2,7 @@ services:
   tailscale:
     image: tailscale/tailscale:${TAILSCALE_TAG:-latest}
     hostname: tailscale
+    privileged: true
     environment:
       - TS_AUTHKEY=${TAILSCALE_AUTHKEY}
       - TS_EXTRA_ARGS=--advertise-tags=tag:container
@@ -13,8 +14,9 @@ services:
       - /dev/net/tun:/dev/net/tun
     cap_add:
       - NET_ADMIN
-      # - sys_module
+      - SYS_MODULE
     restart: unless-stopped
+    network_mode: host
   # nginx:
   #   image: nginx
   #   depends_on:
@@ -23,7 +25,7 @@ services:
 
   atuin:
     restart: always
-    image: ghcr.io/atuinsh/atuin:${ATUIN_TAG:-latest`}
+    image: ghcr.io/atuinsh/atuin:${ATUIN_TAG:-latest}
     container_name: atuin
     command: server start
     volumes:
