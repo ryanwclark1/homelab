@@ -33,17 +33,17 @@ services:
         target: /etc/localtime
         read_only: true
       - type: bind
-        source: ${COMMON_CONFIG_PATH}/tdarr/servercpu
+        source: ~/tdarr/servercpu
         target: /app/server
         bind:
           create_host_path: true
       - type: bind
-        source: ${COMMON_CONFIG_PATH}/tdarr/configcpu
+        source: ~/tdarr/configcpu
         target: /app/configs
         bind:
           create_host_path: true
       - type: bind
-        source: ${COMMON_CONFIG_PATH}/tdarr/logscpu
+        source: ~/tdarr/logscpu
         target: /app/logs
         bind:
           create_host_path: true

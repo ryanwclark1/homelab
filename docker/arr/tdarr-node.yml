@@ -27,12 +27,12 @@ services:
         target: /etc/localtime
         read_only: true
       - type: bind
-        source: ${COMMON_CONFIG_PATH}/tdarr/config
+        source: ~/tdarr/config
         target: /app/configs
         bind:
           create_host_path: true
       - type: bind
-        source: ${COMMON_CONFIG_PATH}/tdarr/logs
+        source: ~/tdarr/logs
         target: /app/logs
         bind:
           create_host_path: true
