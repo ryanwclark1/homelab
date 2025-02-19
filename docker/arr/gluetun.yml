@@ -2,7 +2,7 @@ services:
   # Gluetun - VPN Client for Docker Containers and More
   gluetun:
     # Updated to previous version due to dns resolution issues with latest version
-    image: qmcgaw/gluetun:${GLUETUN_TAG:-v3.38}
+    image: qmcgaw/gluetun:${GLUETUN_TAG:-v3.40}
     container_name: gluetun
     security_opt:
       - no-new-privileges:true
