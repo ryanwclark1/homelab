@@ -17,11 +17,6 @@ services:
       - SYS_MODULE
     restart: unless-stopped
     network_mode: host
-  # nginx:
-  #   image: nginx
-  #   depends_on:
-  #     - tailscale-nginx
-  #   network_mode: service:tailscale-nginx
 
   atuin:
     restart: always
@@ -32,11 +27,6 @@ services:
       - atuin-config-data:/config
     links:
       - postgres:db
-    # depends_on:
-      # postgres:
-      #   condition: service_healthy
-      # tailscale:
-      #   condition: service_started
 
     ports:
       - mode: ingress
@@ -60,7 +50,7 @@ services:
       POSTGRES_PASSWORD: ${ATUIN_DB_PASSWORD:-password123}
       POSTGRES_DB: ${ATUIN_DB_NAME:-atuin}
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -d ${ATUIN_DB_NAME} -U ${ATUIN_DB_USERNAME}"]
+      test: ["CMD-SHELL", "pg_isready -d ${ATUIN_DB_NAME}"]
       start_period: 20s
       interval: 10s
 
