@@ -58,7 +58,7 @@ services:
         target: /etc/cont-init.d/99-my-script
         bind:
           create_host_path: true
-      - ${COMMON_CONFIG_PATH}/stash/config/config.yml:/root/.stash/config.yml
+      - ~/stash/config/config.yml:/root/.stash/config.yml
     environment:
       TZ: ${TZ:-Etc/UTC}
       # PUID: 1
