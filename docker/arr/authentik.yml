@@ -2,7 +2,7 @@ services:
 
   postgresql:
     container_name: postgresql
-    image: docker.io/library/postgres:${POSTGRES_TAG:-16.3}
+    image: docker.io/library/postgres:${POSTGRES_TAG:-16}
     restart: unless-stopped
     profiles: ["core", "all"]
     healthcheck:
