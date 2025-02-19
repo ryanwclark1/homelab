@@ -51,9 +51,8 @@ services:
 
   postgres:
     image: postgres:16
-    container_name: atuin_db
+    container_name: postgres
     restart: unless-stopped
-    user: postgres
     volumes: # Don't remove permanent storage for index database files!
       - pgdata:/var/lib/postgresql/data/
     environment:
@@ -66,8 +65,8 @@ services:
       interval: 10s
 
   backup:
-    container_name: atuin_db_dumper
-    image: prodrigestivill/postgres-backup-local
+    image: prodrigestivill/postgres-backup-local:latest
+    container_name: db-backup
     env_file:
       - .env
     environment:
