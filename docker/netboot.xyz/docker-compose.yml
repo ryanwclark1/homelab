@@ -1,7 +1,7 @@
 ---
 services:
   netbootxyz:
-    image: lscr.io/linuxserver/netbootxyz:latest
+    image: lscr.io/linuxserver/netbootxyz:${NETBOOT_TAG:-latest}
     container_name: netbootxyz
     environment:
       PUID: ${PUID:-1000}

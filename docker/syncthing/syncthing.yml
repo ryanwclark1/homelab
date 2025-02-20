@@ -1,0 +1,50 @@
+---
+services:
+  tailscale:
+    image: tailscale/tailscale:${TAILSCALE_TAG:-latest}
+    hostname: tailscale
+    container_name: tailscale
+    privileged: true
+    environment:
+      - TS_AUTHKEY=${TS_AUTHKEY}
+      - TS_EXTRA_ARGS=--advertise-tags=tag:container
+      - TS_STATE_DIR=/var/lib/tailscale
+      - TS_USERSPACE=false
+      - TS_HOSTNAME=atuin
+    volumes:
+      - tailscale-data:/var/lib/tailscale
+      - /dev/net/tun:/dev/net/tun
+    cap_add:
+      - NET_ADMIN
+      - SYS_MODULE
+    restart: unless-stopped
+    network_mode: host
+
+  syncthing:
+    image: lscr.io/linuxserver/syncthing:{SYNCTHING_TAG:-latest}latest
+    container_name: syncthing
+    hostname: syncthing #optional
+    environment:
+      - PUID=${PUID:-1000}
+      - PGID=${PGID:-1000}
+      - TZ=${TZ:-Etc/UTC}
+    volumes:
+      - syncthing_config_data:/config
+      - /mnt/ryan/documents:/mnt/documents
+      - /mnt/ryan/pictures:/mnt/pictures
+      - /mnt/ryan/videos:/mnt/videos
+    ports:
+      - 8384:8384
+      - 22000:22000/tcp
+      - 22000:22000/udp
+      - 21027:21027/udp
+    restart: unless-stopped
+    # Docker's default network mode prevents local IP addresses from being discovered, as Syncthing is only able to see the internal IP of the container on the 172.17.0.0/16 subnet. This will result in poor transfer rates if local device addresses are not manually configured.
+    # network_mode: host
+
+volumes:
+  syncthing_config_data:
+    external: false
+    name: syncthing_config_data
+  tailscale-data:
+    driver: local
