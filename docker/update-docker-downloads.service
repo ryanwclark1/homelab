@@ -1,0 +1,9 @@
+# /etc/systemd/system/update-docker-downloads.service
+[Unit]
+Description=Weekly Docker Compose Update + Cleanup
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/bin/update-docker-downloads.sh

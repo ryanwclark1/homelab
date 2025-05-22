@@ -1,0 +1,9 @@
+# /etc/systemd/system/restart-docker-downloads.service
+[Unit]
+Description=Restart Docker Compose Downloads Profile
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/bin/restart-docker-downloads.sh

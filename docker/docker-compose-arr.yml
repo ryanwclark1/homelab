@@ -59,7 +59,7 @@ include:
   - arr/readarr.yml
   - arr/sonarr.yml
   - arr/whisparr.yml
-  - arr/calibre.yml
+  # - arr/calibre.yml
   # - arr/bitmagnet.yml
   # COMPLEMENTARY APPS
   - arr/bazarr.yml
@@ -77,5 +77,5 @@ include:
   - arr/gluetun.yml
   # OTHER
   - arr/jellyfin.yml
-  - arr/plex.yml
+  # - arr/plex.yml
   # OTHER

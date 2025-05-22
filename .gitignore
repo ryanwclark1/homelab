@@ -5,3 +5,4 @@ homelab.code-workspace
 test/
 kubernetes/monitoring/vendor/
 **/secrets/*
+docker/arr/data/*
