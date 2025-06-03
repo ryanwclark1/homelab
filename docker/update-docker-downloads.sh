@@ -1,5 +1,5 @@
-# /usr/local/bin/update-docker-downloads.sh
 #!/usr/bin/env bash
+
 set -euo pipefail
 
 cd ~/homelab/docker

@@ -1,4 +1,3 @@
-# /etc/systemd/system/update-docker-downloads.service
 [Unit]
 Description=Weekly Docker Compose Update + Cleanup
 Wants=network-online.target

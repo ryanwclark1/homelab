@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+
 set -euo pipefail
 
 cp ./restart-docker-downloads.sh /usr/local/bin/restart-docker-downloads.sh

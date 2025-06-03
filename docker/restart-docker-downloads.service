@@ -1,4 +1,3 @@
-# /etc/systemd/system/restart-docker-downloads.service
 [Unit]
 Description=Restart Docker Compose Downloads Profile
 Wants=network-online.target

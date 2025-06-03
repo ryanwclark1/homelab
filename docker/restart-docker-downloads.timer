@@ -1,4 +1,3 @@
-# /etc/systemd/system/restart-docker-downloads.timer
 [Unit]
 Description=Restart Docker Compose every 6 hours
 
