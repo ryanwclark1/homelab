@@ -18,3 +18,7 @@ systemctl enable update-docker-downloads.timer
 
 systemctl start restart-docker-downloads.timer
 systemctl start update-docker-downloads.timer
+
+systemctl daemon-reexec
+systemctl daemon-reload
+systemctl start update-docker-downloads.service
