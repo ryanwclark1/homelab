@@ -56,13 +56,13 @@ include:
   - arr/flaresolverr.yml
   - arr/lidarr.yml
   - arr/radarr.yml
-  - arr/readarr.yml
+  # - arr/readarr.yml
   - arr/sonarr.yml
   - arr/whisparr.yml
   # - arr/calibre.yml
   # - arr/bitmagnet.yml
   # COMPLEMENTARY APPS
-  - arr/bazarr.yml
+  # - arr/bazarr.yml
   - arr/prowlarr.yml
   - arr/stash.yml
   # MONITORING
