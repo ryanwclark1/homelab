@@ -23,6 +23,6 @@ services:
       - "traefik.http.routers.lidarr-secure.entrypoints=websecure"
       - "traefik.http.routers.lidarr-secure.rule=Host(`lidarr.$DOMAINNAME`)"
       - "traefik.http.routers.lidarr-secure.tls.certresolver=cloudflare-dns"
-      - "traefik.http.routers.lidarr-secure.middlewares=ssl-header@file"
+      - "traefik.http.routers.lidarr-secure.middlewares=secure-chain@file"
       - "traefik.http.services.lidarr.loadbalancer.server.port=8686"
       - "traefik.docker.network=arr_net"

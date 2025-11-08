@@ -31,7 +31,7 @@ services:
       - "traefik.http.routers.prometheus-secure.entrypoints=websecure"
       - "traefik.http.routers.prometheus-secure.rule=Host(`prometheus.$DOMAINNAME`)"
       - "traefik.http.routers.prometheus-secure.tls.certresolver=cloudflare-dns"
-      - "traefik.http.routers.prometheus-secure.middlewares=ssl-header@file"
+      - "traefik.http.routers.prometheus-secure.middlewares=secure-chain@file"
       - "traefik.http.services.prometheus.loadbalancer.server.port=9090"
       - "traefik.docker.network=monitoring-services"
     restart: unless-stopped

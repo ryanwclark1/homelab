@@ -51,6 +51,6 @@ services:
       - "traefik.http.routers.gotify-secure.entrypoints=websecure"
       - "traefik.http.routers.gotify-secure.rule=Host(`gotify.$DOMAINNAME`)"
       - "traefik.http.routers.gotify-secure.tls.certresolver=cloudflare-dns"
-      - "traefik.http.routers.gotify-secure.middlewares=ssl-header@file"
+      - "traefik.http.routers.gotify-secure.middlewares=secure-chain@file"
       - "traefik.http.services.gotify.loadbalancer.server.port=80"
       - "traefik.docker.network=arr_net"

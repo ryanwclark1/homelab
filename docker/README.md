@@ -1,59 +1,94 @@
+# Homelab Docker Compose Setup
 
-#TODO:
-- [ ] Add port variables to service yml files
-- [ ] Research conditional statements related to graphics card
+A simplified, secure, and maintainable Docker Compose configuration for running a comprehensive homelab.
 
-To retrieve your Global API key:
-Log in to the Cloudflare dashboard and go to User Profile > API Tokens.
-In the API Keys section, click View button of Global API Key.
+## Quick Start
 
-Note: when used in docker-compose.yml all dollar signs in the hash need to be doubled for escaping.
-To create user:password pair, it's possible to use this command:
-echo $(htpasswd -nB user) | sed -e s/\\$/\\$\\$/g
+```bash
+# List all stacks
+./manage-stacks.sh list
 
-htpasswd -c /home/usernamehere/.htpasswd bob123
-htpasswd /home/usernamehere/.htpasswd nancy456
+# Start a stack
+./manage-stacks.sh start arr
 
-f you were to check the contents of the .htpasswd file, you would see something similar to the following:
+# View logs
+./manage-stacks.sh logs arr --follow
 
-bob123:$apr1$FaPCZHMe$jYiw5.9UevKx25pBH4AsT/
-nancy456:$apr1$mrCHcVhc$oNdJeRcWKPk2z8dlzQI0x/
+# Update a stack
+./manage-stacks.sh update arr
+```
 
+## Stacks
 
-# arrs
-bazarr
-flaresolverr
-lidarr
-prowlarr
-radarr
-readarr
-sonarr
-whisparr
+- **arr**: Media management (Radarr, Sonarr, Lidarr, etc.)
+- **monitoring**: Prometheus, Grafana, Loki
+- **network**: Traefik reverse proxy
+- **n8n**: Workflow automation
+- **semaphore**: Ansible UI
+- **atuin**: Shell history
+- **immich**: Photo management
 
-# media
-bazarr
-flaresolverr
-lidarr
-prowlarr
-radarr
-readarr
-sonarr
-stash
-tdarr-node
-tdarr-server
-whisparr
+## Management Script
 
-# core
-authentik
-gluetun
-gotify
-socket-proxy
-authelia
-oauth
-crowdsec
-traefik-bouncer
-traefik
+The `manage-stacks.sh` script provides easy management:
 
-# downloads
-gluetun
-qbittorrent
+```bash
+./manage-stacks.sh [COMMAND] [STACK] [OPTIONS]
+
+Commands:
+  list          List all stacks
+  status        Show stack status
+  start         Start stack
+  stop          Stop stack
+  restart       Restart stack
+  logs          View logs
+  pull          Pull latest images
+  update        Pull and restart
+  config        Validate configuration
+  ps            List containers
+  down          Stop and remove
+```
+
+## Security
+
+✅ No hardcoded credentials
+✅ Automated database backups
+✅ Security headers (HSTS, XSS, etc.)
+✅ Health checks for all databases
+✅ SSL/TLS via Traefik
+
+## Documentation
+
+- [SIMPLIFICATION_CHANGELOG.md](SIMPLIFICATION_CHANGELOG.md) - Complete changelog
+- [POSTGRESQL_ANALYSIS.md](POSTGRESQL_ANALYSIS.md) - Database analysis
+- [test-compose.sh](test-compose.sh) - Automated testing
+
+## Setup
+
+1. Configure secrets:
+```bash
+mkdir -p secrets
+echo "your-token" > secrets/cf_dns_api_token
+```
+
+2. Setup standalone apps:
+```bash
+cd n8n && cp .env.sample .env && nano .env
+cd ../semaphore && cp .env.sample .env && nano .env
+```
+
+3. Start stacks:
+```bash
+./manage-stacks.sh start network
+./manage-stacks.sh start arr
+```
+
+## Testing
+
+```bash
+./test-compose.sh
+```
+
+---
+
+**Last Updated**: 2025-11-08

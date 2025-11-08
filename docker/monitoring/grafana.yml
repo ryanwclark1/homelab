@@ -72,7 +72,7 @@ services:
       - "traefik.http.routers.grafana-secure.entrypoints=websecure"
       - "traefik.http.routers.grafana-secure.rule=Host(`grafana.$DOMAINNAME`)"
       - "traefik.http.routers.grafana-secure.tls.certresolver=cloudflare-dns"
-      - "traefik.http.routers.grafana-secure.middlewares=ssl-header@file"
+      - "traefik.http.routers.grafana-secure.middlewares=secure-chain@file"
       - "traefik.http.services.grafana.loadbalancer.server.port=3030"
       - "traefik.docker.network=monitoring-services"
     restart: unless-stopped

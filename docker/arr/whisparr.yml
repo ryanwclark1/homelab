@@ -26,6 +26,6 @@ services:
       - "traefik.http.routers.whisparr-secure.entrypoints=websecure"
       - "traefik.http.routers.whisparr-secure.rule=Host(`whisparr.$DOMAINNAME`)"
       - "traefik.http.routers.whisparr-secure.tls.certresolver=cloudflare-dns"
-      - "traefik.http.routers.whisparr-secure.middlewares=ssl-header@file"
+      - "traefik.http.routers.whisparr-secure.middlewares=secure-chain@file"
       - "traefik.http.services.whisparr.loadbalancer.server.port=6969"
       - "traefik.docker.network=arr_net"

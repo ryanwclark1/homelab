@@ -22,6 +22,6 @@ services:
       - "traefik.http.routers.prowlarr-secure.entrypoints=websecure"
       - "traefik.http.routers.prowlarr-secure.rule=Host(`prowlarr.$DOMAINNAME`)"
       - "traefik.http.routers.prowlarr-secure.tls.certresolver=cloudflare-dns"
-      - "traefik.http.routers.prowlarr-secure.middlewares=ssl-header@file"
+      - "traefik.http.routers.prowlarr-secure.middlewares=secure-chain@file"
       - "traefik.http.services.prowlarr.loadbalancer.server.port=9696"
       - "traefik.docker.network=arr_net"

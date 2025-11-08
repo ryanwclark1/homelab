@@ -23,6 +23,6 @@ services:
       - "traefik.http.routers.sonarr-secure.entrypoints=websecure"
       - "traefik.http.routers.sonarr-secure.rule=Host(`sonarr.$DOMAINNAME`)"
       - "traefik.http.routers.sonarr-secure.tls.certresolver=cloudflare-dns"
-      - "traefik.http.routers.sonarr-secure.middlewares=ssl-header@file"
+      - "traefik.http.routers.sonarr-secure.middlewares=secure-chain@file"
       - "traefik.http.services.sonarr.loadbalancer.server.port=8989"
       - "traefik.docker.network=arr_net"
