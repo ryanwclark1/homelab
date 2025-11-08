@@ -1,35 +1,22 @@
 services:
   # Prowlarr - Torrent proxy
   prowlarr:
+    <<: *common-arr
     image: ghcr.io/linuxserver/prowlarr:${PROWLARR_TAG:-latest}
     container_name: prowlarr
-    security_opt:
-      - no-new-privileges:true
-    restart: unless-stopped
     profiles: ["media", "arrs", "all"]
-    networks:
-      - arr_net
     ports:
       - mode: ingress
         target: 9696
         published: ${PROWLARR_PORT:-9696}
         protocol: tcp
     volumes:
-      - type: bind
-        source: /etc/localtime
-        target: /etc/localtime
-        read_only: true
-        bind:
-          create_host_path: true
+      - *common-volumes
       - type: bind
         source: ~/prowlarr
         target: /config
         bind:
           create_host_path: true
-    environment:
-      TZ: ${TZ:-Etc/UTC}
-      PUID: ${PUID:-1000}
-      PGID: ${PGID:-1000}
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.prowlarr.entrypoints=web"
@@ -42,6 +29,5 @@ services:
       - "traefik.http.routers.prowlarr-secure.tls=true"
       - "traefik.http.routers.prowlarr-secure.tls.certresolver=cloudflare-dns"
       - "traefik.http.routers.prowlarr-secure.service=prowlarr"
-      # - "traefik.http.services.prowlarr-svc.loadbalancer.server.scheme=https"
       - "traefik.http.services.prowlarr.loadbalancer.server.port=9696"
       - "traefik.docker.network=arr_net"

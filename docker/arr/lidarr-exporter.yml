@@ -1,14 +1,8 @@
 services:
   # Lidarr Exporter - Lidarr metrics for Prometheus
   lidarr-exporter:
-    image: ghcr.io/onedr0p/exportarr:${EXPORTARR_TAG:-latest}
+    <<: *common-exporter
     container_name: lidarr-exporter
-    security_opt:
-      - no-new-privileges:true
-    restart: "no"
-    profiles: ["all", "exporter"]
-    networks:
-      - arr_net
     ports:
       - mode: ingress
         target: 9709

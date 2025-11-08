@@ -12,6 +12,44 @@ networks:
     name: monitoring-services
     driver: bridge
 
+########################### COMMON CONFIGURATIONS
+x-common-arr: &common-arr
+  security_opt:
+    - no-new-privileges:true
+  restart: unless-stopped
+  networks:
+    - arr_net
+  environment: &common-env
+    TZ: ${TZ:-Etc/UTC}
+    PUID: ${PUID:-1000}
+    PGID: ${PGID:-1000}
+
+x-common-volumes: &common-volumes
+  - type: bind
+    source: /etc/localtime
+    target: /etc/localtime
+    read_only: true
+    bind:
+      create_host_path: true
+
+x-common-storage-volume: &storage-volume
+  type: bind
+  source: ${COMMON_DATA_PATH}
+  target: /storage
+  bind:
+    create_host_path: true
+
+x-common-exporter: &common-exporter
+  image: ghcr.io/onedr0p/exportarr:${EXPORTARR_TAG:-latest}
+  security_opt:
+    - no-new-privileges:true
+  restart: unless-stopped
+  profiles: ["all", "exporter"]
+  networks:
+    - arr_net
+  environment:
+    ENABLE_ADDITIONAL_METRICS: TRUE
+
 ########################### SECRETS
 secrets:
   basic_auth_credentials:
@@ -67,12 +105,13 @@ include:
   - arr/stash.yml
   # MONITORING
   - monitoring/prometheus.yml
+  - monitoring/node-exporter.yml
+  - monitoring/cadvisor.yml
   # - arr/grafana.yml
   - arr/lidarr-exporter.yml
   - arr/prowlarr-exporter.yml
   - arr/radarr-exporter.yml
   - arr/sonarr-exporter.yml
-  - arr/node-exporter.yml
   # NETWORK
   - arr/gluetun.yml
   # OTHER

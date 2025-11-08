@@ -1,40 +1,23 @@
 services:
   # Radarr - Movie management
   radarr:
+    <<: *common-arr
     image: lscr.io/linuxserver/radarr:${RADARR_TAG:-latest}
     container_name: radarr
-    security_opt:
-      - no-new-privileges:true
-    restart: "no"
     profiles: ["media", "arrs", "all"]
-    networks:
-      - arr_net
     ports:
       - mode: ingress
         target: 7878
         published: ${RADARR_PORT:-7878}
         protocol: tcp
     volumes:
-      - type: bind
-        source: /etc/localtime
-        target: /etc/localtime
-        read_only: true
-        bind:
-          create_host_path: true
+      - *common-volumes
       - type: bind
         source: ~/radarr
         target: /config
         bind:
           create_host_path: true
-      - type: bind
-        source: ${COMMON_DATA_PATH}
-        target: /storage
-        bind:
-          create_host_path: true
-    environment:
-      TZ: ${TZ:-Etc/UTC}
-      PUID: ${PUID:-1000}
-      PGID: ${PGID:-1000}
+      - *storage-volume
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.radarr.entrypoints=web"
@@ -47,6 +30,5 @@ services:
       - "traefik.http.routers.radarr-secure.tls=true"
       - "traefik.http.routers.radarr-secure.tls.certresolver=cloudflare-dns"
       - "traefik.http.routers.radarr-secure.service=radarr"
-      # - "traefik.http.services.radarr.loadbalancer.server.scheme=https"
       - "traefik.http.services.radarr.loadbalancer.server.port=7878"
       - "traefik.docker.network=arr_net"

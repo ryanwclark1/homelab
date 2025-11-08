@@ -2,8 +2,10 @@ services:
   cadvisor:
     image: gcr.io/cadvisor/cadvisor:${CADVISOR_TAG:-v0.49.1}
     container_name: cadvisor
-    profiles: ["monitoring", "exporter", "all"]
+    profiles: ["monitoring", "exporter", "all", "apps", "cadvisor"]
     privileged: true
+    security_opt:
+      - no-new-privileges:true
     command:
       - "--docker_only=true"
       - "--store_container_labels=true"
