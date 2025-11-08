@@ -1,0 +1,26 @@
+# Proxmox connection
+proxmox_api_url          = "https://james.techcasa.io:8006/api2/json"
+proxmox_api_token_id     = "root@pam!terraform"
+proxmox_api_token_secret = "your-api-token-secret-here"
+proxmox_tls_insecure     = true
+
+# Template configuration
+template_node    = "james"
+template_id      = 5001
+template_name    = "debian-bookworm-cloudinit"
+template_storage = "tank"
+
+# Cloud image source
+cloud_image_url          = "https://cloud.debian.org/images/cloud/bookworm/latest/debian-12-generic-amd64.qcow2"
+cloud_image_checksum_url = "https://cloud.debian.org/images/cloud/bookworm/latest/SHA512SUMS"
+
+# Cloud-init defaults
+ci_user = "administrator"
+ci_ssh_public_key = <<-EOT
+ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQC... your-public-key-here
+EOT
+
+# Template VM specs
+template_cores     = 2
+template_memory    = 4096
+template_disk_size = "10G"

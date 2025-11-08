@@ -15,7 +15,17 @@ This Terraform configuration manages your K3s cluster VMs across multiple Proxmo
 
 ```
 terraform/
-├── proxmox/              # Main Proxmox configuration
+├── deploy.sh             # Orchestration script (template + VMs)
+├── templates/            # Cloud-init template configuration
+│   ├── versions.tf       # Terraform version requirements
+│   ├── variables.tf      # Template variables
+│   ├── main.tf           # Template resource definition
+│   ├── outputs.tf        # Template outputs
+│   ├── Makefile          # Template management commands
+│   ├── README.md         # Template documentation
+│   └── terraform.tfvars.example  # Example configuration
+│
+├── proxmox/              # Main Proxmox VM configuration
 │   ├── versions.tf       # Terraform and provider versions
 │   ├── providers.tf      # Proxmox provider configuration
 │   ├── variables.tf      # Input variables
@@ -29,6 +39,7 @@ terraform/
 │   │   └── import-existing.sh    # Import existing VMs
 │   └── templates/        # Template files
 │       └── ansible_inventory.tpl # Ansible inventory template
+│
 └── modules/
     └── k3s-vm/           # Reusable K3s VM module
         ├── main.tf       # Module resources
@@ -47,109 +58,141 @@ terraform/
    ```
 
 2. **Proxmox VE** 7.x or 8.x with:
-   - Cloud-init template created (see [Creating a Template](#creating-a-cloud-init-template))
    - API token or user credentials
    - Network connectivity to Proxmox API
+   - SSH access to Proxmox nodes
 
 3. **SSH Key Pair** for VM access
    ```bash
    ssh-keygen -t rsa -b 4096 -f ~/.ssh/id_rsa
+   ssh-copy-id root@james.techcasa.io
+   ```
+
+4. **jq** (optional, for JSON parsing)
+   ```bash
+   apt install jq  # Debian/Ubuntu
    ```
 
 ## Quick Start
 
-### 1. Create Proxmox API Token
+### Automated Deployment (Recommended)
 
-On your Proxmox host (e.g., james), run:
+Use the orchestration script for end-to-end deployment:
 
 ```bash
-# Option A: Use the helper script
-scp terraform/proxmox/scripts/create-api-token.sh root@james:/tmp/
+cd terraform
+
+# 1. Create Proxmox API token
+ssh root@james < proxmox/scripts/create-api-token.sh
+
+# 2. Configure both template and VM variables
+cp templates/terraform.tfvars.example templates/terraform.tfvars
+cp proxmox/terraform.tfvars.example proxmox/terraform.tfvars
+
+# Edit both files with your credentials
+vim templates/terraform.tfvars
+vim proxmox/terraform.tfvars
+
+# 3. Check prerequisites
+./deploy.sh check
+
+# 4. Deploy everything (template + VMs)
+./deploy.sh all
+```
+
+### Manual Deployment (Step-by-Step)
+
+#### Step 1: Create Proxmox API Token
+
+```bash
+# Use the helper script
+scp proxmox/scripts/create-api-token.sh root@james:/tmp/
 ssh root@james "bash /tmp/create-api-token.sh"
 
-# Option B: Manual creation via Proxmox UI
+# Or create via Proxmox UI:
 # Datacenter -> Permissions -> API Tokens -> Add
-# User: root@pam
-# Token ID: terraform
-# Privilege Separation: No
+# User: root@pam, Token ID: terraform, Privilege Separation: No
 ```
 
-Save the token secret - it's only shown once!
-
-### 2. Configure Terraform Variables
+#### Step 2: Create Cloud-Init Template
 
 ```bash
-cd terraform/proxmox
+cd terraform/templates
+
+# Configure
 cp terraform.tfvars.example terraform.tfvars
+vim terraform.tfvars  # Add API credentials and SSH key
+
+# Create template
+make init
+make plan
+make apply
+make info
 ```
 
-Edit `terraform.tfvars` with your values:
+This creates template VM (ID 5001) on james with Debian 12 cloud image.
 
-```hcl
-proxmox_api_url          = "https://james.techcasa.io:8006/api2/json"
-proxmox_api_token_id     = "root@pam!terraform"
-proxmox_api_token_secret = "your-secret-here"
-
-ci_ssh_public_key = <<-EOT
-ssh-rsa AAAAB3NzaC1yc2E... your-public-key
-EOT
-
-ci_password = "strong-password-here"
-k3s_token   = "your-k3s-cluster-token"
-```
-
-### 3. Initialize and Deploy
+#### Step 3: Deploy VMs
 
 ```bash
-# Initialize Terraform
+cd ../proxmox
+
+# Configure
+cp terraform.tfvars.example terraform.tfvars
+vim terraform.tfvars  # Add credentials and settings
+
+# Deploy
 make init
-
-# Validate configuration
-make validate
-
-# Review changes
 make plan
-
-# Deploy infrastructure
 make apply
 
 # Generate Ansible inventory
 make inventory
 ```
 
-## Creating a Cloud-Init Template
+## Cloud-Init Template Management
 
-Before using Terraform, you need a cloud-init template on Proxmox:
+The infrastructure requires a cloud-init template (ID 5001) that VMs will be cloned from.
+
+### Automated Template Creation (Recommended)
+
+Terraform now handles template creation automatically:
 
 ```bash
-# SSH to a Proxmox node (e.g., james)
+cd terraform/templates
+make deploy
+```
+
+This will:
+1. Download Debian 12 cloud image to james
+2. Verify image checksum (SHA512)
+3. Create template VM with UEFI, cloud-init, and virtio drivers
+4. Configure serial console and networking
+
+See [templates/README.md](templates/README.md) for detailed documentation.
+
+### Alternative: Manual Template Creation
+
+If you prefer manual setup or need a different OS:
+
+```bash
+# SSH to Proxmox node
 ssh root@james
 
-# Download Debian cloud image
-cd /mnt/pve/iso/template/iso/
+# Download cloud image
+cd /var/lib/vz/template/iso/
 wget https://cloud.debian.org/images/cloud/bookworm/latest/debian-12-generic-amd64.qcow2
 
-# Create VM template
+# Create and configure template
 qm create 5001 --name "debian-bookworm-cloudinit" \
-  --ostype l26 \
-  --memory 4096 \
-  --cpu host --socket 1 --core 2 \
-  --bios ovmf \
-  --machine q35 \
+  --ostype l26 --memory 4096 --cpu host --socket 1 --core 2 \
+  --bios ovmf --machine q35 --scsihw virtio-scsi-pci \
   --efidisk0 tank:0,pre-enrolled-keys=0 \
-  --net0 virtio,bridge=vmbr0 \
-  --scsihw virtio-scsi-pci
+  --net0 virtio,bridge=vmbr0
 
-# Import disk
-qm set 5001 --scsi0 tank:0,ssd=on,import-from=/mnt/pve/iso/template/iso/debian-12-generic-amd64.qcow2
-
-# Configure cloud-init
-qm set 5001 --ide2 tank:cloudinit
-qm set 5001 --boot order=scsi0
-qm set 5001 --vga serial0 --serial0 socket
-qm set 5001 --ipconfig0 ip=dhcp
-
-# Convert to template
+qm set 5001 --scsi0 tank:0,ssd=on,import-from=/var/lib/vz/template/iso/debian-12-generic-amd64.qcow2
+qm set 5001 --ide2 tank:cloudinit --boot order=scsi0
+qm set 5001 --vga serial0 --serial0 socket --ipconfig0 ip=dhcp
 qm template 5001
 ```
 

@@ -11,6 +11,16 @@ terraform/
 ├── .gitignore                    # Git ignore rules for sensitive files
 ├── README.md                     # Comprehensive documentation
 ├── TERRAFORM_SETUP.md            # This file
+├── deploy.sh                     # Orchestration script (template + VMs)
+│
+├── templates/                    # Cloud-init template configuration
+│   ├── versions.tf               # Terraform version requirements
+│   ├── variables.tf              # Template variables
+│   ├── main.tf                   # Template resource definition
+│   ├── outputs.tf                # Template outputs
+│   ├── Makefile                  # Template management commands
+│   ├── README.md                 # Template documentation
+│   └── terraform.tfvars.example  # Example configuration
 │
 ├── modules/
 │   └── k3s-vm/                   # Reusable VM module
@@ -18,7 +28,7 @@ terraform/
 │       ├── variables.tf          # Module inputs
 │       └── outputs.tf            # Module outputs
 │
-└── proxmox/                      # Main Proxmox configuration
+└── proxmox/                      # Main Proxmox VM configuration
     ├── README.md                 # Quick reference guide
     ├── Makefile                  # Helper commands
     ├── versions.tf               # Terraform version requirements
@@ -144,33 +154,42 @@ Machine:   Q35
 ### Prerequisites
 1. Terraform >= 1.5.0
 2. Proxmox VE 7.x or 8.x
-3. Cloud-init template (ID 5001)
-4. SSH key pair
+3. SSH key pair for VM access
+4. SSH access to Proxmox nodes
 5. Proxmox API token
 
-### Quick Start
+### Quick Start (Automated)
 
 ```bash
-# 1. Navigate to proxmox directory
-cd terraform/proxmox
+cd terraform
 
-# 2. Create Proxmox API token
-ssh root@james < scripts/create-api-token.sh
+# 1. Create Proxmox API token
+ssh root@james < proxmox/scripts/create-api-token.sh
 
-# 3. Configure variables
-cp terraform.tfvars.example terraform.tfvars
-vim terraform.tfvars  # Add your credentials
+# 2. Configure both template and VM variables
+cp templates/terraform.tfvars.example templates/terraform.tfvars
+cp proxmox/terraform.tfvars.example proxmox/terraform.tfvars
 
-# 4. Initialize
+# Edit both with your credentials
+vim templates/terraform.tfvars
+vim proxmox/terraform.tfvars
+
+# 3. Deploy everything (template + VMs)
+./deploy.sh all
+```
+
+### Quick Start (Manual)
+
+```bash
+# 1. Create cloud-init template
+cd terraform/templates
+make deploy
+
+# 2. Deploy VMs
+cd ../proxmox
 make init
-
-# 5. Review plan
 make plan
-
-# 6. Deploy
 make apply
-
-# 7. Generate inventory
 make inventory
 ```
 
@@ -377,11 +396,26 @@ You now have a complete Terraform setup that:
 ✅ Follows infrastructure as code best practices
 
 **Total Resources Created**:
-- 16 Terraform configuration files
-- 2 comprehensive documentation files
-- 2 helper scripts
+- 24 Terraform configuration files
+- 3 comprehensive documentation files (README, template docs, setup guide)
+- 3 helper scripts (API token, import, deploy orchestration)
 - 1 Ansible inventory template
 - 1 reusable VM module
-- 1 Makefile with 20+ commands
+- 3 Makefiles with 40+ commands total
+- Cloud-init template management (automated download & creation)
 
 All infrastructure from your `inventory.json` is now codified and ready to manage with Terraform!
+
+## Two-Tier Architecture
+
+The setup uses a two-tier approach:
+
+1. **Tier 1: Template Layer** (`terraform/templates/`)
+   - Creates cloud-init template (ID 5001)
+   - Downloads and verifies OS images
+   - One-time setup, rarely changes
+
+2. **Tier 2: VM Layer** (`terraform/proxmox/`)
+   - Clones VMs from template
+   - Manages K3s cluster infrastructure
+   - Frequently modified for scaling
