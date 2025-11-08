@@ -20,15 +20,9 @@ services:
       - *storage-volume
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.sonarr.entrypoints=web"
-      - "traefik.http.routers.sonarr.rule=Host(`sonarr.$DOMAINNAME`)"
-      - "traefik.http.middlewares.sonarr-https-redirect.redirectscheme.scheme=https"
-      - "traefik.http.middlewares.sslheader.headers.customrequestheaders.X-Forwarded-Proto=https"
-      - "traefik.http.routers.sonarr.middlewares=sonarr-https-redirect"
       - "traefik.http.routers.sonarr-secure.entrypoints=websecure"
       - "traefik.http.routers.sonarr-secure.rule=Host(`sonarr.$DOMAINNAME`)"
-      - "traefik.http.routers.sonarr-secure.tls=true"
       - "traefik.http.routers.sonarr-secure.tls.certresolver=cloudflare-dns"
-      - "traefik.http.routers.sonarr-secure.service=sonarr"
+      - "traefik.http.routers.sonarr-secure.middlewares=ssl-header@file"
       - "traefik.http.services.sonarr.loadbalancer.server.port=8989"
       - "traefik.docker.network=arr_net"

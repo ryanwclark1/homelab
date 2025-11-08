@@ -20,15 +20,9 @@ services:
       - *storage-volume
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.radarr.entrypoints=web"
-      - "traefik.http.routers.radarr.rule=Host(`radarr.$DOMAINNAME`)"
-      - "traefik.http.middlewares.radarr-https-redirect.redirectscheme.scheme=https"
-      - "traefik.http.middlewares.sslheader.headers.customrequestheaders.X-Forwarded-Proto=https"
-      - "traefik.http.routers.radarr.middlewares=radarr-https-redirect"
       - "traefik.http.routers.radarr-secure.entrypoints=websecure"
       - "traefik.http.routers.radarr-secure.rule=Host(`radarr.$DOMAINNAME`)"
-      - "traefik.http.routers.radarr-secure.tls=true"
       - "traefik.http.routers.radarr-secure.tls.certresolver=cloudflare-dns"
-      - "traefik.http.routers.radarr-secure.service=radarr"
+      - "traefik.http.routers.radarr-secure.middlewares=ssl-header@file"
       - "traefik.http.services.radarr.loadbalancer.server.port=7878"
       - "traefik.docker.network=arr_net"

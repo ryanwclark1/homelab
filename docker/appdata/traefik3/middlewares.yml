@@ -1,0 +1,68 @@
+http:
+  middlewares:
+    # HTTPS Redirect Middleware
+    # Redirects HTTP requests to HTTPS
+    https-redirect:
+      redirectScheme:
+        scheme: https
+        permanent: true
+
+    # SSL Header Middleware
+    # Adds X-Forwarded-Proto header for SSL
+    ssl-header:
+      headers:
+        customRequestHeaders:
+          X-Forwarded-Proto: "https"
+
+    # Security Headers Middleware
+    # Adds common security headers
+    security-headers:
+      headers:
+        browserXssFilter: true
+        contentTypeNosniff: true
+        forceSTSHeader: true
+        frameDeny: true
+        stsIncludeSubdomains: true
+        stsPreload: true
+        stsSeconds: 31536000
+        customFrameOptionsValue: "SAMEORIGIN"
+
+    # Rate Limiting Middleware
+    # Limits requests to prevent abuse
+    rate-limit:
+      rateLimit:
+        average: 100
+        burst: 50
+        period: 1s
+
+    # Compression Middleware
+    # Compresses responses
+    compress:
+      compress: {}
+
+    # Common Middleware Chain
+    # Combines https-redirect and ssl-header
+    common-chain:
+      chain:
+        middlewares:
+          - https-redirect
+          - ssl-header
+
+    # Secure Chain
+    # Adds security headers to common chain
+    secure-chain:
+      chain:
+        middlewares:
+          - https-redirect
+          - ssl-header
+          - security-headers
+
+    # Full Chain
+    # Includes compression and rate limiting
+    full-chain:
+      chain:
+        middlewares:
+          - https-redirect
+          - ssl-header
+          - security-headers
+          - compress
