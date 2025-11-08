@@ -1,0 +1,33 @@
+---
+# K3s installation and configuration
+
+- name: Include OS-specific tasks
+  include_tasks: "{{ ansible_os_family | lower }}.yml"
+  tags: [always]
+
+- name: Install K3s on first master
+  include_tasks: install-master.yml
+  when: inventory_hostname in groups['k3s_init_master']
+  tags: [install, master]
+
+- name: Install K3s on additional masters
+  include_tasks: install-additional-master.yml
+  when:
+    - inventory_hostname in groups['k3s_masters']
+    - inventory_hostname not in groups['k3s_init_master']
+  tags: [install, master]
+
+- name: Install K3s on workers
+  include_tasks: install-worker.yml
+  when: inventory_hostname in groups['k3s_workers']
+  tags: [install, worker]
+
+- name: Configure storage nodes
+  include_tasks: configure-storage.yml
+  when: inventory_hostname in groups['k3s_storage']
+  tags: [storage]
+
+- name: Deploy cluster add-ons
+  include_tasks: addons.yml
+  when: inventory_hostname == groups['k3s_init_master'][0]
+  tags: [addons]

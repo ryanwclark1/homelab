@@ -1,0 +1,54 @@
+---
+# Install K3s on first master (bootstrap node)
+
+- name: Check if K3s is already installed
+  stat:
+    path: /usr/local/bin/k3s
+  register: k3s_binary
+
+- name: Download K3s install script
+  get_url:
+    url: "{{ k3s_install_url }}"
+    dest: /tmp/k3s-install.sh
+    mode: '0755'
+  when: not k3s_binary.stat.exists
+
+- name: Install K3s server (first master)
+  environment:
+    INSTALL_K3S_VERSION: "{{ k3s_version }}"
+    K3S_TOKEN: "{{ k3s_token }}"
+    K3S_CLUSTER_INIT: "true"
+  shell: |
+    /tmp/k3s-install.sh server \
+      --cluster-init \
+      --tls-san {{ k3s_cluster_vip }} \
+      --tls-san k3s.{{ domain_name }} \
+      --disable {{ k3s_disable_components | join(',') }} \
+      --cluster-cidr {{ k3s_cluster_cidr }} \
+      --service-cidr {{ k3s_service_cidr }} \
+      --write-kubeconfig-mode 644
+  when: not k3s_binary.stat.exists
+  register: k3s_install
+
+- name: Wait for K3s to be ready
+  wait_for:
+    path: /etc/rancher/k3s/k3s.yaml
+    state: present
+    timeout: 300
+
+- name: Get node token
+  slurp:
+    src: /var/lib/rancher/k3s/server/node-token
+  register: k3s_node_token
+
+- name: Save node token
+  set_fact:
+    k3s_node_token_value: "{{ k3s_node_token.content | b64decode | trim }}"
+
+- name: Display cluster info
+  debug:
+    msg: |
+      K3s first master installed
+      Node: {{ inventory_hostname }}
+      Join URL: https://{{ ansible_host }}:6443
+      Token: {{ k3s_node_token_value[:20] }}...

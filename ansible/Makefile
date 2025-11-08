@@ -22,6 +22,11 @@ help:
 	@echo "  truenas-health  - TrueNAS health check"
 	@echo "  truenas-info    - Display TrueNAS system info"
 	@echo ""
+	@echo "K3s Operations:"
+	@echo "  k3s-deploy      - Deploy K3s cluster"
+	@echo "  k3s-health      - K3s cluster health check"
+	@echo "  k3s-kubeconfig  - Get kubeconfig from cluster"
+	@echo ""
 	@echo "Node-specific operations:"
 	@echo "  ping-node NODE=name    - Ping specific node"
 	@echo "  update-node NODE=name  - Update specific node"
@@ -187,3 +192,17 @@ truenas-health: check-collections
 
 truenas-info:
 	ansible truenas_servers -m uri -a "url={{ truenas_api_url }}/system/info method=GET headers='Authorization:Bearer {{ truenas_api_key }}' validate_certs=no" -c local
+
+# K3s operations
+k3s-deploy: check-collections
+	ansible-playbook -i inventories/k3s/hosts.yml playbooks/k3s-deploy.yml
+
+k3s-health:
+	ansible-playbook -i inventories/k3s/hosts.yml playbooks/k3s-health.yml
+
+k3s-kubeconfig:
+	@echo "Fetching kubeconfig from k3s-node01..."
+	@ansible k3s-node01 -i inventories/k3s/hosts.yml -m fetch -a "src=/etc/rancher/k3s/k3s.yaml dest=./kubeconfig.yaml flat=yes" -b
+	@sed -i 's/127.0.0.1/10.10.101.50/g' kubeconfig.yaml
+	@echo "Kubeconfig saved to ./kubeconfig.yaml"
+	@echo "Use with: export KUBECONFIG=\$$(pwd)/kubeconfig.yaml"

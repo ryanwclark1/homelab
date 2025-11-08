@@ -1,0 +1,43 @@
+---
+# K3s cluster deployment playbook
+
+- name: Deploy K3s Cluster
+  hosts: k3s_cluster
+  become: yes
+  gather_facts: yes
+  serial:
+    - 1  # First master
+    - 5  # Additional masters
+    - "100%"  # All workers
+
+  pre_tasks:
+    - name: Verify required variables
+      assert:
+        that:
+          - k3s_token is defined
+          - k3s_cluster_vip is defined
+        fail_msg: "K3s token and VIP are required"
+        success_msg: "K3s configuration verified"
+
+    - name: Display deployment info
+      debug:
+        msg: |
+          Deploying K3s on {{ inventory_hostname }}
+          Role: {{ 'master' if inventory_hostname in groups['k3s_masters'] else 'worker' if inventory_hostname in groups['k3s_workers'] else 'storage' }}
+          Version: {{ k3s_version }}
+
+  roles:
+    - role: k3s
+      tags: [k3s]
+
+  post_tasks:
+    - name: Verify K3s installation
+      command: k3s kubectl get nodes
+      register: k3s_nodes
+      changed_when: false
+      when: inventory_hostname == groups['k3s_init_master'][0]
+
+    - name: Display cluster nodes
+      debug:
+        var: k3s_nodes.stdout_lines
+      when: inventory_hostname == groups['k3s_init_master'][0]
