@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Complete Terraform deployment workflow
 # This script orchestrates template creation and VM deployment
 

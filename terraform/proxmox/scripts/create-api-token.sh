@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Script to help create Proxmox API tokens
 # Run this script on your Proxmox host
 

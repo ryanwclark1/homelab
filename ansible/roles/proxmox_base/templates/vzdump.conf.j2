@@ -1,0 +1,10 @@
+# vzdump default settings
+
+mode: snapshot
+compress: gzip
+storage: {{ backup_storage | default('tank') }}
+maxfiles: {{ backup_retention | default(30) }}
+pigz: 4
+ionice: 7
+lockwait: 180
+stopwait: 60

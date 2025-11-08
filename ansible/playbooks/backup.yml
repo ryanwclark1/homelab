@@ -1,0 +1,87 @@
+---
+# Backup Proxmox host configurations
+# Creates backups of critical configuration files
+
+- name: Backup Proxmox Configurations
+  hosts: proxmox_cluster
+  gather_facts: true
+  become: true
+
+  vars:
+    backup_dir: "/var/backups/proxmox"
+    backup_date: "{{ ansible_date_time.date }}"
+    backup_retention_days: 30
+
+  tasks:
+    - name: Create backup directory
+      file:
+        path: "{{ backup_dir }}"
+        state: directory
+        mode: '0700'
+
+    - name: Backup network configuration
+      copy:
+        src: /etc/network/interfaces
+        dest: "{{ backup_dir }}/interfaces.{{ backup_date }}"
+        remote_src: yes
+        backup: yes
+
+    - name: Backup Proxmox cluster configuration
+      copy:
+        src: "{{ item }}"
+        dest: "{{ backup_dir }}/{{ item | basename }}.{{ backup_date }}"
+        remote_src: yes
+        backup: yes
+      loop:
+        - /etc/pve/corosync.conf
+        - /etc/pve/storage.cfg
+        - /etc/pve/datacenter.cfg
+        - /etc/pve/user.cfg
+      when: item is exists
+      ignore_errors: yes
+
+    - name: Backup VM configurations
+      shell: |
+        mkdir -p {{ backup_dir }}/qemu-server
+        cp -r /etc/pve/qemu-server/*.conf {{ backup_dir }}/qemu-server/ 2>/dev/null || true
+      args:
+        creates: "{{ backup_dir }}/qemu-server"
+
+    - name: Backup container configurations
+      shell: |
+        mkdir -p {{ backup_dir }}/lxc
+        cp -r /etc/pve/lxc/*.conf {{ backup_dir }}/lxc/ 2>/dev/null || true
+      args:
+        creates: "{{ backup_dir }}/lxc"
+
+    - name: Create vzdump backup of all VMs
+      command: >
+        vzdump --all 1 --mode snapshot --compress gzip
+        --storage {{ backup_storage | default('tank') }}
+        --maxfiles 3
+      async: 3600
+      poll: 0
+      register: vzdump_job
+      when: backup_vms | default(false)
+
+    - name: Clean old backups
+      find:
+        paths: "{{ backup_dir }}"
+        age: "{{ backup_retention_days }}d"
+        recurse: yes
+      register: old_backups
+
+    - name: Remove old backups
+      file:
+        path: "{{ item.path }}"
+        state: absent
+      loop: "{{ old_backups.files }}"
+      when: old_backups.files | length > 0
+
+    - name: Display backup summary
+      debug:
+        msg: |
+          Backup completed for {{ inventory_hostname }}
+          Location: {{ backup_dir }}
+          Date: {{ backup_date }}
+          Files backed up: Network, Cluster config, VM/CT configs

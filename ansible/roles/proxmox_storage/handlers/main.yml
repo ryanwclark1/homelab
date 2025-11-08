@@ -1,0 +1,12 @@
+---
+# Handlers for proxmox_storage role
+
+- name: reload zfs module
+  modprobe:
+    name: zfs
+    state: present
+
+- name: restart smartd
+  systemd:
+    name: smartd
+    state: restarted

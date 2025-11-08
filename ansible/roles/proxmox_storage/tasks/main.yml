@@ -1,0 +1,60 @@
+---
+# Proxmox storage configuration
+
+- name: Check ZFS pool status
+  command: zpool status {{ item.name }}
+  register: zpool_status
+  changed_when: false
+  failed_when: false
+  loop: "{{ storage_pools }}"
+  when: item.type == 'zfs'
+
+- name: Display ZFS pool status
+  debug:
+    var: zpool_status
+  when: storage_pools is defined
+
+- name: Install ZFS utilities
+  apt:
+    name:
+      - zfsutils-linux
+      - zfs-dkms
+    state: present
+
+- name: Configure ZFS ARC size
+  lineinfile:
+    path: /etc/modprobe.d/zfs.conf
+    line: "options zfs zfs_arc_max={{ zfs_arc_max | default('8589934592') }}"  # 8GB default
+    create: yes
+    mode: '0644'
+  when: zfs_arc_max is defined
+  notify: reload zfs module
+
+- name: Enable ZFS auto-scrub
+  cron:
+    name: "ZFS scrub {{ item.name }}"
+    special_time: monthly
+    job: "/usr/sbin/zpool scrub {{ item.name }}"
+    user: root
+  loop: "{{ storage_pools }}"
+  when: item.type == 'zfs'
+
+- name: Configure Proxmox storage
+  template:
+    src: storage.cfg.j2
+    dest: /etc/pve/storage.cfg
+    mode: '0640'
+  when: datacenter_role == 'primary'
+
+- name: Enable SMART monitoring
+  systemd:
+    name: smartd
+    state: started
+    enabled: yes
+
+- name: Configure SMART monitoring
+  template:
+    src: smartd.conf.j2
+    dest: /etc/smartd.conf
+    mode: '0644'
+  notify: restart smartd

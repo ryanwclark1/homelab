@@ -1,0 +1,12 @@
+---
+# Handlers for common role
+
+- name: restart sshd
+  systemd:
+    name: sshd
+    state: restarted
+
+- name: restart ntp
+  systemd:
+    name: ntp
+    state: restarted

@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Script to import existing Proxmox VMs into Terraform state
 # This is useful if you have already created VMs manually and want to manage them with Terraform
 

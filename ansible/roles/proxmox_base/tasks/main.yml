@@ -1,0 +1,96 @@
+---
+# Proxmox base configuration
+
+- name: Configure Proxmox APT repository
+  template:
+    src: pve-enterprise.list.j2
+    dest: /etc/apt/sources.list.d/pve-enterprise.list
+    mode: '0644'
+  when: proxmox_enterprise_repo | default(false)
+
+- name: Configure Proxmox no-subscription repository
+  template:
+    src: pve-no-subscription.list.j2
+    dest: /etc/apt/sources.list.d/pve-no-subscription.list
+    mode: '0644'
+  when: not (proxmox_enterprise_repo | default(false))
+
+- name: Update APT cache
+  apt:
+    update_cache: yes
+    cache_valid_time: 3600
+
+- name: Install Proxmox tools
+  apt:
+    name:
+      - proxmox-ve
+      - qemu-guest-agent
+      - ifupdown2
+    state: present
+
+- name: Configure Proxmox datacenter settings
+  template:
+    src: datacenter.cfg.j2
+    dest: /etc/pve/datacenter.cfg
+    mode: '0640'
+  when: datacenter_role == 'primary'
+
+- name: Disable enterprise repository nag
+  shell: |
+    sed -Ezi.bak "s/(Ext.Msg.show\(\{\s+title: gettext\('No valid sub)/void\(\{ \/\/\1/g" \
+    /usr/share/javascript/proxmox-widget-toolkit/proxmoxlib.js
+  args:
+    creates: /usr/share/javascript/proxmox-widget-toolkit/proxmoxlib.js.bak
+  when: not (proxmox_enterprise_repo | default(false))
+
+- name: Restart pveproxy after nag removal
+  systemd:
+    name: pveproxy
+    state: restarted
+  when: not (proxmox_enterprise_repo | default(false))
+
+- name: Configure IOMMU (if needed)
+  lineinfile:
+    path: /etc/default/grub
+    regexp: '^GRUB_CMDLINE_LINUX_DEFAULT='
+    line: 'GRUB_CMDLINE_LINUX_DEFAULT="quiet intel_iommu=on iommu=pt"'
+  notify: update grub
+  when: enable_iommu | default(false)
+
+- name: Load vfio modules
+  copy:
+    content: |
+      vfio
+      vfio_iommu_type1
+      vfio_pci
+      vfio_virqfd
+    dest: /etc/modules-load.d/vfio.conf
+    mode: '0644'
+  when: enable_iommu | default(false)
+
+- name: Ensure Proxmox services are running
+  systemd:
+    name: "{{ item }}"
+    state: started
+    enabled: yes
+  loop:
+    - pve-cluster
+    - pvedaemon
+    - pveproxy
+    - pvestatd
+
+- name: Configure vzdump backup defaults
+  template:
+    src: vzdump.conf.j2
+    dest: /etc/vzdump.conf
+    mode: '0644'
+  when: backup_enabled | default(false)
+
+- name: Setup backup cron job
+  cron:
+    name: "Proxmox VM backup"
+    minute: "0"
+    hour: "2"
+    job: "/usr/bin/vzdump --all 1 --mode snapshot --compress gzip --storage {{ backup_storage }} --quiet 1"
+    user: root
+  when: backup_enabled | default(false)

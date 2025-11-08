@@ -1,0 +1,45 @@
+# Ansible files
+*.retry
+*.pyc
+__pycache__/
+
+# Logs
+ansible.log
+*.log
+
+# Vault files
+*.vault
+vault-password.txt
+
+# Facts cache
+/tmp/ansible_facts/
+
+# Collections
+collections/
+
+# Roles from Galaxy
+roles/external/
+
+# Generated files
+*.auto.yml
+host_vars/*.auto.yml
+group_vars/*.auto.yml
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Editor files
+*.swp
+*.swo
+*~
+.vscode/
+.idea/
+
+# Backup files
+*.backup
+*.bak
+
+# Temporary files
+tmp/
+.tmp/

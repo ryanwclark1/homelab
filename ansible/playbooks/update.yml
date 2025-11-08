@@ -1,0 +1,94 @@
+---
+# Update Proxmox hosts
+# Performs system updates and Proxmox package updates
+
+- name: Update Proxmox Hosts
+  hosts: proxmox_cluster
+  gather_facts: true
+  become: true
+  serial: 1  # Update one node at a time
+
+  vars:
+    reboot_after_update: false
+    update_packages: true
+    update_proxmox: true
+
+  pre_tasks:
+    - name: Display update plan
+      debug:
+        msg: |
+          Updating {{ inventory_hostname }}
+          - Update packages: {{ update_packages }}
+          - Update Proxmox: {{ update_proxmox }}
+          - Reboot after: {{ reboot_after_update }}
+
+    - name: Check for running VMs
+      shell: qm list | grep -c running || true
+      register: running_vms
+      changed_when: false
+
+    - name: Warn about running VMs
+      debug:
+        msg: "WARNING: {{ running_vms.stdout }} VMs are running on this node"
+      when: running_vms.stdout|int > 0
+
+  tasks:
+    - name: Update APT cache
+      apt:
+        update_cache: yes
+        cache_valid_time: 3600
+      when: update_packages
+
+    - name: Upgrade all packages
+      apt:
+        upgrade: dist
+        autoremove: yes
+        autoclean: yes
+      when: update_packages
+      register: apt_upgrade
+
+    - name: Check if reboot is required
+      stat:
+        path: /var/run/reboot-required
+      register: reboot_required
+
+    - name: Display reboot status
+      debug:
+        msg: "Reboot required: {{ reboot_required.stat.exists }}"
+
+    - name: Reboot if required
+      reboot:
+        msg: "Rebooting {{ inventory_hostname }} after updates"
+        connect_timeout: 5
+        reboot_timeout: 300
+        pre_reboot_delay: 0
+        post_reboot_delay: 30
+        test_command: uptime
+      when:
+        - reboot_after_update or reboot_required.stat.exists
+        - running_vms.stdout|int == 0
+
+    - name: Skip reboot warning
+      debug:
+        msg: "Skipping reboot due to running VMs. Manual reboot required."
+      when:
+        - reboot_after_update or reboot_required.stat.exists
+        - running_vms.stdout|int > 0
+
+  post_tasks:
+    - name: Verify Proxmox services
+      systemd:
+        name: "{{ item }}"
+        state: started
+      loop:
+        - pve-cluster
+        - pvedaemon
+        - pveproxy
+        - pvestatd
+
+    - name: Display update summary
+      debug:
+        msg: |
+          Update complete for {{ inventory_hostname }}
+          - Packages updated: {{ apt_upgrade.changed }}
+          - Reboot required: {{ reboot_required.stat.exists }}

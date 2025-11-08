@@ -1,0 +1,20 @@
+# Proxmox Datacenter Configuration
+
+# Keyboard layout
+keyboard: en-us
+
+# Console settings
+console: term
+
+# Email notification settings
+{% if email_from is defined %}
+email_from: {{ email_from }}
+{% endif %}
+
+# Migration settings
+migration: secure
+
+# HA settings
+{% if ha_enabled | default(false) %}
+ha: shutdown_policy=conditional
+{% endif %}

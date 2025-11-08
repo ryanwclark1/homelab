@@ -1,0 +1,97 @@
+---
+# Health check playbook for Proxmox cluster
+# Verifies cluster health, services, and resources
+
+- name: Proxmox Cluster Health Check
+  hosts: proxmox_cluster
+  gather_facts: true
+  become: true
+
+  tasks:
+    - name: Check Proxmox version
+      command: pveversion
+      register: pve_version
+      changed_when: false
+
+    - name: Check cluster status
+      command: pvecm status
+      register: cluster_status
+      changed_when: false
+      failed_when: false
+
+    - name: Check storage status
+      command: pvesm status
+      register: storage_status
+      changed_when: false
+
+    - name: Check running VMs
+      command: qm list
+      register: vm_list
+      changed_when: false
+
+    - name: Check running containers
+      command: pct list
+      register: ct_list
+      changed_when: false
+      failed_when: false
+
+    - name: Check system resources
+      shell: |
+        echo "=== CPU Usage ==="
+        top -bn1 | head -5
+        echo ""
+        echo "=== Memory Usage ==="
+        free -h
+        echo ""
+        echo "=== Disk Usage ==="
+        df -h | grep -E '(Filesystem|/dev/|tank)'
+        echo ""
+        echo "=== ZFS Status ==="
+        zpool status tank || echo "ZFS pool 'tank' not found"
+      register: system_resources
+      changed_when: false
+
+    - name: Check critical services
+      systemd:
+        name: "{{ item }}"
+      loop:
+        - pve-cluster
+        - pvedaemon
+        - pveproxy
+        - pvestatd
+        - corosync
+      register: service_status
+      failed_when: false
+
+    - name: Generate health report
+      debug:
+        msg: |
+          ╔══════════════════════════════════════════════════════════╗
+          ║  Proxmox Health Check: {{ inventory_hostname }}
+          ╚══════════════════════════════════════════════════════════╝
+
+          Proxmox Version:
+          {{ pve_version.stdout }}
+
+          Cluster Status:
+          {{ cluster_status.stdout if cluster_status.rc == 0 else 'Not in cluster mode' }}
+
+          Storage Status:
+          {{ storage_status.stdout }}
+
+          Running VMs:
+          {{ vm_list.stdout }}
+
+          Running Containers:
+          {{ ct_list.stdout if ct_list.rc == 0 else 'No containers' }}
+
+          System Resources:
+          {{ system_resources.stdout }}
+
+    - name: Check for issues
+      assert:
+        that:
+          - pve_version.rc == 0
+          - storage_status.rc == 0
+        fail_msg: "Health check failed on {{ inventory_hostname }}"
+        success_msg: "Health check passed on {{ inventory_hostname }}"
