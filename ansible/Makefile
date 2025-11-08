@@ -1,10 +1,13 @@
-.PHONY: help ping check lint site update backup health inventory
+.PHONY: help ping check lint site update backup health inventory install-collections
 
 # Default target
 help:
-	@echo "Ansible Proxmox Host Management"
+	@echo "Ansible Homelab Management"
 	@echo ""
-	@echo "Available targets:"
+	@echo "Setup:"
+	@echo "  install-collections  - Install required Ansible Galaxy collections"
+	@echo ""
+	@echo "Proxmox Operations:"
 	@echo "  ping       - Test connectivity to all Proxmox hosts"
 	@echo "  check      - Syntax check all playbooks"
 	@echo "  lint       - Lint all Ansible files (requires ansible-lint)"
@@ -14,15 +17,21 @@ help:
 	@echo "  health     - Run cluster health check"
 	@echo "  inventory  - Display inventory"
 	@echo ""
+	@echo "TrueNAS Operations:"
+	@echo "  truenas-setup   - Configure TrueNAS servers"
+	@echo "  truenas-health  - TrueNAS health check"
+	@echo "  truenas-info    - Display TrueNAS system info"
+	@echo ""
 	@echo "Node-specific operations:"
 	@echo "  ping-node NODE=name    - Ping specific node"
 	@echo "  update-node NODE=name  - Update specific node"
 	@echo "  health-node NODE=name  - Health check specific node"
 	@echo ""
 	@echo "Examples:"
+	@echo "  make install-collections"
 	@echo "  make ping"
 	@echo "  make update-node NODE=james"
-	@echo "  make health"
+	@echo "  make truenas-health"
 
 # Test connectivity
 ping:
@@ -159,3 +168,22 @@ deploy: check ping site health
 
 # Maintenance workflow
 maintain: backup update health
+
+# Install Ansible Galaxy collections
+install-collections:
+	ansible-galaxy collection install -r requirements.yml --force
+
+# Install collections if missing
+check-collections:
+	@ansible-galaxy collection list | grep -q community.proxmox || make install-collections
+	@ansible-galaxy collection list | grep -q arensb.truenas || make install-collections
+
+# TrueNAS operations
+truenas-setup: check-collections
+	ansible-playbook playbooks/truenas-setup.yml
+
+truenas-health: check-collections
+	ansible-playbook playbooks/truenas-health.yml
+
+truenas-info:
+	ansible truenas_servers -m uri -a "url={{ truenas_api_url }}/system/info method=GET headers='Authorization:Bearer {{ truenas_api_key }}' validate_certs=no" -c local

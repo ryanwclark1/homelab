@@ -1,0 +1,19 @@
+---
+# TrueNAS alert configuration
+
+- name: Get alert services
+  uri:
+    url: "{{ truenas_api_url }}/alertservice"
+    method: GET
+    headers:
+      Authorization: "Bearer {{ truenas_api_key }}"
+    validate_certs: "{{ truenas_validate_certs }}"
+  register: alert_services
+  changed_when: false
+
+- name: Display configured alert services
+  debug:
+    msg: "Alert service: {{ item.name }} ({{ item.type }})"
+  loop: "{{ alert_services.json }}"
+  loop_control:
+    label: "{{ item.name }}"

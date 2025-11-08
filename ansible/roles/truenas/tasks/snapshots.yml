@@ -1,0 +1,23 @@
+---
+# TrueNAS snapshot configuration
+
+- name: Configure snapshot tasks
+  arensb.truenas.periodic_snapshot_task:
+    api_url: "{{ truenas_api_url }}"
+    api_key: "{{ truenas_api_key }}"
+    validate_certs: "{{ truenas_validate_certs }}"
+    dataset: "{{ item.dataset }}"
+    recursive: "{{ item.recursive | default(true) }}"
+    schedule:
+      minute: "{{ item.schedule.minute | default('0') }}"
+      hour: "{{ item.schedule.hour | default('2') }}"
+      dom: "{{ item.schedule.day_of_month | default('*') }}"
+      month: "{{ item.schedule.month | default('*') }}"
+      dow: "{{ item.schedule.day_of_week | default('*') }}"
+    lifetime_value: "{{ item.lifetime_value | default(7) }}"
+    lifetime_unit: "{{ item.lifetime_unit | default('DAY') }}"
+    enabled: "{{ item.enabled | default(true) }}"
+    state: present
+  loop: "{{ truenas_snapshot_tasks }}"
+  loop_control:
+    label: "{{ item.dataset }}"

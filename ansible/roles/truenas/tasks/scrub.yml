@@ -1,0 +1,19 @@
+---
+# TrueNAS scrub task configuration
+
+- name: Configure ZFS scrub tasks
+  arensb.truenas.pool_scrub_task:
+    api_url: "{{ truenas_api_url }}"
+    api_key: "{{ truenas_api_key }}"
+    validate_certs: "{{ truenas_validate_certs }}"
+    pool: "{{ item.pool }}"
+    schedule:
+      minute: "{{ item.schedule.minute | default('0') }}"
+      hour: "{{ item.schedule.hour | default('3') }}"
+      dow: "{{ item.schedule.day_of_week | default('7') }}"
+    threshold: "{{ item.threshold | default(35) }}"
+    enabled: true
+    state: present
+  loop: "{{ truenas_scrub_tasks }}"
+  loop_control:
+    label: "{{ item.pool }}"

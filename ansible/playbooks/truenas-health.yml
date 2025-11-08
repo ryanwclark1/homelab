@@ -1,0 +1,68 @@
+---
+# TrueNAS health check playbook
+
+- name: TrueNAS Health Check
+  hosts: truenas_servers
+  gather_facts: false
+  connection: local
+
+  tasks:
+    - name: Get system info
+      uri:
+        url: "{{ truenas_api_url }}/system/info"
+        method: GET
+        headers:
+          Authorization: "Bearer {{ truenas_api_key }}"
+        validate_certs: "{{ truenas_validate_certs }}"
+      register: system_info
+
+    - name: Get pool status
+      uri:
+        url: "{{ truenas_api_url }}/pool"
+        method: GET
+        headers:
+          Authorization: "Bearer {{ truenas_api_key }}"
+        validate_certs: "{{ truenas_validate_certs }}"
+      register: pool_status
+
+    - name: Get alerts
+      uri:
+        url: "{{ truenas_api_url }}/alert/list"
+        method: GET
+        headers:
+          Authorization: "Bearer {{ truenas_api_key }}"
+        validate_certs: "{{ truenas_validate_certs }}"
+      register: alerts
+
+    - name: Display health report
+      debug:
+        msg: |
+          ╔══════════════════════════════════════════════════════════╗
+          ║  TrueNAS Health Check: {{ inventory_hostname }}
+          ╚══════════════════════════════════════════════════════════╝
+
+          System Info:
+          - Hostname: {{ system_info.json.hostname }}
+          - Version: {{ system_info.json.version }}
+          - Uptime: {{ system_info.json.uptime_seconds | int // 86400 }} days
+
+          Storage Pools:
+          {% for pool in pool_status.json %}
+          - {{ pool.name }}: {{ pool.status }}
+            Size: {{ (pool.size / 1024 / 1024 / 1024 / 1024) | round(2) }} TiB
+            Used: {{ pool.used_pct }}%
+          {% endfor %}
+
+          Active Alerts: {{ alerts.json | length }}
+          {% if alerts.json | length > 0 %}
+          {% for alert in alerts.json %}
+          - [{{ alert.level }}] {{ alert.formatted }}
+          {% endfor %}
+          {% endif %}
+
+    - name: Check for critical alerts
+      assert:
+        that:
+          - alerts.json | selectattr('level', 'equalto', 'CRITICAL') | list | length == 0
+        fail_msg: "Critical alerts detected!"
+        success_msg: "No critical alerts"

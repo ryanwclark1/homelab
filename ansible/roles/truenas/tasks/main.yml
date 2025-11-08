@@ -1,0 +1,57 @@
+---
+# TrueNAS management tasks
+
+- name: Verify TrueNAS API connectivity
+  uri:
+    url: "{{ truenas_api_url }}/system/info"
+    method: GET
+    headers:
+      Authorization: "Bearer {{ truenas_api_key }}"
+    validate_certs: "{{ truenas_validate_certs }}"
+    timeout: "{{ truenas_api_timeout }}"
+  register: truenas_info
+  changed_when: false
+
+- name: Display TrueNAS system info
+  debug:
+    msg: |
+      TrueNAS System: {{ truenas_info.json.hostname }}
+      Version: {{ truenas_info.json.version }}
+      Uptime: {{ truenas_info.json.uptime_seconds | int // 86400 }} days
+
+- name: Configure network settings
+  include_tasks: network.yml
+  tags: [network]
+
+- name: Configure storage pools
+  include_tasks: storage.yml
+  tags: [storage]
+
+- name: Configure datasets
+  include_tasks: datasets.yml
+  when: truenas_datasets | length > 0
+  tags: [datasets]
+
+- name: Configure NFS
+  include_tasks: nfs.yml
+  when: truenas_nfs_enabled | default(false)
+  tags: [nfs, shares]
+
+- name: Configure SMB
+  include_tasks: smb.yml
+  when: truenas_smb_enabled | default(false)
+  tags: [smb, shares]
+
+- name: Configure snapshots
+  include_tasks: snapshots.yml
+  when: truenas_snapshot_tasks | length > 0
+  tags: [snapshots]
+
+- name: Configure scrub tasks
+  include_tasks: scrub.yml
+  when: truenas_scrub_tasks | length > 0
+  tags: [scrub, maintenance]
+
+- name: Configure alerts
+  include_tasks: alerts.yml
+  tags: [alerts]

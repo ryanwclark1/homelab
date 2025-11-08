@@ -1,0 +1,29 @@
+---
+# TrueNAS setup and configuration playbook
+
+- name: Configure TrueNAS Servers
+  hosts: truenas_servers
+  gather_facts: false
+  connection: local
+
+  pre_tasks:
+    - name: Verify required variables
+      assert:
+        that:
+          - truenas_api_url is defined
+          - truenas_api_key is defined
+        fail_msg: "TrueNAS API URL and API key are required"
+        success_msg: "TrueNAS connection parameters verified"
+
+  roles:
+    - role: truenas
+      tags: [truenas]
+
+  post_tasks:
+    - name: Display configuration summary
+      debug:
+        msg: |
+          TrueNAS configuration complete for {{ inventory_hostname }}
+          API URL: {{ truenas_api_url }}
+          NFS enabled: {{ truenas_nfs_enabled | default(false) }}
+          SMB enabled: {{ truenas_smb_enabled | default(false) }}

@@ -1,0 +1,20 @@
+---
+# Ansible Galaxy requirements
+# Install with: ansible-galaxy install -r requirements.yml
+
+collections:
+  # Proxmox VE management
+  - name: community.proxmox
+    version: ">=1.0.0"
+
+  # TrueNAS management
+  - name: arensb.truenas
+    version: ">=1.0.0"
+
+  # General utilities
+  - name: community.general
+    version: ">=6.0.0"
+
+  # Additional collections as needed
+  - name: ansible.posix
+    version: ">=1.5.0"
