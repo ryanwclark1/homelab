@@ -1,0 +1,16 @@
+# Network configuration for {{ inventory_hostname }}
+# Managed by Ansible - do not edit manually
+
+auto lo
+iface lo inet loopback
+
+# Primary network interface
+auto vmbr0
+iface vmbr0 inet static
+        address {{ ansible_host }}/{{ network_subnet.split('/')[1] }}
+        gateway {{ network_gateway }}
+        bridge-ports eth0
+        bridge-stp off
+        bridge-fd 0
+
+# Additional bridges can be configured here

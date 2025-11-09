@@ -3,7 +3,9 @@ services:
   node-exporter:
     container_name: node-exporter
     image: prom/node-exporter:${NODE_EXPORTER_TAG:-latest}
-    profiles: ["exporter", "all"]
+    profiles: ["exporter", "all", "monitoring", "apps"]
+    security_opt:
+      - no-new-privileges:true
     ports:
       - mode: ingress
         target: 9100

@@ -1,55 +1,31 @@
 services:
-  # Whiparr - Whisparr managment
+  # Whisparr - Adult content management
   whisparr:
+    <<: *common-arr
     image: ghcr.io/hotio/whisparr:${WHISPARR_TAG:-nightly}
     container_name: whisparr
-    security_opt:
-      - no-new-privileges:true
-    restart: "no"
-    profiles: ["media","arrs", "all"]
-    networks:
-      - arr_net
+    profiles: ["media", "arrs", "all"]
     ports:
       - mode: ingress
         target: 6969
         published: "6969"
         protocol: tcp
     volumes:
-      - type: bind
-        source: /etc/localtime
-        target: /etc/localtime
-        read_only: true
-        bind:
-          create_host_path: true
+      - *common-volumes
       - type: bind
         source: ~/whisparr
         target: /config
         bind:
           create_host_path: true
-      - type: bind
-        source: ${COMMON_DATA_PATH}
-        target: /storage
-        bind:
-          create_host_path: true
+      - *storage-volume
     environment:
-      PUID: ${PUID:-1000}
-      PGID: ${PGID:-1000}
-      TZ: ${TZ:-Etc/UTC}
-      # UMASK_SET: ${UMASK_SET:-022}
-      # WHISPARR_API_KEY: ${WHISPARR_API_KEY}
+      <<: *common-env
       WHISPARR_URL: ${WHISPARR_URL:-https://whisparr.$DOMAINNAME}
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.whisparr.entrypoints=web"
-      - "traefik.http.routers.whisparr.rule=Host(`whisparr.$DOMAINNAME`)"
-      - "traefik.http.middlewares.whisparr-https-redirect.redirectscheme.scheme=https"
-      - "traefik.http.middlewares.sslheader.headers.customrequestheaders.X-Forwarded-Proto=https"
-      - "traefik.http.routers.whisparr.middlewares=whisparr-https-redirect"
       - "traefik.http.routers.whisparr-secure.entrypoints=websecure"
       - "traefik.http.routers.whisparr-secure.rule=Host(`whisparr.$DOMAINNAME`)"
-      - "traefik.http.routers.whisparr-secure.tls=true"
       - "traefik.http.routers.whisparr-secure.tls.certresolver=cloudflare-dns"
-      - "traefik.http.routers.whisparr-secure.service=whisparr"
-      # - "traefik.http.services.whisparr-svc.loadbalancer.server.scheme=https"
+      - "traefik.http.routers.whisparr-secure.middlewares=secure-chain@file"
       - "traefik.http.services.whisparr.loadbalancer.server.port=6969"
       - "traefik.docker.network=arr_net"

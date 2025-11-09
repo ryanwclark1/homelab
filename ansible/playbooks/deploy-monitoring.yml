@@ -1,0 +1,219 @@
+---
+# Deploy monitoring stack to K3s cluster
+# Includes Prometheus, Grafana, and Alertmanager
+
+- name: Deploy Monitoring Stack
+  hosts: k3s_init_master
+  become: yes
+  gather_facts: no
+
+  vars:
+    monitoring_namespace: monitoring
+    prometheus_retention: 30d
+    grafana_admin_password: "{{ vault_grafana_admin_password | default('admin') }}"
+
+  tasks:
+    - name: Create monitoring namespace
+      kubernetes.core.k8s:
+        state: present
+        definition:
+          apiVersion: v1
+          kind: Namespace
+          metadata:
+            name: "{{ monitoring_namespace }}"
+
+    - name: Add Prometheus Helm repository
+      kubernetes.core.helm_repository:
+        name: prometheus-community
+        repo_url: https://prometheus-community.github.io/helm-charts
+
+    - name: Deploy kube-prometheus-stack
+      kubernetes.core.helm:
+        name: kube-prometheus-stack
+        chart_ref: prometheus-community/kube-prometheus-stack
+        release_namespace: "{{ monitoring_namespace }}"
+        create_namespace: true
+        values:
+          # Prometheus configuration
+          prometheus:
+            prometheusSpec:
+              retention: "{{ prometheus_retention }}"
+              storageSpec:
+                volumeClaimTemplate:
+                  spec:
+                    accessModes: ["ReadWriteOnce"]
+                    resources:
+                      requests:
+                        storage: 50Gi
+              resources:
+                requests:
+                  cpu: 500m
+                  memory: 2Gi
+                limits:
+                  cpu: 2000m
+                  memory: 4Gi
+
+          # Grafana configuration
+          grafana:
+            enabled: true
+            adminPassword: "{{ grafana_admin_password }}"
+            persistence:
+              enabled: true
+              size: 10Gi
+            ingress:
+              enabled: true
+              hosts:
+                - grafana.techcasa.io
+            dashboardProviders:
+              dashboardproviders.yaml:
+                apiVersion: 1
+                providers:
+                  - name: 'default'
+                    orgId: 1
+                    folder: ''
+                    type: file
+                    disableDeletion: false
+                    editable: true
+                    options:
+                      path: /var/lib/grafana/dashboards/default
+
+          # Alertmanager configuration
+          alertmanager:
+            enabled: true
+            alertmanagerSpec:
+              storage:
+                volumeClaimTemplate:
+                  spec:
+                    accessModes: ["ReadWriteOnce"]
+                    resources:
+                      requests:
+                        storage: 10Gi
+
+          # Node exporter
+          nodeExporter:
+            enabled: true
+
+          # Kube-state-metrics
+          kubeStateMetrics:
+            enabled: true
+
+    - name: Wait for Prometheus to be ready
+      kubernetes.core.k8s_info:
+        kind: StatefulSet
+        namespace: "{{ monitoring_namespace }}"
+        name: prometheus-kube-prometheus-stack-prometheus
+      register: prometheus_status
+      until:
+        - prometheus_status.resources | length > 0
+        - prometheus_status.resources[0].status.readyReplicas is defined
+        - prometheus_status.resources[0].status.readyReplicas == prometheus_status.resources[0].spec.replicas
+      retries: 30
+      delay: 10
+
+    - name: Wait for Grafana to be ready
+      kubernetes.core.k8s_info:
+        kind: Deployment
+        namespace: "{{ monitoring_namespace }}"
+        name: kube-prometheus-stack-grafana
+      register: grafana_status
+      until:
+        - grafana_status.resources | length > 0
+        - grafana_status.resources[0].status.readyReplicas is defined
+        - grafana_status.resources[0].status.readyReplicas == grafana_status.resources[0].spec.replicas
+      retries: 30
+      delay: 10
+
+    - name: Get Grafana service details
+      kubernetes.core.k8s_info:
+        kind: Service
+        namespace: "{{ monitoring_namespace }}"
+        name: kube-prometheus-stack-grafana
+      register: grafana_svc
+
+    - name: Display monitoring stack info
+      debug:
+        msg: |
+          ╔══════════════════════════════════════════════════════════╗
+          ║  Monitoring Stack Deployed                               ║
+          ╚══════════════════════════════════════════════════════════╝
+
+          Prometheus:
+            - Namespace: {{ monitoring_namespace }}
+            - Retention: {{ prometheus_retention }}
+            - Storage: 50Gi
+
+          Grafana:
+            - URL: http://grafana.techcasa.io (if ingress configured)
+            - Admin user: admin
+            - Admin password: {{ grafana_admin_password }}
+            - Storage: 10Gi
+
+          Alertmanager:
+            - Enabled: Yes
+            - Storage: 10Gi
+
+          Access:
+            kubectl port-forward -n {{ monitoring_namespace }} svc/kube-prometheus-stack-grafana 3000:80
+            kubectl port-forward -n {{ monitoring_namespace }} svc/kube-prometheus-stack-prometheus 9090:9090
+
+    - name: Create example ServiceMonitor for custom metrics
+      kubernetes.core.k8s:
+        state: present
+        definition:
+          apiVersion: monitoring.coreos.com/v1
+          kind: ServiceMonitor
+          metadata:
+            name: example-app
+            namespace: "{{ monitoring_namespace }}"
+            labels:
+              release: kube-prometheus-stack
+          spec:
+            selector:
+              matchLabels:
+                app: example-app
+            endpoints:
+              - port: metrics
+                interval: 30s
+
+    - name: Create example PrometheusRule for alerts
+      kubernetes.core.k8s:
+        state: present
+        definition:
+          apiVersion: monitoring.coreos.com/v1
+          kind: PrometheusRule
+          metadata:
+            name: homelab-alerts
+            namespace: "{{ monitoring_namespace }}"
+            labels:
+              release: kube-prometheus-stack
+          spec:
+            groups:
+              - name: homelab
+                interval: 30s
+                rules:
+                  - alert: HighPodMemory
+                    expr: |
+                      sum(container_memory_working_set_bytes{container!=""}) by (pod, namespace)
+                      / sum(container_spec_memory_limit_bytes{container!=""}) by (pod, namespace) > 0.9
+                    for: 5m
+                    labels:
+                      severity: warning
+                    annotations:
+                      summary: "Pod {{ $labels.namespace }}/{{ $labels.pod }} high memory usage"
+                      description: "Pod is using {{ $value | humanizePercentage }} of memory limit"
+
+                  - alert: NodeDiskPressure
+                    expr: kube_node_status_condition{condition="DiskPressure",status="true"} == 1
+                    for: 5m
+                    labels:
+                      severity: critical
+                    annotations:
+                      summary: "Node {{ $labels.node }} has disk pressure"
+
+                  - alert: PodCrashLooping
+                    expr: rate(kube_pod_container_status_restarts_total[15m]) > 0
+                    for: 5m
+                    labels:
+                      severity: warning
+                    annotations:
+                      summary: "Pod {{ $labels.namespace }}/{{ $labels.pod }} is crash looping"

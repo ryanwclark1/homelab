@@ -1,0 +1,71 @@
+---
+# Default variables for TrueNAS role
+
+# API settings
+truenas_api_timeout: 60
+truenas_validate_certs: false
+
+# Network settings
+truenas_dns_servers:
+  - 10.10.100.1
+  - 1.1.1.1
+
+truenas_search_domain: techcasa.io
+
+# NFS settings
+truenas_nfs_enabled: true
+truenas_nfs_v4: true
+truenas_nfs_protocols:
+  - nfsv3
+  - nfsv4
+
+# SMB settings
+truenas_smb_enabled: true
+truenas_smb_workgroup: HOMELAB
+
+# Datasets to create
+truenas_datasets: []
+  # - name: tank/proxmox
+  #   compression: lz4
+  #   quota: 1T
+  #   record_size: 128K
+  # - name: tank/backup
+  #   compression: gzip-9
+  #   quota: 5T
+
+# NFS shares to create
+truenas_nfs_shares: []
+  # - path: /mnt/tank/proxmox
+  #   networks:
+  #     - 10.10.100.0/23
+  #   hosts: []
+  #   maproot_user: root
+  #   maproot_group: root
+
+# SMB shares to create
+truenas_smb_shares: []
+  # - name: proxmox-backups
+  #   path: /mnt/tank/backup
+  #   comment: "Proxmox VM backups"
+  #   ro: false
+  #   guest_ok: false
+
+# Snapshots
+truenas_snapshot_tasks: []
+  # - dataset: tank/proxmox
+  #   recursive: true
+  #   schedule:
+  #     minute: "0"
+  #     hour: "2"
+  #     day_of_month: "*"
+  #   lifetime_value: 7
+  #   lifetime_unit: DAY
+
+# Scrub tasks
+truenas_scrub_tasks: []
+  # - pool: tank
+  #   schedule:
+  #     minute: "0"
+  #     hour: "3"
+  #     day_of_week: "7"
+  #   threshold: 35

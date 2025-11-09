@@ -1,0 +1,57 @@
+---
+# Proxmox monitoring configuration
+
+- name: Install monitoring tools
+  apt:
+    name:
+      - prometheus-node-exporter
+      - prometheus-pve-exporter
+    state: present
+  when: install_prometheus_exporters | default(true)
+
+- name: Configure node exporter
+  systemd:
+    name: prometheus-node-exporter
+    state: started
+    enabled: yes
+  when: install_prometheus_exporters | default(true)
+
+- name: Create monitoring scripts directory
+  file:
+    path: /usr/local/bin/monitoring
+    state: directory
+    mode: '0755'
+
+- name: Deploy cluster health check script
+  template:
+    src: cluster-health.sh.j2
+    dest: /usr/local/bin/monitoring/cluster-health.sh
+    mode: '0755'
+
+- name: Deploy storage check script
+  template:
+    src: storage-check.sh.j2
+    dest: /usr/local/bin/monitoring/storage-check.sh
+    mode: '0755'
+
+- name: Schedule health check cron
+  cron:
+    name: "Cluster health check"
+    minute: "*/15"
+    job: "/usr/local/bin/monitoring/cluster-health.sh >> /var/log/cluster-health.log 2>&1"
+    user: root
+  when: enable_health_checks | default(true)
+
+- name: Configure log rotation for health checks
+  copy:
+    content: |
+      /var/log/cluster-health.log {
+          daily
+          rotate 7
+          compress
+          delaycompress
+          notifempty
+          create 0640 root adm
+      }
+    dest: /etc/logrotate.d/cluster-health
+    mode: '0644'

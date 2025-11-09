@@ -1,0 +1,30 @@
+# SSH configuration for Proxmox hosts
+
+# Basic settings
+Port 22
+Protocol 2
+ListenAddress 0.0.0.0
+
+# Authentication
+PermitRootLogin prohibit-password
+PubkeyAuthentication yes
+PasswordAuthentication no
+PermitEmptyPasswords no
+ChallengeResponseAuthentication no
+
+# Security
+X11Forwarding no
+MaxAuthTries 3
+MaxSessions 10
+
+# Performance
+UseDNS no
+TCPKeepAlive yes
+ClientAliveInterval 60
+ClientAliveCountMax 3
+
+# Subsystems
+Subsystem sftp /usr/lib/openssh/sftp-server
+
+# Accept locale-related environment variables
+AcceptEnv LANG LC_*

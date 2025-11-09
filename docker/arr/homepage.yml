@@ -39,16 +39,9 @@ services:
       PGID: ${PGID:-1000}
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.homepage.entrypoints=web"
-      - "traefik.http.routers.homepage.rule=Host(`home.$DOMAINNAME`)"
-      - "traefik.http.middlewares.homepage-https-redirect.redirectscheme.scheme=https"
-      - "traefik.http.middlewares.sslheader.headers.customrequestheaders.X-Forwarded-Proto=https"
-      - "traefik.http.routers.homepage.middlewares=homepage-https-redirect"
       - "traefik.http.routers.homepage-secure.entrypoints=websecure"
       - "traefik.http.routers.homepage-secure.rule=Host(`home.$DOMAINNAME`)"
-      - "traefik.http.routers.homepage-secure.tls=true"
       - "traefik.http.routers.homepage-secure.tls.certresolver=cloudflare-dns"
-      - "traefik.http.routers.homepage-secure.service=homepage"
-      # - "traefik.http.services.homepage-svc.loadbalancer.server.scheme=https"
+      - "traefik.http.routers.homepage-secure.middlewares=secure-chain@file"
       - "traefik.http.services.homepage.loadbalancer.server.port=3000"
       - "traefik.docker.network=arr_net"

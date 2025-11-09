@@ -1,52 +1,28 @@
 services:
   # Lidarr - Music Management
   lidarr:
+    <<: *common-arr
     image: lscr.io/linuxserver/lidarr:${LIDARR_TAG:-latest}
     container_name: lidarr
-    security_opt:
-      - no-new-privileges:true
-    restart: "no"
-    profiles: ["media","arrs", "all"]
-    networks:
-      - arr_net
+    profiles: ["media", "arrs", "all"]
     ports:
       - mode: ingress
         target: 8686
         published: ${LIDARR_PORT:-8686}
         protocol: tcp
     volumes:
-      - type: bind
-        source: /etc/localtime
-        target: /etc/localtime
-        read_only: true
-        bind:
-          create_host_path: true
+      - *common-volumes
       - type: bind
         source: ~/lidarr
         target: /config
         bind:
           create_host_path: true
-      - type: bind
-        source: ${COMMON_DATA_PATH}
-        target: /storage
-        bind:
-          create_host_path: true
-    environment:
-      TZ: ${TZ:-Etc/UTC}
-      PUID: ${PUID:-1000}
-      PGID: ${PGID:-1000}
+      - *storage-volume
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.lidarr.entrypoints=web"
-      - "traefik.http.routers.lidarr.rule=Host(`lidarr.$DOMAINNAME`)"
-      - "traefik.http.middlewares.lidarr-https-redirect.redirectscheme.scheme=https"
-      - "traefik.http.middlewares.sslheader.headers.customrequestheaders.X-Forwarded-Proto=https"
-      - "traefik.http.routers.lidarr.middlewares=lidarr-https-redirect"
       - "traefik.http.routers.lidarr-secure.entrypoints=websecure"
       - "traefik.http.routers.lidarr-secure.rule=Host(`lidarr.$DOMAINNAME`)"
-      - "traefik.http.routers.lidarr-secure.tls=true"
       - "traefik.http.routers.lidarr-secure.tls.certresolver=cloudflare-dns"
-      - "traefik.http.routers.lidarr-secure.service=lidarr"
-      # - "traefik.http.services.lidarr.loadbalancer.server.scheme=https"
+      - "traefik.http.routers.lidarr-secure.middlewares=secure-chain@file"
       - "traefik.http.services.lidarr.loadbalancer.server.port=8686"
       - "traefik.docker.network=arr_net"

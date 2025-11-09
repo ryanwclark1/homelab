@@ -1,0 +1,43 @@
+---
+# TrueNAS NFS configuration
+
+- name: Enable NFS service
+  uri:
+    url: "{{ truenas_api_url }}/service/id/nfs"
+    method: PUT
+    headers:
+      Authorization: "Bearer {{ truenas_api_key }}"
+    body_format: json
+    body:
+      enable: true
+    validate_certs: "{{ truenas_validate_certs }}"
+    status_code: 200
+
+- name: Start NFS service
+  uri:
+    url: "{{ truenas_api_url }}/service/start"
+    method: POST
+    headers:
+      Authorization: "Bearer {{ truenas_api_key }}"
+    body_format: json
+    body:
+      service: "nfs"
+    validate_certs: "{{ truenas_validate_certs }}"
+    status_code: [200, 422]  # 422 if already running
+
+- name: Configure NFS shares
+  arensb.truenas.sharing_nfs:
+    api_url: "{{ truenas_api_url }}"
+    api_key: "{{ truenas_api_key }}"
+    validate_certs: "{{ truenas_validate_certs }}"
+    path: "{{ item.path }}"
+    networks: "{{ item.networks | default([]) }}"
+    hosts: "{{ item.hosts | default([]) }}"
+    maproot_user: "{{ item.maproot_user | default('root') }}"
+    maproot_group: "{{ item.maproot_group | default('root') }}"
+    comment: "{{ item.comment | default('') }}"
+    state: present
+  loop: "{{ truenas_nfs_shares }}"
+  loop_control:
+    label: "{{ item.path }}"
+  when: truenas_nfs_shares | length > 0

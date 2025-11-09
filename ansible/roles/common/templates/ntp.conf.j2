@@ -1,0 +1,23 @@
+# NTP configuration for Proxmox hosts
+
+driftfile /var/lib/ntp/ntp.drift
+statistics loopstats peerstats clockstats
+filegen loopstats file loopstats type day enable
+filegen peerstats file peerstats type day enable
+filegen clockstats file clockstats type day enable
+
+# NTP servers
+{% for server in ntp_servers %}
+server {{ server }} iburst
+{% endfor %}
+
+# Fallback to local clock
+server 127.127.1.0
+fudge 127.127.1.0 stratum 10
+
+# Access control
+restrict -4 default kod notrap nomodify nopeer noquery limited
+restrict -6 default kod notrap nomodify nopeer noquery limited
+restrict 127.0.0.1
+restrict ::1
+restrict source notrap nomodify noquery

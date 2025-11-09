@@ -1,0 +1,63 @@
+---
+# TrueNAS Storage Inventory
+# Add your TrueNAS servers here
+
+all:
+  children:
+    truenas_servers:
+      hosts:
+        # Example TrueNAS server - uncomment and configure
+        # truenas01:
+        #   ansible_host: 10.10.100.50
+        #   truenas_api_url: "http://10.10.100.50/api/v2.0"
+        #   truenas_api_key: "{{ vault_truenas_api_key }}"
+        #   storage_pools:
+        #     - name: tank
+        #       disks:
+        #         - ada0
+        #         - ada1
+        #         - ada2
+        #         - ada3
+        #       raid_type: raidz1
+        #     - name: backup
+        #       disks:
+        #         - ada4
+        #         - ada5
+        #       raid_type: mirror
+
+      vars:
+        # TrueNAS configuration
+        ansible_connection: local  # API-based management
+        ansible_python_interpreter: /usr/bin/python3
+
+        # Default settings
+        truenas_timeout: 60
+        truenas_validate_certs: false
+
+        # Network
+        domain_name: techcasa.io
+
+        # NFS settings
+        nfs_enabled: true
+        nfs_v4: true
+        nfs_protocols:
+          - nfsv3
+          - nfsv4
+
+        # SMB/CIFS settings
+        smb_enabled: true
+        smb_workgroup: HOMELAB
+        smb_netbios_name: TRUENAS
+
+        # iSCSI settings
+        iscsi_enabled: false
+
+        # Replication
+        replication_enabled: false
+
+    # Group for storage servers (both TrueNAS and Proxmox storage nodes)
+    storage_cluster:
+      children:
+        truenas_servers:
+      vars:
+        role: storage

@@ -1,30 +1,68 @@
 services:
   semaphore:
+    image: semaphoreui/semaphore:${SEMAPHORE_TAG:-v2.10.11}
+    container_name: semaphore
     ports:
-      - 3000:3000
-    image: semaphoreui/semaphore:v2.10.11
+      - "${SEMAPHORE_PORT:-3000}:3000"
     environment:
-      SEMAPHORE_DB_USER: ${DB_USER:-semaphore}
-      SEMAPHORE_DB_PASS: ${DB_PASS:-semaphore}
-      SEMAPHORE_DB_HOST: ${DB_HOST:-semaphore}
-      SEMAPHORE_DB_PORT: ${DB_PORT:-5432}
-      SEMAPHORE_DB_DIALECT: ${DB_DIALECT:-postgres}
-      SEMAPHORE_DB: ${DB_TYPE:-postgres}
-      SEMAPHORE_PLAYBOOK_PATH: /tmp/semaphore/
-      SEMAPHORE_ADMIN_PASSWORD: ${SEMAPHORE_PASSWORD:-password123}
-      SEMAPHORE_ADMIN_NAME: ${SEMAPHORE_ADMIN:-semaphore}
-      SEMAPHORE_ADMIN_EMAIL: ${SEMAPHORE_ADMIN_EMAIL:-semaphore}
-      SEMAPHORE_ADMIN: admin
-      SEMAPHORE_ACCESS_KEY_ENCRYPTION: gs72mPntFATGJs9qK0pQ0rKtfidlexiMjYCH9gWKhTU=
-      TZ: UTC
-    # volumes:
-    #   - /path/to/data/home:/etc/semaphore # config.json location
+      SEMAPHORE_DB_USER: ${SEMAPHORE_DB_USER:-semaphore}
+      SEMAPHORE_DB_PASS: ${SEMAPHORE_DB_PASSWORD:-semaphore}
+      SEMAPHORE_DB_HOST: ${SEMAPHORE_DB_HOST:-postgres}
+      SEMAPHORE_DB_PORT: ${SEMAPHORE_DB_PORT:-5432}
+      SEMAPHORE_DB_DIALECT: ${SEMAPHORE_DB_DIALECT:-postgres}
+      SEMAPHORE_DB: ${SEMAPHORE_DB_NAME:-semaphore}
+      SEMAPHORE_PLAYBOOK_PATH: ${SEMAPHORE_PLAYBOOK_PATH:-/tmp/semaphore/}
+      SEMAPHORE_ADMIN_PASSWORD: ${SEMAPHORE_ADMIN_PASSWORD}
+      SEMAPHORE_ADMIN_NAME: ${SEMAPHORE_ADMIN_NAME:-admin}
+      SEMAPHORE_ADMIN_EMAIL: ${SEMAPHORE_ADMIN_EMAIL:-admin@example.com}
+      SEMAPHORE_ADMIN: ${SEMAPHORE_ADMIN_USER:-admin}
+      SEMAPHORE_ACCESS_KEY_ENCRYPTION: ${SEMAPHORE_ACCESS_KEY_ENCRYPTION:-gs72mPntFATGJs9qK0pQ0rKtfidlexiMjYCH9gWKhTU=}
+      TZ: ${TZ:-UTC}
+    volumes:
+      - ./config:/etc/semaphore
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: unless-stopped
+
   postgres:
-    image: postgres:16-alpine
+    image: postgres:${POSTGRES_TAG:-16-alpine}
+    container_name: semaphore-postgres
     hostname: postgres
     volumes:
       - semaphore-postgres:/var/lib/postgresql/data
     environment:
-      POSTGRES_USER: ${DB_USER:-semaphore}
-      POSTGRES_PASSWORD: ${DB_PASSWORD:-semaphore}
-      POSTGRES_DB: semaphore
+      POSTGRES_USER: ${SEMAPHORE_DB_USER:-semaphore}
+      POSTGRES_PASSWORD: ${SEMAPHORE_DB_PASSWORD:-semaphore}
+      POSTGRES_DB: ${SEMAPHORE_DB_NAME:-semaphore}
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -d ${SEMAPHORE_DB_NAME:-semaphore} -U ${SEMAPHORE_DB_USER:-semaphore}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
+    restart: unless-stopped
+
+  backup:
+    image: prodrigestivill/postgres-backup-local:${POSTGRES_BACKUP_TAG:-latest}
+    container_name: semaphore-db-backup
+    environment:
+      POSTGRES_HOST: postgres
+      POSTGRES_DB: ${SEMAPHORE_DB_NAME:-semaphore}
+      POSTGRES_USER: ${SEMAPHORE_DB_USER:-semaphore}
+      POSTGRES_PASSWORD: ${SEMAPHORE_DB_PASSWORD:-semaphore}
+      SCHEDULE: ${BACKUP_SCHEDULE:-@daily}
+      BACKUP_DIR: /db_dumps
+      BACKUP_KEEP_DAYS: ${BACKUP_KEEP_DAYS:-7}
+      BACKUP_KEEP_WEEKS: ${BACKUP_KEEP_WEEKS:-4}
+      BACKUP_KEEP_MONTHS: ${BACKUP_KEEP_MONTHS:-6}
+    volumes:
+      - ./backups:/db_dumps
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: unless-stopped
+
+volumes:
+  semaphore-postgres:
+    driver: local

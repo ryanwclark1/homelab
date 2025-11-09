@@ -31,6 +31,7 @@ include:
   - monitoring/graphite-exporter-proxmox.yml
   - monitoring/graphite-exporter-truenas.yml
   - monitoring/loki.yml
+  - monitoring/node-exporter.yml
   - monitoring/prometheus.yml
   - monitoring/promtail.yml
   - monitoring/pushgateway.yml

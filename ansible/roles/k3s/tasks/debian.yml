@@ -1,0 +1,22 @@
+---
+# Debian/Ubuntu-specific tasks
+
+- name: Update APT cache
+  apt:
+    update_cache: yes
+    cache_valid_time: 3600
+
+- name: Install required packages
+  apt:
+    name:
+      - curl
+      - open-iscsi
+      - nfs-common
+      - jq
+    state: present
+
+- name: Enable and start iscsid
+  systemd:
+    name: iscsid
+    state: started
+    enabled: yes

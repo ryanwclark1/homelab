@@ -1,0 +1,23 @@
+---
+# TrueNAS network configuration
+
+- name: Configure DNS servers
+  uri:
+    url: "{{ truenas_api_url }}/network/configuration"
+    method: PUT
+    headers:
+      Authorization: "Bearer {{ truenas_api_key }}"
+    body_format: json
+    body:
+      nameserver1: "{{ truenas_dns_servers[0] | default('10.10.100.1') }}"
+      nameserver2: "{{ truenas_dns_servers[1] | default('1.1.1.1') }}"
+      domain: "{{ truenas_search_domain }}"
+    validate_certs: "{{ truenas_validate_certs }}"
+    status_code: 200
+  when: truenas_dns_servers is defined
+  register: network_config
+
+- name: Display network configuration
+  debug:
+    var: network_config
+  when: network_config.changed

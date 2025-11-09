@@ -1,0 +1,51 @@
+---
+# Main site playbook for Proxmox cluster management
+# This is the entry point for full cluster configuration
+
+- name: Configure Proxmox Cluster
+  hosts: proxmox_cluster
+  gather_facts: true
+  become: true
+
+  pre_tasks:
+    - name: Display cluster information
+      debug:
+        msg: "Configuring Proxmox node {{ inventory_hostname }} ({{ ansible_host }})"
+
+    - name: Verify Proxmox installation
+      command: pveversion
+      register: pve_version
+      changed_when: false
+      failed_when: pve_version.rc != 0
+
+    - name: Display Proxmox version
+      debug:
+        var: pve_version.stdout
+
+  roles:
+    - role: common
+      tags: [common, always]
+
+    - role: proxmox_base
+      tags: [proxmox, base]
+
+    - role: proxmox_storage
+      tags: [proxmox, storage]
+
+    - role: proxmox_network
+      tags: [proxmox, network]
+
+    - role: proxmox_monitoring
+      tags: [proxmox, monitoring]
+
+  post_tasks:
+    - name: Final cluster status check
+      command: pvecm status
+      register: cluster_status
+      changed_when: false
+      failed_when: false
+
+    - name: Display cluster status
+      debug:
+        var: cluster_status.stdout_lines
+      when: cluster_status.rc == 0

@@ -1,0 +1,25 @@
+---
+# TrueNAS dataset management
+
+- name: Create datasets
+  arensb.truenas.dataset:
+    api_url: "{{ truenas_api_url }}"
+    api_key: "{{ truenas_api_key }}"
+    validate_certs: "{{ truenas_validate_certs }}"
+    name: "{{ item.name }}"
+    compression: "{{ item.compression | default('lz4') }}"
+    quota: "{{ item.quota | default(omit) }}"
+    recordsize: "{{ item.record_size | default('128K') }}"
+    state: present
+  loop: "{{ truenas_datasets }}"
+  loop_control:
+    label: "{{ item.name }}"
+  register: dataset_creation
+
+- name: Display created datasets
+  debug:
+    msg: "Dataset {{ item.item.name }} configured"
+  loop: "{{ dataset_creation.results }}"
+  loop_control:
+    label: "{{ item.item.name }}"
+  when: item.changed

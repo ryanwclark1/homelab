@@ -1,0 +1,51 @@
+# Proxmox Connection Settings
+# Copy this file to terraform.tfvars and fill in your values
+
+# Proxmox API URL (replace with your Proxmox host)
+proxmox_api_url = "https://james.techcasa.io:8006/api2/json"
+
+# Proxmox API Token (recommended method)
+# Create a token in Proxmox UI: Datacenter -> Permissions -> API Tokens
+# Format: username@realm!tokenid
+proxmox_api_token_id     = "root@pam!terraform"
+proxmox_api_token_secret = "your-api-token-secret-here"
+
+# Alternative: Username/Password (less secure, comment out if using API tokens)
+# proxmox_user     = "root@pam"
+# proxmox_password = "your-password-here"
+
+# Skip TLS verification (set to true for self-signed certificates)
+proxmox_tls_insecure = true
+
+# Network Configuration
+gateway      = "10.10.100.1"
+nameserver   = "10.10.100.1"
+searchdomain = "techcasa.io"
+cidr_mask    = "23"
+
+# Cloud-Init Configuration
+ci_user           = "administrator"
+ci_password       = "changeme_strong_password"  # Change this!
+ci_ssh_public_key = <<-EOT
+ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQC... your-ssh-public-key-here
+EOT
+
+# Template Configuration
+template_name = "debian-bookworm-cloudinit"
+template_id   = 5001
+
+# K3s Configuration
+k3s_version = "v1.28.8+k3s1"
+k3s_token   = "changeme_k3s_cluster_token"  # Change this! Generate with: openssl rand -base64 32
+k3s_vip     = "10.10.101.50"
+k3s_lb_range = "10.10.101.60-10.10.101.100"
+
+# Default VM Settings (can be overridden per VM in locals.tf)
+default_cores    = 4
+default_sockets  = 1
+default_memory   = 8192
+default_disk_size = "10G"
+default_storage  = "tank"
+
+# Common Tags
+common_tags = ["terraform", "k3s", "homelab"]

@@ -1,0 +1,49 @@
+---
+# Proxmox network configuration
+
+- name: Ensure network configuration directory exists
+  file:
+    path: /etc/network/interfaces.d
+    state: directory
+    mode: '0755'
+
+- name: Backup current network configuration
+  copy:
+    src: /etc/network/interfaces
+    dest: /etc/network/interfaces.backup
+    remote_src: yes
+    backup: yes
+  changed_when: false
+
+- name: Configure network interfaces
+  template:
+    src: interfaces.j2
+    dest: /etc/network/interfaces
+    mode: '0644'
+    backup: yes
+  notify: restart networking
+  when: configure_network | default(false)
+
+- name: Install networking tools
+  apt:
+    name:
+      - bridge-utils
+      - vlan
+      - ifupdown2
+    state: present
+
+- name: Enable IP forwarding
+  sysctl:
+    name: net.ipv4.ip_forward
+    value: '1'
+    state: present
+    reload: yes
+
+- name: Configure firewall (if enabled)
+  template:
+    src: pve-firewall.fw.j2
+    dest: /etc/pve/firewall/cluster.fw
+    mode: '0640'
+  when:
+    - firewall_enabled | default(false)
+    - datacenter_role == 'primary'

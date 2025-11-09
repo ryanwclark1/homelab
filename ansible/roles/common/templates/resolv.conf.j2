@@ -1,0 +1,10 @@
+# DNS configuration
+search {{ search_domain }}
+
+{% for server in dns_servers %}
+nameserver {{ server }}
+{% endfor %}
+
+options timeout:2
+options attempts:3
+options rotate

@@ -38,19 +38,10 @@ include:
   # PREFIX dns = DNS / AdBlock Server
 
   # CORE
-  - network/socket-proxy.yml
   - network/traefik.yml
   # - network/oauth.yml
-  # AD-BLOCKING
-  #- network/adguardhome.yml
-  #- network/adguardhome-sync.yml
-  # DNS RESOLVER
-  #- network/unbound.yml
-  # VPN
-  # - network/wg-easy.yml
   # MONITORING
   # - network/glances.yml
   # MAINTENANCE
   # - network/docker-gc.yml # not available for arm
-  - network/ddns-updater.yml
   # - network/certdumper.yml

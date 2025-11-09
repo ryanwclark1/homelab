@@ -1,0 +1,13 @@
+---
+# Proxmox secrets - encrypt with ansible-vault
+
+# Proxmox API credentials
+vault_proxmox_api_token_id: "root@pam!terraform"
+vault_proxmox_api_token_secret: "your-proxmox-api-secret-here"
+
+# Alternative: username/password
+# vault_proxmox_user: "root@pam"
+# vault_proxmox_password: "proxmox-password"
+
+# Backup encryption
+vault_backup_password: "backup-encryption-password"

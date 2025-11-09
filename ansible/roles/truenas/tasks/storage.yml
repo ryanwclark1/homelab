@@ -1,0 +1,24 @@
+---
+# TrueNAS storage pool management
+
+- name: Get storage pool status
+  uri:
+    url: "{{ truenas_api_url }}/pool"
+    method: GET
+    headers:
+      Authorization: "Bearer {{ truenas_api_key }}"
+    validate_certs: "{{ truenas_validate_certs }}"
+  register: storage_pools_status
+  changed_when: false
+
+- name: Display storage pool status
+  debug:
+    msg: |
+      Pool: {{ item.name }}
+      Status: {{ item.status }}
+      Size: {{ (item.size / 1024 / 1024 / 1024 / 1024) | round(2) }} TiB
+      Available: {{ (item.available / 1024 / 1024 / 1024 / 1024) | round(2) }} TiB
+      Used: {{ item.used_pct }}%
+  loop: "{{ storage_pools_status.json }}"
+  loop_control:
+    label: "{{ item.name }}"

@@ -1,52 +1,28 @@
 services:
   # Sonarr - TV Shows Management
   sonarr:
+    <<: *common-arr
     image: lscr.io/linuxserver/sonarr:${SONARR_TAG:-latest}
     container_name: sonarr
-    security_opt:
-      - no-new-privileges:true
-    restart: "no"
     profiles: ["media", "arrs", "all"]
-    networks:
-      - arr_net
     ports:
       - mode: ingress
         target: 8989
         published: ${SONARR_PORT:-8989}
         protocol: tcp
     volumes:
-      - type: bind
-        source: /etc/localtime
-        target: /etc/localtime
-        read_only: true
-        bind:
-          create_host_path: true
+      - *common-volumes
       - type: bind
         source: ~/sonarr
         target: /config
         bind:
           create_host_path: true
-      - type: bind
-        source: ${COMMON_DATA_PATH}
-        target: /storage
-        bind:
-          create_host_path: true
-    environment:
-      TZ: ${TZ:-Etc/UTC}
-      PUID: ${PUID:-1000}
-      PGID: ${PGID:-1000}
+      - *storage-volume
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.sonarr.entrypoints=web"
-      - "traefik.http.routers.sonarr.rule=Host(`sonarr.$DOMAINNAME`)"
-      - "traefik.http.middlewares.sonarr-https-redirect.redirectscheme.scheme=https"
-      - "traefik.http.middlewares.sslheader.headers.customrequestheaders.X-Forwarded-Proto=https"
-      - "traefik.http.routers.sonarr.middlewares=sonarr-https-redirect"
       - "traefik.http.routers.sonarr-secure.entrypoints=websecure"
       - "traefik.http.routers.sonarr-secure.rule=Host(`sonarr.$DOMAINNAME`)"
-      - "traefik.http.routers.sonarr-secure.tls=true"
       - "traefik.http.routers.sonarr-secure.tls.certresolver=cloudflare-dns"
-      - "traefik.http.routers.sonarr-secure.service=sonarr"
-      # - "traefik.http.services.sonarr.loadbalancer.server.scheme=https"
+      - "traefik.http.routers.sonarr-secure.middlewares=secure-chain@file"
       - "traefik.http.services.sonarr.loadbalancer.server.port=8989"
       - "traefik.docker.network=arr_net"

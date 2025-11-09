@@ -1,0 +1,18 @@
+# Proxmox Storage Configuration
+
+{% for pool in storage_pools %}
+{% if pool.type == 'zfs' %}
+zfspool: {{ pool.name }}
+        pool {{ pool.name }}
+        content images,rootdir
+        nodes {{ groups['proxmox_cluster'] | join(',') }}
+        sparse 1
+
+{% endif %}
+{% endfor %}
+
+# Local directory storage
+dir: local
+        path /var/lib/vz
+        content vztmpl,iso,backup
+        maxfiles 3
