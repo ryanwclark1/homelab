@@ -1,5 +1,0 @@
-{
-  _config+:: {
-    enableLokiLogs: true,
-  },
-}
