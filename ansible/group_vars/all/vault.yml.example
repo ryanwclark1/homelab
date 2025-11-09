@@ -1,0 +1,11 @@
+---
+# Example vault file - copy and encrypt with ansible-vault
+# cp vault.yml.example vault.yml
+# ansible-vault encrypt vault.yml
+
+# SSH Keys
+vault_ssh_public_key: "ssh-ed25519 AAAAC3... your-key-here"
+
+# Common passwords
+vault_admin_password: "change-me-strong-password"
+vault_backup_encryption_key: "change-me-encryption-key"

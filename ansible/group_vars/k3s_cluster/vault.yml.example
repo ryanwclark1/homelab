@@ -1,0 +1,18 @@
+---
+# K3s cluster secrets - encrypt with ansible-vault
+
+# K3s cluster token (generate with: openssl rand -base64 48)
+vault_k3s_token: "K10abcdef1234567890abcdef1234567890abcdef1234567890abcdef"
+
+# Docker registry credentials
+vault_docker_registry_user: "admin"
+vault_docker_registry_password: "registry-password"
+
+# Database passwords
+vault_postgres_password: "postgres-password"
+vault_mysql_root_password: "mysql-root-password"
+vault_redis_password: "redis-password"
+
+# Application secrets
+vault_grafana_admin_password: "grafana-admin-password"
+vault_minio_root_password: "minio-root-password"

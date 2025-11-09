@@ -1,0 +1,12 @@
+---
+# TrueNAS secrets - encrypt with ansible-vault
+
+# TrueNAS API key
+# Generate in TrueNAS UI: Settings → API Keys
+vault_truenas_api_key: "1-abc123def456..."
+
+# SMB/CIFS passwords
+vault_truenas_smb_admin_password: "smb-admin-password"
+
+# Root password (if needed)
+vault_truenas_root_password: "truenas-root-password"

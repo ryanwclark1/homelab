@@ -62,11 +62,28 @@ ansible/
 
 ## Quick Start
 
-### 1. Test Connectivity
+### 1. Install Collections
 
 ```bash
 cd ansible
 
+# Install required Ansible Galaxy collections
+make install-collections
+```
+
+### 2. Generate Secrets
+
+```bash
+# Generate strong secrets and create encrypted vault files
+make generate-secrets
+
+# Review generated secrets
+ansible-vault view group_vars/k3s_cluster/vault.yml
+```
+
+### 3. Test Connectivity
+
+```bash
 # Ping all hosts
 make ping
 
@@ -74,7 +91,7 @@ make ping
 make ping-node NODE=james
 ```
 
-### 2. Run Health Check
+### 4. Run Health Check
 
 ```bash
 # Check all hosts
@@ -84,7 +101,7 @@ make health
 make health-node NODE=andrew
 ```
 
-### 3. Configure Cluster
+### 5. Configure Cluster
 
 ```bash
 # Full site configuration
@@ -92,6 +109,23 @@ make site
 
 # Configure specific host
 make site-node NODE=john
+```
+
+## Secrets Management
+
+All sensitive data is managed with Ansible Vault. See [SECRETS.md](SECRETS.md) for complete guide.
+
+### Quick Reference
+
+```bash
+# Generate secrets
+make generate-secrets
+
+# View encrypted secrets
+ansible-vault view group_vars/k3s_cluster/vault.yml
+
+# Edit encrypted secrets
+ansible-vault edit group_vars/k3s_cluster/vault.yml
 ```
 
 ## Common Operations
@@ -149,6 +183,32 @@ make cmd CMD="uptime"
 
 # Run command on specific host
 make cmd-node NODE=james CMD="df -h"
+```
+
+### Backup Verification
+
+```bash
+# Verify all backups
+make verify-backups
+
+# Check Proxmox backups
+ansible proxmox_cluster -m find -a "paths=/var/backups/proxmox age=-7d"
+
+# Check TrueNAS snapshots
+make truenas-health
+```
+
+### Monitoring
+
+```bash
+# Deploy monitoring stack to K3s
+make k3s-monitoring
+
+# Access Grafana (after deployment)
+kubectl port-forward -n monitoring svc/kube-prometheus-stack-grafana 3000:80
+
+# View Prometheus
+kubectl port-forward -n monitoring svc/kube-prometheus-stack-prometheus 9090:9090
 ```
 
 ## Playbooks

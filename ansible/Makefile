@@ -26,6 +26,11 @@ help:
 	@echo "  k3s-deploy      - Deploy K3s cluster"
 	@echo "  k3s-health      - K3s cluster health check"
 	@echo "  k3s-kubeconfig  - Get kubeconfig from cluster"
+	@echo "  k3s-monitoring  - Deploy monitoring stack (Prometheus/Grafana)"
+	@echo ""
+	@echo "Utilities:"
+	@echo "  verify-backups  - Verify all backups are working"
+	@echo "  generate-secrets - Generate strong secrets for vault"
 	@echo ""
 	@echo "Node-specific operations:"
 	@echo "  ping-node NODE=name    - Ping specific node"
@@ -206,3 +211,13 @@ k3s-kubeconfig:
 	@sed -i 's/127.0.0.1/10.10.101.50/g' kubeconfig.yaml
 	@echo "Kubeconfig saved to ./kubeconfig.yaml"
 	@echo "Use with: export KUBECONFIG=\$$(pwd)/kubeconfig.yaml"
+
+k3s-monitoring: check-collections
+	ansible-playbook -i inventories/k3s/hosts.yml playbooks/deploy-monitoring.yml
+
+# Utility commands
+verify-backups:
+	ansible-playbook playbooks/verify-backups.yml
+
+generate-secrets:
+	./scripts/generate-secrets.sh

@@ -1,0 +1,55 @@
+---
+# Join additional master nodes to the cluster
+
+- name: Check if K3s is already installed
+  stat:
+    path: /usr/local/bin/k3s
+  register: k3s_binary
+
+- name: Get bootstrap node info
+  set_fact:
+    bootstrap_node: "{{ groups['k3s_init_master'][0] }}"
+    bootstrap_ip: "{{ hostvars[groups['k3s_init_master'][0]]['ansible_host'] }}"
+
+- name: Wait for bootstrap node to be ready
+  wait_for:
+    host: "{{ bootstrap_ip }}"
+    port: 6443
+    timeout: 300
+  delegate_to: localhost
+
+- name: Download K3s install script
+  get_url:
+    url: "{{ k3s_install_url }}"
+    dest: /tmp/k3s-install.sh
+    mode: '0755'
+  when: not k3s_binary.stat.exists
+
+- name: Join cluster as additional master
+  environment:
+    INSTALL_K3S_VERSION: "{{ k3s_version }}"
+    K3S_TOKEN: "{{ k3s_token }}"
+    K3S_URL: "https://{{ bootstrap_ip }}:6443"
+  shell: |
+    /tmp/k3s-install.sh server \
+      --server https://{{ bootstrap_ip }}:6443 \
+      --tls-san {{ k3s_cluster_vip }} \
+      --tls-san k3s.{{ domain_name }} \
+      --disable {{ k3s_disable_components | join(',') }}
+  when: not k3s_binary.stat.exists
+  register: k3s_join
+
+- name: Wait for node to be ready
+  command: k3s kubectl get node {{ inventory_hostname }} -o jsonpath='{.status.conditions[?(@.type=="Ready")].status}'
+  register: node_ready
+  until: node_ready.stdout == "True"
+  retries: 30
+  delay: 10
+  changed_when: false
+
+- name: Display join status
+  debug:
+    msg: |
+      Additional master {{ inventory_hostname }} joined cluster
+      Bootstrap node: {{ bootstrap_node }}
+      Server URL: https://{{ bootstrap_ip }}:6443

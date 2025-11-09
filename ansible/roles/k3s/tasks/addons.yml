@@ -1,0 +1,104 @@
+---
+# Deploy K3s cluster add-ons
+
+- name: Create manifests directory
+  file:
+    path: /var/lib/rancher/k3s/server/manifests
+    state: directory
+    mode: '0755'
+
+# MetalLB
+- name: Deploy MetalLB
+  when: metallb_enabled | default(false)
+  block:
+    - name: Create MetalLB namespace manifest
+      copy:
+        content: |
+          apiVersion: v1
+          kind: Namespace
+          metadata:
+            name: metallb-system
+        dest: /var/lib/rancher/k3s/server/manifests/metallb-namespace.yaml
+        mode: '0644'
+
+    - name: Deploy MetalLB
+      shell: |
+        k3s kubectl apply -f https://raw.githubusercontent.com/metallb/metallb/v0.14.3/config/manifests/metallb-native.yaml
+      register: metallb_deploy
+      changed_when: "'created' in metallb_deploy.stdout or 'configured' in metallb_deploy.stdout"
+
+    - name: Wait for MetalLB controller
+      command: k3s kubectl wait --for=condition=ready pod -l app=metallb -n metallb-system --timeout=300s
+      register: metallb_ready
+      until: metallb_ready.rc == 0
+      retries: 5
+      delay: 10
+      changed_when: false
+
+    - name: Create MetalLB IPAddressPool
+      copy:
+        content: |
+          apiVersion: metallb.io/v1beta1
+          kind: IPAddressPool
+          metadata:
+            name: homelab-pool
+            namespace: metallb-system
+          spec:
+            addresses:
+              - {{ metallb_ip_range }}
+          ---
+          apiVersion: metallb.io/v1beta1
+          kind: L2Advertisement
+          metadata:
+            name: homelab-l2
+            namespace: metallb-system
+          spec:
+            ipAddressPools:
+              - homelab-pool
+        dest: /var/lib/rancher/k3s/server/manifests/metallb-config.yaml
+        mode: '0644'
+
+# Longhorn
+- name: Deploy Longhorn
+  when: longhorn_enabled | default(false)
+  block:
+    - name: Add Longhorn Helm repo
+      command: k3s kubectl apply -f https://raw.githubusercontent.com/longhorn/longhorn/v1.5.3/deploy/longhorn.yaml
+      register: longhorn_deploy
+      changed_when: "'created' in longhorn_deploy.stdout or 'configured' in longhorn_deploy.stdout"
+
+    - name: Wait for Longhorn to be ready
+      command: k3s kubectl wait --for=condition=ready pod -l app=longhorn-manager -n longhorn-system --timeout=600s
+      register: longhorn_ready
+      until: longhorn_ready.rc == 0
+      retries: 10
+      delay: 30
+      changed_when: false
+
+# Traefik (if enabled - K3s has it by default but we disabled it)
+- name: Deploy Traefik
+  when: traefik_enabled | default(false)
+  block:
+    - name: Create Traefik namespace
+      copy:
+        content: |
+          apiVersion: v1
+          kind: Namespace
+          metadata:
+            name: traefik
+        dest: /var/lib/rancher/k3s/server/manifests/traefik-namespace.yaml
+        mode: '0644'
+
+    - name: Deploy Traefik via Helm
+      shell: |
+        k3s kubectl apply -f https://raw.githubusercontent.com/traefik/traefik/v2.10/docs/content/reference/dynamic-configuration/kubernetes-crd-definition-v1.yml
+      register: traefik_crd
+      changed_when: "'created' in traefik_crd.stdout or 'configured' in traefik_crd.stdout"
+
+- name: Display add-ons status
+  debug:
+    msg: |
+      Cluster add-ons deployed:
+      - MetalLB: {{ metallb_enabled | default(false) }}
+      - Longhorn: {{ longhorn_enabled | default(false) }}
+      - Traefik: {{ traefik_enabled | default(false) }}
