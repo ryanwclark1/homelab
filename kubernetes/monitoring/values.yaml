@@ -1,0 +1,103 @@
+---
+# kube-prometheus-stack Helm values
+# This replaces the monitoring.jsonnet configuration
+
+commonLabels: {}
+
+defaultRules:
+  create: true
+  rules:
+    alertmanager: true
+    etcd: true
+    configReloaders: true
+    general: true
+    k8s: true
+    kubeApiserverAvailability: true
+    kubeApiserverBurnrate: true
+    kubeApiserverHistogram: true
+    kubeApiserverSlos: true
+    kubeControllerManager: true
+    kubelet: true
+    kubeProxy: true
+    kubePrometheusGeneral: true
+    kubePrometheusNodeRecording: true
+    kubernetesApps: true
+    kubernetesResources: true
+    kubernetesStorage: true
+    kubernetesSystem: true
+    kubeSchedulerAlerting: true
+    kubeSchedulerRecording: true
+    kubeStateMetrics: true
+    network: true
+    node: true
+    nodeExporterAlerting: true
+    nodeExporterRecording: true
+    prometheus: true
+    prometheusOperator: true
+
+alertmanager:
+  enabled: true
+  alertmanagerSpec:
+    externalUrl: http://alertmanager.techcasa.io
+    storage:
+      volumeClaimTemplate:
+        spec:
+          accessModes:
+            - ReadWriteOnce
+          resources:
+            requests:
+              storage: 10Gi
+
+grafana:
+  enabled: true
+  adminPassword: changeme  # Should be overridden with --set or in a secret
+  grafana.ini:
+    server:
+      root_url: http://grafana.techcasa.io/
+  persistence:
+    enabled: true
+    size: 10Gi
+
+prometheus:
+  enabled: true
+  prometheusSpec:
+    externalUrl: http://prometheus.techcasa.io
+    retention: 30d
+    storageSpec:
+      volumeClaimTemplate:
+        spec:
+          accessModes:
+            - ReadWriteOnce
+          resources:
+            requests:
+              storage: 50Gi
+    # Enable external metrics adapter
+    enableRemoteWriteReceiver: true
+
+prometheusOperator:
+  enabled: true
+
+kubeStateMetrics:
+  enabled: true
+
+nodeExporter:
+  enabled: true
+
+kubeControllerManager:
+  enabled: true
+
+kubeEtcd:
+  enabled: true
+
+kubeScheduler:
+  enabled: true
+
+kubeProxy:
+  enabled: true
+
+# External Metrics Adapter
+prometheus-adapter:
+  enabled: true
+  prometheus:
+    url: http://prometheus-operated.monitoring.svc
+    port: 9090

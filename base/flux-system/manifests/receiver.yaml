@@ -1,0 +1,20 @@
+---
+apiVersion: notification.toolkit.fluxcd.io/v1beta1
+kind: Receiver
+metadata:
+  name: github-receiver
+  namespace: flux-system
+  labels:
+    app.kubernetes.io/instance: flux-system
+    app.kubernetes.io/part-of: flux
+spec:
+  type: github
+  events:
+    - ping
+    - push
+  secretRef:
+    name: github-webhook-token
+  resources:
+    - apiVersion: source.toolkit.fluxcd.io/v1beta1
+      kind: GitRepository
+      name: homelab

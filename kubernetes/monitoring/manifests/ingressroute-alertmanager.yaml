@@ -1,0 +1,21 @@
+---
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: alertmanager-main
+  namespace: monitoring
+  annotations:
+    kubernetes.io/ingress.class: traefik-external
+spec:
+  entryPoints:
+    - web
+    - websecure
+  routes:
+    - kind: Rule
+      match: Host(`alertmanager.techcasa.io`)
+      services:
+        - name: alertmanager-main
+          namespace: monitoring
+          port: 9093
+  tls:
+    secretName: techcasa-io-production-tls

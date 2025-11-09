@@ -1,0 +1,13 @@
+---
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+  - networkpolicy-cert-manager.yaml
+  - ingress.yaml
+  - prometheusrule.yaml
+  - podmonitor.yaml
+  - externalsecret-github.yaml
+  - externalsecret-slack.yaml
+  - provider-slack.yaml
+  - alert.yaml
+  - receiver.yaml

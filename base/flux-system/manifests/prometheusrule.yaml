@@ -1,0 +1,26 @@
+---
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: flux
+  namespace: flux-system
+  labels:
+    app.kubernetes.io/instance: flux-system
+    app.kubernetes.io/part-of: flux
+    prometheus: k8s
+    role: alert-rules
+spec:
+  groups:
+    - name: GitOpsToolkit
+      rules:
+        - alert: ReconciliationFailure
+          expr: |
+            sum by (kind, name, namespace) (
+              max_over_time(gotk_reconcile_condition{status=~"False|Unknown",type="Ready"}[3m])
+            ) != 0
+          for: 20m
+          labels:
+            severity: warning
+          annotations:
+            summary: Flux objects reconciliation failure
+            description: '{{ $labels.kind }} {{ $labels.namespace }}/{{ $labels.name }} reconciliation has been failing for more than 10 minutes.'
