@@ -1,0 +1,245 @@
+---
+# Grafana Helm Values
+# Grafana is the visualization and dashboarding platform
+
+# Admin credentials (should be in a secret for production)
+adminUser: admin
+adminPassword: changeme  # Override with --set or use a secret
+
+# Persistence
+persistence:
+  enabled: true
+  type: pvc
+  size: 10Gi
+  storageClassName: ""  # Use default StorageClass
+
+# Replicas
+replicas: 1
+
+# Resources
+resources:
+  requests:
+    cpu: 100m
+    memory: 256Mi
+  limits:
+    cpu: 500m
+    memory: 512Mi
+
+# Service
+service:
+  type: ClusterIP
+  port: 80
+
+# Ingress
+ingress:
+  enabled: true
+  ingressClassName: traefik
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-production
+  hosts:
+    - grafana.techcasa.io
+  tls:
+    - secretName: grafana-tls
+      hosts:
+        - grafana.techcasa.io
+
+# Data sources
+datasources:
+  datasources.yaml:
+    apiVersion: 1
+    datasources:
+      # Prometheus
+      - name: Prometheus
+        type: prometheus
+        access: proxy
+        url: http://prometheus-k8s.monitoring.svc.cluster.local:9090
+        isDefault: true
+        editable: true
+        jsonData:
+          httpMethod: POST
+          timeInterval: 30s
+
+      # Loki
+      - name: Loki
+        type: loki
+        access: proxy
+        url: http://loki-gateway.monitoring-stack.svc.cluster.local
+        editable: true
+        jsonData:
+          maxLines: 1000
+          derivedFields:
+            # Extract trace IDs from logs
+            - datasourceUid: tempo
+              matcherRegex: "traceID=(\\w+)"
+              name: TraceID
+              url: "$${__value.raw}"
+
+      # Tempo
+      - name: Tempo
+        type: tempo
+        access: proxy
+        url: http://tempo-query-frontend.monitoring-stack.svc.cluster.local:3100
+        editable: true
+        uid: tempo
+        jsonData:
+          httpMethod: GET
+          tracesToLogs:
+            # Link traces to logs
+            datasourceUid: loki
+            tags: ['job', 'instance', 'pod', 'namespace']
+            mappedTags: [{ key: 'service.name', value: 'service' }]
+            mapTagNamesEnabled: false
+            spanStartTimeShift: '-1h'
+            spanEndTimeShift: '1h'
+            filterByTraceID: true
+            filterBySpanID: false
+          tracesToMetrics:
+            # Link traces to metrics
+            datasourceUid: prometheus
+            tags: [{ key: 'service.name', value: 'service' }, { key: 'job' }]
+            queries:
+              - name: 'Sample query'
+                query: 'sum(rate(tempo_spanmetrics_latency_bucket{$__tags}[5m]))'
+          serviceMap:
+            datasourceUid: prometheus
+          search:
+            hide: false
+          nodeGraph:
+            enabled: true
+          lokiSearch:
+            datasourceUid: loki
+
+# Dashboard providers
+dashboardProviders:
+  dashboardproviders.yaml:
+    apiVersion: 1
+    providers:
+      - name: 'default'
+        orgId: 1
+        folder: ''
+        type: file
+        disableDeletion: false
+        editable: true
+        options:
+          path: /var/lib/grafana/dashboards/default
+
+# Pre-installed dashboards
+dashboards:
+  default:
+    # Kubernetes cluster monitoring
+    kubernetes-cluster:
+      gnetId: 7249
+      revision: 1
+      datasource: Prometheus
+
+    # Node exporter
+    node-exporter:
+      gnetId: 1860
+      revision: 31
+      datasource: Prometheus
+
+    # Loki logs
+    loki-logs:
+      gnetId: 13639
+      revision: 2
+      datasource: Loki
+
+    # Tempo traces
+    tempo-traces:
+      gnetId: 16971
+      revision: 1
+      datasource: Tempo
+
+# Grafana configuration
+grafana.ini:
+  server:
+    root_url: https://grafana.techcasa.io
+    domain: grafana.techcasa.io
+
+  analytics:
+    reporting_enabled: false
+    check_for_updates: true
+
+  security:
+    admin_user: admin
+    # admin_password should be set via environment variable or secret
+
+  users:
+    allow_sign_up: false
+    auto_assign_org: true
+    auto_assign_org_role: Viewer
+
+  auth:
+    disable_login_form: false
+
+  auth.anonymous:
+    enabled: false
+
+  alerting:
+    enabled: true
+
+  unified_alerting:
+    enabled: true
+
+  explore:
+    enabled: true
+
+  feature_toggles:
+    enable: "traceqlEditor tempoSearch tempoBackendSearch"
+
+# Environment variables
+env:
+  GF_SECURITY_ADMIN_PASSWORD: changeme  # Override in production
+  GF_INSTALL_PLUGINS: ""  # Add plugins: grafana-piechart-panel,etc
+
+# Environment from secrets
+# envFromSecret: grafana-credentials
+
+# Plugins
+plugins:
+  # - grafana-piechart-panel
+  # - grafana-clock-panel
+
+# ServiceMonitor for Prometheus
+serviceMonitor:
+  enabled: true
+  interval: 30s
+  labels:
+    prometheus: k8s
+
+# RBAC
+rbac:
+  create: true
+  pspEnabled: false
+
+# Service account
+serviceAccount:
+  create: true
+
+# Security context
+securityContext:
+  runAsUser: 472
+  runAsGroup: 472
+  fsGroup: 472
+
+# Pod security context
+podSecurityContext:
+  runAsNonRoot: true
+  runAsUser: 472
+  fsGroup: 472
+
+# Liveness and readiness probes
+livenessProbe:
+  httpGet:
+    path: /api/health
+    port: 3000
+  initialDelaySeconds: 60
+  timeoutSeconds: 30
+  failureThreshold: 10
+
+readinessProbe:
+  httpGet:
+    path: /api/health
+    port: 3000
+  initialDelaySeconds: 60
+  timeoutSeconds: 30

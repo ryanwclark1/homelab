@@ -1,0 +1,115 @@
+---
+# Example application instrumented for observability
+# This demonstrates how to configure an app to send metrics, logs, and traces
+
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: demo-app
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: instrumented-app
+  namespace: demo-app
+  labels:
+    app: instrumented-app
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: instrumented-app
+  template:
+    metadata:
+      labels:
+        app: instrumented-app
+      annotations:
+        # Prometheus scraping annotations
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "8080"
+        prometheus.io/path: "/metrics"
+    spec:
+      containers:
+        - name: app
+          image: your-app:latest
+          ports:
+            - name: http
+              containerPort: 8080
+            - name: metrics
+              containerPort: 8080
+          env:
+            # OpenTelemetry configuration
+            - name: OTEL_EXPORTER_OTLP_ENDPOINT
+              value: "http://alloy.monitoring-stack.svc.cluster.local:4318"
+            - name: OTEL_EXPORTER_OTLP_PROTOCOL
+              value: "http/protobuf"
+            - name: OTEL_SERVICE_NAME
+              value: "instrumented-app"
+            - name: OTEL_RESOURCE_ATTRIBUTES
+              value: "deployment.environment=production,service.namespace=demo-app"
+
+            # Logging configuration
+            - name: LOG_LEVEL
+              value: "info"
+            - name: LOG_FORMAT
+              value: "json"
+
+            # Application configuration
+            - name: POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: POD_NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
+            - name: POD_IP
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.podIP
+
+          resources:
+            requests:
+              cpu: 100m
+              memory: 128Mi
+            limits:
+              cpu: 500m
+              memory: 512Mi
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: instrumented-app
+  namespace: demo-app
+  labels:
+    app: instrumented-app
+spec:
+  selector:
+    app: instrumented-app
+  ports:
+    - name: http
+      port: 80
+      targetPort: http
+    - name: metrics
+      port: 8080
+      targetPort: metrics
+
+---
+# ServiceMonitor for Prometheus scraping
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: instrumented-app
+  namespace: demo-app
+  labels:
+    app: instrumented-app
+spec:
+  selector:
+    matchLabels:
+      app: instrumented-app
+  endpoints:
+    - port: metrics
+      interval: 30s
+      path: /metrics

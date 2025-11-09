@@ -1,0 +1,175 @@
+---
+# Grafana Alloy Helm Values
+# Alloy is the next-generation telemetry collector (replaces Grafana Agent)
+
+alloy:
+  # Collector mode: flow (default), static, or both
+  mode: flow
+
+  # Stability level: experimental, public-preview, generally-available
+  stability: generally-available
+
+  # Enable clustering for high availability
+  clustering:
+    enabled: true
+    portName: http-memberlist
+
+# Controller configuration
+controller:
+  type: deployment  # or daemonset for node-level collection
+  replicas: 2
+
+  # For DaemonSet mode (uncomment if needed)
+  # type: daemonset
+  # enableConfigReadAPI: true
+
+# Resource limits
+resources:
+  requests:
+    cpu: 100m
+    memory: 128Mi
+  limits:
+    cpu: 500m
+    memory: 512Mi
+
+# Service configuration
+service:
+  enabled: true
+  type: ClusterIP
+
+# ServiceMonitor for Prometheus scraping
+serviceMonitor:
+  enabled: true
+  interval: 30s
+
+# Configuration file
+configMap:
+  create: true
+  content: |
+    // Grafana Alloy configuration
+
+    // Prometheus scraping
+    prometheus.scrape "kubernetes_pods" {
+      targets = discovery.kubernetes.pods.targets
+      forward_to = [prometheus.remote_write.default.receiver]
+
+      clustering {
+        enabled = true
+      }
+    }
+
+    // Kubernetes pod discovery
+    discovery.kubernetes "pods" {
+      role = "pod"
+    }
+
+    // Prometheus remote write to Mimir or Prometheus
+    prometheus.remote_write "default" {
+      endpoint {
+        url = "http://prometheus-k8s.monitoring.svc.cluster.local:9090/api/v1/write"
+
+        // For Grafana Cloud (uncomment and configure)
+        // url = env("PROMETHEUS_REMOTE_WRITE_URL")
+        // basic_auth {
+        //   username = env("PROMETHEUS_REMOTE_WRITE_USERNAME")
+        //   password = env("PROMETHEUS_REMOTE_WRITE_PASSWORD")
+        // }
+      }
+
+      // Metrics queue configuration
+      queue_config {
+        capacity = 10000
+        max_shards = 10
+      }
+    }
+
+    // Loki log collection from Kubernetes pods
+    loki.source.kubernetes "pods" {
+      targets = discovery.kubernetes.pods.targets
+      forward_to = [loki.write.default.receiver]
+
+      clustering {
+        enabled = true
+      }
+    }
+
+    // Loki write to Loki instance
+    loki.write "default" {
+      endpoint {
+        url = "http://loki-gateway.monitoring-stack.svc.cluster.local/loki/api/v1/push"
+
+        // For Grafana Cloud (uncomment and configure)
+        // url = env("LOKI_URL")
+        // basic_auth {
+        //   username = env("LOKI_USERNAME")
+        //   password = env("LOKI_PASSWORD")
+        // }
+      }
+    }
+
+    // OpenTelemetry receiver for traces
+    otelcol.receiver.otlp "default" {
+      grpc {
+        endpoint = "0.0.0.0:4317"
+      }
+
+      http {
+        endpoint = "0.0.0.0:4318"
+      }
+
+      output {
+        traces = [otelcol.exporter.otlp.tempo.input]
+      }
+    }
+
+    // OTLP exporter to Tempo
+    otelcol.exporter.otlp "tempo" {
+      client {
+        endpoint = "tempo-distributor.monitoring-stack.svc.cluster.local:4317"
+
+        // For Grafana Cloud (uncomment and configure)
+        // endpoint = env("TEMPO_ENDPOINT")
+        // auth = otelcol.auth.basic.tempo.handler
+      }
+    }
+
+    // Self-monitoring: expose Alloy's own metrics
+    prometheus.exporter.self "alloy" { }
+
+    prometheus.scrape "alloy" {
+      targets = prometheus.exporter.self.alloy.targets
+      forward_to = [prometheus.remote_write.default.receiver]
+    }
+
+# Environment variables (for Grafana Cloud integration)
+# env:
+#   - name: PROMETHEUS_REMOTE_WRITE_URL
+#     valueFrom:
+#       secretKeyRef:
+#         name: grafana-cloud-credentials
+#         key: prometheus-url
+#   - name: PROMETHEUS_REMOTE_WRITE_USERNAME
+#     valueFrom:
+#       secretKeyRef:
+#         name: grafana-cloud-credentials
+#         key: prometheus-username
+#   - name: PROMETHEUS_REMOTE_WRITE_PASSWORD
+#     valueFrom:
+#       secretKeyRef:
+#         name: grafana-cloud-credentials
+#         key: prometheus-password
+
+# Security context
+securityContext:
+  runAsUser: 473
+  runAsGroup: 473
+  fsGroup: 473
+
+# Node selector
+nodeSelector: {}
+
+# Tolerations
+tolerations: []
+
+# Affinity
+affinity: {}
